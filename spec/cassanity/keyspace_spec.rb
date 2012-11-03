@@ -1,0 +1,116 @@
+require 'helper'
+require 'cassanity/keyspace'
+
+describe Cassanity::Keyspace do
+  let(:keyspace_name) { 'analytics' }
+
+  let(:executor) {
+    lambda { |args| ['GOTTA KEEP EM EXECUTED', args] }
+  }
+
+  let(:required_arguments) {
+    {
+      name: keyspace_name,
+      executor: executor,
+    }
+  }
+
+  subject { described_class.new(required_arguments) }
+
+  it { should respond_to(:name) }
+  it { should respond_to(:executor) }
+
+  describe "#initialize" do
+    it "sets name" do
+      subject.name.should eq(keyspace_name)
+    end
+
+    [:name, :executor].each do |key|
+      it "raises error without :#{key} key" do
+        expect {
+          described_class.new(required_arguments.except(key))
+        }.to raise_error
+      end
+    end
+  end
+
+  describe "#create_column_family" do
+    it "sends command and arguments to executor" do
+      args = {name: 'foo'}
+      executor.should_receive(:call).with({
+        command: :column_family_create,
+        arguments: args,
+      })
+      subject.create_column_family(args)
+    end
+  end
+
+  describe "#create_table" do
+    it "sends command and arguments to executor" do
+      args = {name: 'foo'}
+      executor.should_receive(:call).with({
+        command: :column_family_create,
+        arguments: args,
+      })
+      subject.create_table(args)
+    end
+  end
+
+  describe "#column_family" do
+    let(:column_family_name) { 'apps' }
+
+    before do
+      @return_value = subject.column_family(column_family_name)
+    end
+
+    it "returns instance of column family" do
+      @return_value.should be_instance_of(Cassanity::ColumnFamily)
+    end
+  end
+
+  describe "#table" do
+    let(:column_family_name) { 'apps' }
+
+    before do
+      @return_value = subject.table(column_family_name)
+    end
+
+    it "returns instance of column family" do
+      @return_value.should be_instance_of(Cassanity::ColumnFamily)
+    end
+  end
+
+  describe "#[]" do
+    let(:column_family_name) { 'apps' }
+
+    before do
+      @return_value = subject[column_family_name]
+    end
+
+    it "returns instance of column family" do
+      @return_value.should be_instance_of(Cassanity::ColumnFamily)
+    end
+  end
+
+  describe "#use" do
+    it "sends command and arguments, including :name, to executor" do
+      args = {something: 'else'}
+      executor.should_receive(:call).with({
+        command: :keyspace_use,
+        arguments: args.merge(name: keyspace_name),
+      })
+      subject.use(args)
+    end
+  end
+
+  describe "#drop" do
+    it "sends command and arguments, including :name, to executor" do
+      args = {something: 'else'}
+      executor.should_receive(:call).with({
+        command: :keyspace_drop,
+        arguments: args.merge(name: keyspace_name),
+      })
+      subject.drop(args)
+    end
+  end
+end
