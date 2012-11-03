@@ -18,6 +18,45 @@ Or install it yourself as:
 
     $ gem install cassanity
 
+## Usage
+
+```ruby
+require 'cassanity'
+
+# cassandra-cql connection
+client = CassandraCQL::Database.new('127.0.0.1:9160', {
+  cql_version: '3.0.0',
+})
+
+# what is going to execute the cql queries?
+executor = Cassanity::Executors::CassandraCql.new({
+  client: client,
+})
+
+# setup connection with something that can execute queries
+connection = Cassanity::Connection.new({
+  executor: executor,
+})
+
+# get keyspace instance
+keyspace = connection[:my_app]
+
+# get column family instance
+apps = keyspace[:apps]
+
+apps.insert({
+  data: {
+    id: '1',
+    name: 'GitHub.com',
+    created_at: Time.now,
+  }
+})
+
+apps.truncate
+apps.drop
+
+```
+
 ## Contributing
 
 1. Fork it
