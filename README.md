@@ -41,9 +41,27 @@ connection = Cassanity::Connection.new({
 # get keyspace instance
 keyspace = connection[:my_app]
 
+# tell client to use keyspace for future queries
+keyspace.use
+
+# create column family
+keyspace.create_column_family({
+  name: :apps,
+  primary_key: :id,
+  columns: {
+    id: :text,
+    name: :text,
+    created_at: :timestamp,
+  },
+  with: {
+    comment: 'For storing apps',
+  }
+})
+
 # get column family instance
 apps = keyspace[:apps]
 
+# insert row
 apps.insert({
   data: {
     id: '1',
@@ -52,9 +70,24 @@ apps.insert({
   }
 })
 
-apps.truncate
-apps.drop
+# update name for row
+apps.update({
+  set: {
+    name: 'GitHub',
+  }
+  where: {
+    id: '1',
+  }
+})
 
+# delete row
+apps.delete(where: {id: '1'})
+
+# truncate column family (remove all rows, still can add new stuff)
+apps.truncate
+
+# drop column family (no more inserting into it, it is gone)
+apps.drop
 ```
 
 ## Contributing
