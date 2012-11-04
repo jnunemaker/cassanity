@@ -62,23 +62,14 @@ keyspace.create_column_family({
 apps = keyspace[:apps]
 
 # insert row
-apps.insert({
-  data: {
-    id: '1',
-    name: 'GitHub.com',
-    created_at: Time.now,
-  }
+apps.insert(data: {
+  id: '1',
+  name: 'GitHub.com',
+  created_at: Time.now,
 })
 
 # update name for row
-apps.update({
-  set: {
-    name: 'GitHub',
-  }
-  where: {
-    id: '1',
-  }
-})
+apps.update(set: {name: 'GitHub'}, where: {id: '1'})
 
 # delete row
 apps.delete(where: {id: '1'})
@@ -89,6 +80,10 @@ apps.truncate
 # drop column family (no more inserting into it, it is gone)
 apps.drop
 ```
+
+## Compatibility
+
+* Ruby 1.9.3
 
 ## Contributing
 
