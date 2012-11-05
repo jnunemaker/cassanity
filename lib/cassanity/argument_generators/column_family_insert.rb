@@ -30,7 +30,12 @@ module Cassanity
         using   = args[:using] || {}
         keys    = data.keys
         binders = ['?'] * keys.size
-        cql     = "INSERT INTO #{name} (#{keys.join(', ')}) VALUES (#{binders.join(', ')})"
+
+        if (keyspace_name = args[:keyspace_name])
+          name = "#{keyspace_name}.#{name}"
+        end
+
+        cql = "INSERT INTO #{name} (#{keys.join(', ')}) VALUES (#{binders.join(', ')})"
 
         unless using.empty?
           statements = []

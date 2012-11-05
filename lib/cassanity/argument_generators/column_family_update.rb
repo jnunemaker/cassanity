@@ -42,6 +42,11 @@ module Cassanity
         using = args[:using] || {}
 
         variables = []
+
+        if (keyspace_name = args[:keyspace_name])
+          name = "#{keyspace_name}.#{name}"
+        end
+
         cql = "UPDATE #{name}"
 
         using_cql, *using_variables = @using_clause.call(using: using)

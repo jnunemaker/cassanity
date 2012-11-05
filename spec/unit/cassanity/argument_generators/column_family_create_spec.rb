@@ -38,6 +38,22 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyCreate do
       end
     end
 
+    context "when including :keyspace_name" do
+      it "returns array of arguments" do
+        cql = "CREATE COLUMNFAMILY foo.#{column_family_name} (id text, name text, PRIMARY KEY (id))"
+        expected = [cql]
+        subject.call({
+          keyspace_name: :foo,
+          name: column_family_name,
+          primary_key: :id,
+          columns: {
+            id: :text,
+            name: :text,
+          },
+        }).should eq(expected)
+      end
+    end
+
     context "when using composite primary key" do
       it "returns array of arguments" do
         cql = "CREATE COLUMNFAMILY #{column_family_name} (segment text, track_id timeuuid, page text, PRIMARY KEY (segment, track_id))"

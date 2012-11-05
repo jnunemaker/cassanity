@@ -37,6 +37,10 @@ module Cassanity
         columns = args.fetch(:columns) { [] }
         using   = args[:using]
 
+        if (keyspace_name = args[:keyspace_name])
+          name = "#{keyspace_name}.#{name}"
+        end
+
         column_clause, variables = '', []
 
         unless columns.empty?

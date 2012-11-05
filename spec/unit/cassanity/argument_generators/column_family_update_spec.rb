@@ -19,6 +19,23 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyUpdate do
       }).should eq(expected)
     end
 
+    context "with :keyspace_name" do
+      it "returns array of arguments" do
+        cql = "UPDATE foo.#{column_family_name} SET name = ? WHERE id = ?"
+        expected = [cql, 'New Name', '1']
+        subject.call({
+          keyspace_name: :foo,
+          name: column_family_name,
+          set: {
+            name: 'New Name',
+          },
+          where: {
+            id: '1',
+          }
+        }).should eq(expected)
+      end
+    end
+
     context "with :where key" do
       subject {
         described_class.new({

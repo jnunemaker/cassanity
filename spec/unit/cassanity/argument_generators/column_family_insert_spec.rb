@@ -33,6 +33,21 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyInsert do
       }).should eq(expected)
     end
 
+    context "with :keyspace_name" do
+      it "returns array of arguments" do
+        cql = "INSERT INTO foo.#{column_family_name} (id, name) VALUES (?, ?)"
+        expected = [cql, '1', 'GitHub']
+        subject.call({
+          keyspace_name: :foo,
+          name: column_family_name,
+          data: {
+            id: '1',
+            name: 'GitHub',
+          }
+        }).should eq(expected)
+      end
+    end
+
     context "with :using key" do
       it "returns array of arguments including using in cql string" do
         millis = (Time.mktime(2012, 11, 1, 14, 9, 9).to_f * 1000).to_i

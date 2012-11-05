@@ -8,6 +8,10 @@ module Cassanity
         with        = args.fetch(:with) { {} }
         definitions, variables = [], []
 
+        if (keyspace_name = args[:keyspace_name])
+          name = "#{keyspace_name}.#{name}"
+        end
+
         columns.each do |name, type|
           definitions << "#{name} #{type}"
         end
