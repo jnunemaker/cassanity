@@ -61,7 +61,7 @@ describe Cassanity::Keyspace do
 
     subject.create_column_family({
       name: column_family_name,
-      schema: schema
+      schema: schema,
     })
 
     client.schema.column_family_names.should include(column_family_name)
