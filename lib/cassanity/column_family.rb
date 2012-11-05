@@ -34,6 +34,7 @@ module Cassanity
         command: :column_family_truncate,
         arguments: args.merge({
           name: @name,
+          keyspace_name: @keyspace.name,
         }),
       })
     end
@@ -49,6 +50,7 @@ module Cassanity
         command: :column_family_drop,
         arguments: args.merge({
           name: @name,
+          keyspace_name: @keyspace.name,
         }),
       })
     end
@@ -64,6 +66,7 @@ module Cassanity
         command: :column_family_insert,
         arguments: args.merge({
           name: @name,
+          keyspace_name: @keyspace.name,
         }),
       })
     end
@@ -79,6 +82,7 @@ module Cassanity
         command: :column_family_update,
         arguments: args.merge({
           name: @name,
+          keyspace_name: @keyspace.name,
         }),
       })
     end
@@ -94,6 +98,7 @@ module Cassanity
         command: :column_family_delete,
         arguments: args.merge({
           name: @name,
+          keyspace_name: @keyspace.name,
         }),
       })
     end

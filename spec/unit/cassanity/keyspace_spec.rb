@@ -39,7 +39,9 @@ describe Cassanity::Keyspace do
       args = {name: 'foo'}
       executor.should_receive(:call).with({
         command: :column_family_create,
-        arguments: args,
+        arguments: args.merge({
+          keyspace_name: keyspace_name,
+        }),
       })
       subject.create_column_family(args)
     end
@@ -50,7 +52,9 @@ describe Cassanity::Keyspace do
       args = {name: 'foo'}
       executor.should_receive(:call).with({
         command: :column_family_create,
-        arguments: args,
+        arguments: args.merge({
+          keyspace_name: keyspace_name,
+        }),
       })
       subject.create_table(args)
     end

@@ -3,10 +3,12 @@ require 'cassanity/column_family'
 
 describe Cassanity::ColumnFamily do
   let(:column_family_name) { 'analytics' }
+  let(:keyspace_name) { 'foo' }
 
   let(:keyspace) {
     double('Keyspace', {
       executor: executor,
+      name: keyspace_name,
     })
   }
 
@@ -61,7 +63,10 @@ describe Cassanity::ColumnFamily do
       args = {something: 'else'}
       executor.should_receive(:call).with({
         command: :column_family_truncate,
-        arguments: args.merge(name: column_family_name),
+        arguments: args.merge({
+          name: column_family_name,
+          keyspace_name: keyspace_name,
+        }),
       })
       subject.truncate(args)
     end
@@ -72,7 +77,10 @@ describe Cassanity::ColumnFamily do
       args = {something: 'else'}
       executor.should_receive(:call).with({
         command: :column_family_drop,
-        arguments: args.merge(name: column_family_name),
+        arguments: args.merge({
+          name: column_family_name,
+          keyspace_name: keyspace_name,
+        }),
       })
       subject.drop(args)
     end
@@ -83,7 +91,10 @@ describe Cassanity::ColumnFamily do
       args = {data: {id: '1', name: 'GitHub'}}
       executor.should_receive(:call).with({
         command: :column_family_insert,
-        arguments: args.merge(name: column_family_name),
+        arguments: args.merge({
+          name: column_family_name,
+          keyspace_name: keyspace_name,
+        }),
       })
       subject.insert(args)
     end
@@ -94,7 +105,10 @@ describe Cassanity::ColumnFamily do
       args = {set: {name: 'GitHub'}, where: {id: '1'}}
       executor.should_receive(:call).with({
         command: :column_family_update,
-        arguments: args.merge(name: column_family_name),
+        arguments: args.merge({
+          name: column_family_name,
+          keyspace_name: keyspace_name,
+        }),
       })
       subject.update(args)
     end
@@ -105,7 +119,10 @@ describe Cassanity::ColumnFamily do
       args = {where: {id: '1'}}
       executor.should_receive(:call).with({
         command: :column_family_delete,
-        arguments: args.merge(name: column_family_name),
+        arguments: args.merge({
+          name: column_family_name,
+          keyspace_name: keyspace_name,
+        }),
       })
       subject.delete(args)
     end

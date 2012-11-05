@@ -77,7 +77,9 @@ module Cassanity
     def create_column_family(args = {})
       @executor.call({
         command: :column_family_create,
-        arguments: args,
+        arguments: args.merge({
+          keyspace_name: @name,
+        }),
       })
     end
     alias_method :create_table, :create_column_family
