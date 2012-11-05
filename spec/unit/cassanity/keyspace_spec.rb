@@ -45,24 +45,12 @@ describe Cassanity::Keyspace do
     end
 
     context "with args" do
-      let(:schema) {
-        Cassanity::Schema.new({
-          primary_key: :id,
-          columns: {
-            id: :text,
-            name: :text,
-          }
-        })
-      }
-
-      let(:args) {
-        {
-          schema: schema,
-        }
-      }
+      let(:schema) { double('Schema') }
 
       before do
-        @return_value = subject.column_family(column_family_name, args)
+        @return_value = subject.column_family(column_family_name, {
+          schema: schema,
+        })
       end
 
       it "passes args to initialization" do
