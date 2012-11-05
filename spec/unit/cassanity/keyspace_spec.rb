@@ -31,6 +31,28 @@ describe Cassanity::Keyspace do
         expect { described_class.new(args) }.to raise_error(KeyError)
       end
     end
+
+    it "sets strategy_class if provided" do
+      instance = described_class.new(required_arguments.merge({
+        strategy_class: 'NetworkTopologyStrategy',
+      }))
+
+      instance.strategy_class.should eq('NetworkTopologyStrategy')
+    end
+
+    it "sets strategy_options if provided" do
+      instance = described_class.new(required_arguments.merge({
+        strategy_options: {
+          dc1: 3,
+          dc2: 5,
+        },
+      }))
+
+      instance.strategy_options.should eq({
+        dc1: 3,
+        dc2: 5,
+      })
+    end
   end
 
   describe "#column_family" do

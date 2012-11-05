@@ -8,15 +8,27 @@ module Cassanity
     # Internal
     attr_reader :executor
 
+    # Internal
+    attr_reader :strategy_class
+
+    # Internal
+    attr_reader :strategy_options
+
     # Public: Initializes a Keyspace.
     #
     # args - The Hash of arguments (default: {}).
     #        :name - The String name of the keyspace.
     #        :executor - What will execute the queries. Must respond to `call`.
+    #        :strategy_class - The String strategy class name to use when
+    #                          creating keyspace.
+    #        :strategy_options - The Hash of strategy options to use when
+    #                            creating keyspace.
     #
     def initialize(args = {})
       @name = args.fetch(:name)
       @executor = args.fetch(:executor)
+      @strategy_class = args[:strategy_class]
+      @strategy_options = args[:strategy_options]
     end
 
     # Public: Uses a keyspace
