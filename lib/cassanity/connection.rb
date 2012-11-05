@@ -75,11 +75,13 @@ module Cassanity
     # name - The String name of the keyspace.
     #
     # Returns a Cassanity::Keyspace instance.
-    def keyspace(name)
-      Keyspace.new({
+    def keyspace(name, args = {})
+      keyspace_args = args.merge({
         name: name,
         executor: @executor,
       })
+
+      Keyspace.new(keyspace_args)
     end
 
     alias_method :[], :keyspace

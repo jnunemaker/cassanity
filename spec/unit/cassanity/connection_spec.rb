@@ -45,6 +45,22 @@ describe Cassanity::Connection do
     it "returns instance of keyspace" do
       @return_value.should be_instance_of(Cassanity::Keyspace)
     end
+
+    context "with args" do
+      before do
+        @return_value = subject.keyspace(keyspace_name, {
+          strategy_class: 'NetworkTopologyStrategy',
+        })
+      end
+
+      it "passes args to initialization" do
+        @return_value.strategy_class.should eq('NetworkTopologyStrategy')
+      end
+
+      it "returns instance of keyspace" do
+        @return_value.should be_instance_of(Cassanity::Keyspace)
+      end
+    end
   end
 
   describe "#[]" do
