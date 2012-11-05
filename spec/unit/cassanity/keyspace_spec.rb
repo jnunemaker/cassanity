@@ -25,6 +25,10 @@ describe Cassanity::Keyspace do
       subject.name.should eq(keyspace_name)
     end
 
+    it "sets executor" do
+      subject.executor.should eq(executor)
+    end
+
     [:name, :executor].each do |key|
       it "raises error without :#{key} key" do
         args = required_arguments.reject { |k, v| k == key }
