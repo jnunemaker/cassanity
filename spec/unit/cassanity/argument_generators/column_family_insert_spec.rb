@@ -7,7 +7,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyInsert do
   describe "#call" do
     [:name, :data].each do |key|
       it "raises error if missing :#{key} key" do
-        arguments = {
+        required_arguments = {
           name: column_family_name,
           data: {
             id: '1',
@@ -15,9 +15,8 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyInsert do
           }
         }
 
-        expect {
-          subject.call(arguments.except(key))
-        }.to raise_error
+        args = required_arguments.reject { |k, v| k == key }
+        expect { subject.call(args) }.to raise_error(KeyError)
       end
     end
 

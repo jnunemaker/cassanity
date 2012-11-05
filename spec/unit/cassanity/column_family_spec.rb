@@ -51,9 +51,8 @@ describe Cassanity::ColumnFamily do
 
     [:name, :keyspace].each do |key|
       it "raises error without :#{key} key" do
-        expect {
-          described_class.new(required_arguments.except(key))
-        }.to raise_error
+        args = required_arguments.reject { |k, v| k == key }
+        expect { described_class.new(args) }.to raise_error(KeyError)
       end
     end
   end
