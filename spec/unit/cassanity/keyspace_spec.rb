@@ -33,32 +33,6 @@ describe Cassanity::Keyspace do
     end
   end
 
-  describe "#create_column_family" do
-    it "sends command and arguments to executor" do
-      args = {name: 'foo'}
-      executor.should_receive(:call).with({
-        command: :column_family_create,
-        arguments: args.merge({
-          keyspace_name: keyspace_name,
-        }),
-      })
-      subject.create_column_family(args)
-    end
-  end
-
-  describe "#create_table" do
-    it "sends command and arguments to executor" do
-      args = {name: 'foo'}
-      executor.should_receive(:call).with({
-        command: :column_family_create,
-        arguments: args.merge({
-          keyspace_name: keyspace_name,
-        }),
-      })
-      subject.create_table(args)
-    end
-  end
-
   describe "#column_family" do
     let(:column_family_name) { 'apps' }
 
@@ -68,6 +42,36 @@ describe Cassanity::Keyspace do
 
     it "returns instance of column family" do
       @return_value.should be_instance_of(Cassanity::ColumnFamily)
+    end
+
+    context "with args" do
+      let(:schema) {
+        Cassanity::Schema.new({
+          primary_key: :id,
+          columns: {
+            id: :text,
+            name: :text,
+          }
+        })
+      }
+
+      let(:args) {
+        {
+          schema: schema,
+        }
+      }
+
+      before do
+        @return_value = subject.column_family(column_family_name, args)
+      end
+
+      it "passes args to initialization" do
+        @return_value.schema.should eq(schema)
+      end
+
+      it "returns instance of column family" do
+        @return_value.should be_instance_of(Cassanity::ColumnFamily)
+      end
     end
   end
 

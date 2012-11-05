@@ -11,6 +11,9 @@ module Cassanity
     # Private
     attr_reader :executor
 
+    # Private
+    attr_reader :schema
+
     # Public: Initializes a ColumnFamily.
     #
     # args - The Hash of arguments (default: {}).
@@ -18,11 +21,42 @@ module Cassanity
     #        :keyspace - The Cassanity::Keyspace the column family is in.
     #        :executor - What will execute the queries (optional).
     #                    Must respond to `call`.
+    #        :schema - The schema to use to create the column family.
     #
     def initialize(args = {})
       @name = args.fetch(:name)
       @keyspace = args.fetch(:keyspace)
       @executor = args.fetch(:executor) { @keyspace.executor }
+      @schema = args[:schema]
+    end
+
+    # Public: Creates the column family in the keyspace based on the schema.
+    #
+    # args - The Hash of arguments to pass to the executor. Always passes :name
+    #        and :keyspace_name.
+    #        :schema - The Schema to use to create the column family
+    #                  (defaults to schema provided during initialization).
+    #
+    # Examples
+    #
+    #   create # uses schema from initialization
+    #   create(schema: Cassanity::Schema.new(...))
+    #
+    # Returns nothing.
+    # Raises Cassanity::Error if schema not set during initialization and also
+    #   not passed in via arguments.
+    def create(args = {})
+      forced_arguments = {
+        name: @name,
+        keyspace_name: @keyspace.name,
+      }
+      arguments = args.merge(forced_arguments)
+      arguments[:schema] = schema unless arguments[:schema]
+
+      @executor.call({
+        command: :column_family_create,
+        arguments: arguments,
+      })
     end
 
     # Public: Truncates the column family.
@@ -103,6 +137,11 @@ module Cassanity
           keyspace_name: @keyspace.name,
         }),
       })
+    end
+
+    # Internal
+    def schema
+      @schema || raise(Cassanity::Error.new(message: "No schema found to create #{@name} column family. Please set :schema during initialization or include it as a key in #create call."))
     end
   end
 end

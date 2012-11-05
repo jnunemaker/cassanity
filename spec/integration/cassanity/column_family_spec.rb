@@ -26,11 +26,29 @@ describe Cassanity::ColumnFamily do
     })
   }
 
-  subject {
-    described_class.new({
+  let(:schema) {
+    Cassanity::Schema.new({
+      primary_key: :id,
+      columns: {
+        id: :timeuuid,
+        name: :text,
+      },
+      with: {
+        comment: 'For storing things',
+      }
+    })
+  }
+
+  let(:arguments) {
+    {
       keyspace: keyspace,
       name: column_family_name,
-    })
+      schema: schema,
+    }
+  }
+
+  subject {
+    described_class.new(arguments)
   }
 
   before do
@@ -42,6 +60,20 @@ describe Cassanity::ColumnFamily do
 
   after do
     client_drop_keyspace(client, keyspace_name)
+  end
+
+  it "can create itself" do
+    column_family = described_class.new(arguments.merge(name: 'people'))
+    column_family.create
+
+    apps_column_family = client.schema.column_families.fetch(column_family.name)
+    apps_column_family.comment.should eq('For storing things')
+
+    columns = apps_column_family.columns
+    columns.should have_key('id')
+    columns.should have_key('name')
+    columns['id'].should eq('org.apache.cassandra.db.marshal.TimeUUIDType')
+    columns['name'].should eq('org.apache.cassandra.db.marshal.UTF8Type')
   end
 
   it "can truncate" do

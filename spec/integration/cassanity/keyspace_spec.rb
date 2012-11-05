@@ -46,31 +46,4 @@ describe Cassanity::Keyspace do
     subject.drop
     client_keyspace?(client, keyspace_name).should be_false
   end
-
-  it "can create a column family" do
-    schema = Cassanity::Schema.new({
-      primary_key: :id,
-      columns: {
-        id: :timeuuid,
-        name: :text,
-      },
-      with: {
-        comment: 'For storing things',
-      }
-    })
-
-    subject.create_column_family({
-      name: column_family_name,
-      schema: schema,
-    })
-
-    client.schema.column_family_names.should include(column_family_name)
-    apps_column_family = client.schema.column_families[column_family_name]
-    apps_column_family.comment.should eq('For storing things')
-    columns = apps_column_family.columns
-    columns.should have_key('id')
-    columns.should have_key('name')
-    columns['id'].should eq('org.apache.cassandra.db.marshal.TimeUUIDType')
-    columns['name'].should eq('org.apache.cassandra.db.marshal.UTF8Type')
-  end
 end

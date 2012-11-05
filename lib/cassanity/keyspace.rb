@@ -57,43 +57,20 @@ module Cassanity
       })
     end
 
-    # Public: Creates a column family.
-    #
-    # args - The Hash of arguments to pass to the argument generator
-    #        (default: {}). :name is always included.
-    #
-    # Examples
-    #
-    #   create_column_family({
-    #     name: 'apps',
-    #     primary_key: :id,
-    #     columns: {
-    #       id: :timeuuid,
-    #       name: :text,
-    #     }
-    #   })
-    #
-    # Returns whatever is returned by executor.
-    def create_column_family(args = {})
-      @executor.call({
-        command: :column_family_create,
-        arguments: args.merge({
-          keyspace_name: @name,
-        }),
-      })
-    end
-    alias_method :create_table, :create_column_family
-
     # Public: Get a column family instance
     #
     # name - The String name of the column family.
+    # args - The Hash of arguments to use for ColumnFamily initialization
+    #        (optional, default: {}).
     #
     # Returns a Cassanity::ColumnFamily instance.
-    def column_family(name)
-      ColumnFamily.new({
+    def column_family(name, args = {})
+      column_family_args = args.merge({
         name: name,
         keyspace: self,
       })
+
+      ColumnFamily.new(column_family_args)
     end
     alias_method :table, :column_family
     alias_method :[], :column_family
