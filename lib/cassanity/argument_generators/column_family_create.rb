@@ -3,9 +3,11 @@ module Cassanity
     class ColumnFamilyCreate
       def call(args = {})
         name        = args.fetch(:name)
-        columns     = args.fetch(:columns)
-        primary_key = args.fetch(:primary_key)
-        with        = args.fetch(:with) { {} }
+        schema      = args.fetch(:schema)
+        columns     = schema.columns
+        primary_key = schema.primary_key
+        with        = schema.with
+
         definitions, variables = [], []
 
         if (keyspace_name = args[:keyspace_name])

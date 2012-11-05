@@ -1,3 +1,5 @@
+require 'cassanity/schema'
+
 module Cassanity
   class ColumnFamily
     # Public

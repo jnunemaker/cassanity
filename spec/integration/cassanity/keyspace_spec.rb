@@ -48,8 +48,7 @@ describe Cassanity::Keyspace do
   end
 
   it "can create a column family" do
-    subject.create_column_family({
-      name: column_family_name,
+    schema = Cassanity::Schema.new({
       primary_key: :id,
       columns: {
         id: :timeuuid,
@@ -58,6 +57,11 @@ describe Cassanity::Keyspace do
       with: {
         comment: 'For storing things',
       }
+    })
+
+    subject.create_column_family({
+      name: column_family_name,
+      schema: schema
     })
 
     client.schema.column_family_names.should include(column_family_name)
