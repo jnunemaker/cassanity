@@ -31,6 +31,34 @@ module Cassanity
       @strategy_options = args[:strategy_options]
     end
 
+    # Public: Creates the keyspace
+    #
+    # args - The Hash of arguments to pass to the argument generator
+    #        (default: {}). :name is always included.
+    #
+    # Examples
+    #
+    #   create # uses options from initialization
+    #
+    #   # override options from initialization
+    #   create({
+    #     strategy_class: 'NetworkTopologyStrategy',
+    #     strategy_options: {
+    #       dc1: 1,
+    #       dc2: 3,
+    #     }
+    #   })
+    #
+    # Returns whatever is returned by executor.
+    def create(args = {})
+      @executor.call({
+        command: :keyspace_create,
+        arguments: args.merge({
+          name: @name,
+        })
+      })
+    end
+
     # Public: Uses a keyspace
     #
     # args - The Hash of arguments to pass to the argument generator

@@ -26,17 +26,6 @@ describe Cassanity::Connection do
     end
   end
 
-  describe "#create_keyspace" do
-    it "sends command and arguments to executor" do
-      args = {name: 'foo'}
-      executor.should_receive(:call).with({
-        command: :keyspace_create,
-        arguments: args,
-      })
-      subject.create_keyspace(args)
-    end
-  end
-
   describe "#keyspace" do
     before do
       @return_value = subject.keyspace(keyspace_name)

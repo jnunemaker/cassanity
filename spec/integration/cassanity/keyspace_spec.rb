@@ -3,8 +3,9 @@ require 'cassanity/keyspace'
 require 'cassanity/executors/cassandra_cql'
 
 describe Cassanity::Keyspace do
-  let(:keyspace_name)      { 'cassanity_test' }
-  let(:column_family_name) { 'apps' }
+  let(:keyspace_name)              { 'cassanity_test' }
+  let(:self_created_keyspace_name) { 'self_created' }
+  let(:column_family_name)         { 'apps' }
 
   let(:client) {
     CassandraCQL::Database.new('127.0.0.1:9160', {
@@ -18,11 +19,15 @@ describe Cassanity::Keyspace do
     })
   }
 
-  subject {
-    described_class.new({
+  let(:required_arguments) {
+    {
       name: keyspace_name,
       executor: executor,
-    })
+    }
+  }
+
+  subject {
+    described_class.new(required_arguments)
   }
 
   before do
@@ -32,6 +37,16 @@ describe Cassanity::Keyspace do
 
   after do
     client_drop_keyspace(client, keyspace_name)
+    client_drop_keyspace(client, self_created_keyspace_name)
+  end
+
+  it "can create" do
+    client_keyspace?(client, self_created_keyspace_name).should be_false
+    instance = described_class.new(required_arguments.merge({
+      name: self_created_keyspace_name,
+    }))
+    instance.create
+    client_keyspace?(client, self_created_keyspace_name).should be_true
   end
 
   it "can use" do

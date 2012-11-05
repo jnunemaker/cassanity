@@ -14,31 +14,6 @@ module Cassanity
       @executor = args.fetch(:executor)
     end
 
-    # Public: Creates a keyspace
-    #
-    # args - The Hash of arguments to pass to the argument generator
-    #        (default: {}). :name is always included.
-    #
-    # Examples
-    #
-    #   create_keyspace(name: 'analytics')
-    #   create_keyspace({
-    #     name: 'analytics',
-    #     strategy_class: 'NetworkTopologyStrategy',
-    #     strategy_options: {
-    #       dc1: 1,
-    #       dc2: 3,
-    #     }
-    #   })
-    #
-    # Returns whatever is returned by executor.
-    def create_keyspace(args = {})
-      @executor.call({
-        command: :keyspace_create,
-        arguments: args,
-      })
-    end
-
     # Public: Get all keyspaces.
     #
     # Returns Array of Cassanity::Keyspace instances.

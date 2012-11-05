@@ -31,12 +31,6 @@ describe Cassanity::Connection do
     client_drop_keyspace(client, keyspace_name)
   end
 
-  it "can create keyspace" do
-    client_keyspace?(client, keyspace_name).should be_false
-    subject.create_keyspace(name: keyspace_name)
-    client_keyspace?(client, keyspace_name).should be_true
-  end
-
   it "knows keyspaces" do
     client_create_keyspace(client, 'something1')
     client_create_keyspace(client, 'something2')
