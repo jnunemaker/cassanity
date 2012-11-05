@@ -62,6 +62,13 @@ describe Cassanity::ColumnFamily do
     client_column_family?(client, column_family_name).should be_false
   end
 
+  it "can drop when using a different keyspace" do
+    client_column_family?(client, column_family_name).should be_true
+    client.execute('USE system')
+    subject.drop
+    client_column_family?(client, column_family_name).should be_false
+  end
+
   it "can insert data" do
     subject.insert({
       data: {
