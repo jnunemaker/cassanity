@@ -2,8 +2,6 @@
 
 Layer of goodness on top of cassandra-cql so you do not have to write CQL strings all over the place.
 
-Current status: Incomplete and changing fast. **Do not use this yet**, but feel free to follow along.
-
 ## Installation
 
 Add this line to your application's Gemfile:
