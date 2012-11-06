@@ -1,6 +1,8 @@
 module Cassanity
   module ArgumentGenerators
     class UsingClause
+
+      # Internal
       def call(args = {})
         using = args[:using]
         cql = ''

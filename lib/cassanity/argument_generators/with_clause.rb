@@ -1,6 +1,8 @@
 module Cassanity
   module ArgumentGenerators
     class WithClause
+
+      # Internal
       def call(args = {})
         with = args[:with]
         cql = ''

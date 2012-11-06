@@ -1,7 +1,8 @@
 module Cassanity
   module ArgumentGenerators
     class ColumnFamilyInsert
-      # Public: Converts a Hash of arguments to CQL with bound variables.
+
+      # Internal: Converts a Hash of arguments to CQL with bound variables.
       #
       # args - The Hash of arguments to use.
       #        :name - The String name of the column family

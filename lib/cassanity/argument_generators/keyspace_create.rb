@@ -1,6 +1,8 @@
 module Cassanity
   module ArgumentGenerators
     class KeyspaceCreate
+
+      # Internal
       def call(args = {})
         options, variables = [], []
         name = args.fetch(:name)

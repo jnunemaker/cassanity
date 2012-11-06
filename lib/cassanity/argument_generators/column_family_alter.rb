@@ -3,10 +3,13 @@ require 'cassanity/argument_generators/with_clause'
 module Cassanity
   module ArgumentGenerators
     class ColumnFamilyAlter
+
+      # Internal
       def initialize(args = {})
         @with_clause = args.fetch(:with_clause) { WithClause.new }
       end
 
+      # Internal
       def call(args = {})
         name = args.fetch(:name)
         with = args[:with] || {}

@@ -1,6 +1,8 @@
 module Cassanity
   module ArgumentGenerators
     class IndexCreate
+
+      # Internal
       def call(args = {})
         name = args[:name]
         column_name = args.fetch(:column_name)

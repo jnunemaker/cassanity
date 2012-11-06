@@ -1,6 +1,8 @@
 module Cassanity
   module ArgumentGenerators
     class SetClause
+
+      # Internal
       def call(args = {})
         set = args.fetch(:set)
         cql, variables, sets = '', [], []
@@ -19,6 +21,7 @@ module Cassanity
         [cql, *variables]
       end
 
+      # Private
       def counter?(key, value)
         value.is_a?(String) && value.match(/#{key}(\s+)?[\+\-](\s+)?\d/)
       end

@@ -4,18 +4,20 @@ module Cassanity
   module ArgumentGenerators
     class Batch
 
-      # Internal: Map of command to argument generator
+      # Private: Map of command to argument generator
       Commands = {
         insert: ColumnFamilyInsert.new,
         update: ColumnFamilyUpdate.new,
         delete: ColumnFamilyDelete.new,
       }
 
+      # Internal
       def initialize(args = {})
         @using_clause = args.fetch(:using_clause) { UsingClause.new }
         @commands = args.fetch(:commands) { Commands }
       end
 
+      # Internal
       def call(args = {})
         using = args[:using]
         modifications_argument = args.fetch(:modifications) { [] }

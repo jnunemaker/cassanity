@@ -1,6 +1,8 @@
 module Cassanity
   module ArgumentGenerators
     class WhereClause
+
+      # Internal
       def call(args = {})
         where = args[:where]
         cql = ''

@@ -6,13 +6,14 @@ module Cassanity
   module ArgumentGenerators
     class ColumnFamilyUpdate
 
+      # Internal
       def initialize(args = {})
         @using_clause = args.fetch(:using_clause) { UsingClause.new }
         @set_clause   = args.fetch(:set_clause)   { SetClause.new }
         @where_clause = args.fetch(:where_clause) { WhereClause.new }
       end
 
-      # Public: Converts a Hash of arguments to CQL with bound variables.
+      # Internal: Converts a Hash of arguments to CQL with bound variables.
       #
       # args - The Hash of arguments to use.
       #        :name - The String name of the column family

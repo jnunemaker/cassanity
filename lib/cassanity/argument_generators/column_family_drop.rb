@@ -1,6 +1,8 @@
 module Cassanity
   module ArgumentGenerators
     class ColumnFamilyDrop
+
+      # Internal
       def call(args = {})
         name = args.fetch(:name)
 

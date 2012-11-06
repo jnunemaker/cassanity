@@ -5,12 +5,13 @@ module Cassanity
   module ArgumentGenerators
     class ColumnFamilyDelete
 
+      # Internal
       def initialize(args = {})
         @using_clause = args.fetch(:using_clause) { UsingClause.new }
         @where_clause = args.fetch(:where_clause) { WhereClause.new }
       end
 
-      # Public: Converts a Hash of arguments to CQL with bound variables.
+      # Internal: Converts a Hash of arguments to CQL with bound variables.
       #
       # args - The Hash of arguments to use.
       #        :name - The String name of the column family
