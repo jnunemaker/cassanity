@@ -3,7 +3,8 @@ require 'cassanity/connection'
 require 'cassanity/executors/cassandra_cql'
 
 describe Cassanity::Connection do
-  let(:keyspace_name) { 'cassanity_test' }
+  let(:keyspace_name)      { 'cassanity_test' }
+  let(:column_family_name) { 'apps' }
 
   let(:client) {
     CassandraCQL::Database.new('127.0.0.1:9160', {
@@ -29,6 +30,35 @@ describe Cassanity::Connection do
 
   after do
     client_drop_keyspace(client, keyspace_name)
+  end
+
+  it "can batch" do
+    client_create_keyspace(client, keyspace_name)
+    client_create_column_family(client, column_family_name, "id text PRIMARY KEY, name text")
+
+    default_arguments = {
+      keyspace_name: keyspace_name,
+      name: column_family_name,
+    }
+
+    subject.batch({
+      :modifications => [
+        [:insert, default_arguments.merge(data: {id: '1', name: 'github'})],
+        [:insert, default_arguments.merge(data: {id: '2', name: 'gist'})],
+        [:update, default_arguments.merge(set: {name: 'github.com'}, where: {id: '1'})],
+        [:delete, default_arguments.merge(where: {id: '2'})],
+      ]
+    })
+
+    result = client.execute("SELECT * FROM apps")
+    result.rows.should be(1)
+
+    rows = []
+    result.fetch_hash { |row| rows << row }
+
+    rows.should eq([
+      {'id' => '1', 'name' => 'github.com'},
+    ])
   end
 
   it "knows keyspaces" do
