@@ -58,7 +58,7 @@ module Cassanity
       # Private
       attr_reader :result_transformers
 
-      # Public: Initializes a cassandra-cql based CQL executor.
+      # Internal: Initializes a cassandra-cql based CQL executor.
       #
       # args - The Hash of arguments.
       #        :client - The CassandraCQL::Database connection instance.
@@ -82,7 +82,7 @@ module Cassanity
         @result_transformers = args.fetch(:result_transformers) { ResultTransformers }
       end
 
-      # Public: Execute a CQL query.
+      # Internal: Execute a CQL query.
       #
       # args - One or more arguments to send to execute. First should always be
       #        String CQL query. The rest should be the bound variables if any
