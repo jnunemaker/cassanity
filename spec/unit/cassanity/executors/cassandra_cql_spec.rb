@@ -76,6 +76,7 @@ describe Cassanity::Executors::CassandraCql do
     :column_family_alter,
     :index_create,
     :index_drop,
+    :batch,
   ]
 
   KnownCommands.each do |key|

@@ -14,6 +14,7 @@ require 'cassanity/argument_generators/column_family_delete'
 require 'cassanity/argument_generators/column_family_alter'
 require 'cassanity/argument_generators/index_create'
 require 'cassanity/argument_generators/index_drop'
+require 'cassanity/argument_generators/batch'
 require 'cassanity/result_transformers/column_family_select'
 require 'cassanity/result_transformers/mirror'
 
@@ -36,6 +37,7 @@ module Cassanity
         column_family_alter: Cassanity::ArgumentGenerators::ColumnFamilyAlter.new,
         index_create: Cassanity::ArgumentGenerators::IndexCreate.new,
         index_drop: Cassanity::ArgumentGenerators::IndexDrop.new,
+        batch: Cassanity::ArgumentGenerators::Batch.new,
       }
 
       CommandToResultTransformerMap = {
