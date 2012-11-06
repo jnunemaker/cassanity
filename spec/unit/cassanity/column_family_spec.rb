@@ -167,6 +167,31 @@ describe Cassanity::ColumnFamily do
     end
   end
 
+  describe "#create_index" do
+    it "sends command and arguments, including :name, to executor" do
+      args = {something: 'else'}
+      executor.should_receive(:call).with({
+        command: :index_create,
+        arguments: args.merge({
+          column_family_name: column_family_name,
+          keyspace_name: keyspace_name,
+        }),
+      })
+      subject.create_index(args)
+    end
+  end
+
+  describe "#drop_index" do
+    it "sends command and arguments, including :name, to executor" do
+      args = {something: 'else', name: 'users_state_idx'}
+      executor.should_receive(:call).with({
+        command: :index_drop,
+        arguments: args,
+      })
+      subject.drop_index(args)
+    end
+  end
+
   describe "#insert" do
     it "sends command and arguments, including :name, to executor" do
       args = {data: {id: '1', name: 'GitHub'}}
