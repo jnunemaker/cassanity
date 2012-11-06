@@ -14,6 +14,18 @@ describe Cassanity::ArgumentGenerators::WhereClause do
       ])
     end
 
+    context "with nil where" do
+      it "returns array with empty string" do
+        subject.call.should eq([""])
+      end
+    end
+
+    context "with empty where" do
+      it "returns array with empty string" do
+        subject.call(where: {}).should eq([""])
+      end
+    end
+
     context "with array value for a where" do
       it "returns array of arguments using IN for key with array value" do
         subject.call({
