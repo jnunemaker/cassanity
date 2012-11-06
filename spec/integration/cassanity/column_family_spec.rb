@@ -101,6 +101,32 @@ describe Cassanity::ColumnFamily do
     client_column_family?(client, column_family_name).should be_false
   end
 
+  it "can alter" do
+    subject.alter(add: {created_at: :timestamp})
+
+    apps_column_family = client.schema.column_families.fetch(column_family_name)
+    columns = apps_column_family.columns
+    columns.should have_key('created_at')
+    columns['created_at'].should eq('org.apache.cassandra.db.marshal.DateType')
+
+    subject.alter(alter: {created_at: :timeuuid})
+
+    apps_column_family = client.schema.column_families.fetch(column_family_name)
+    columns = apps_column_family.columns
+    columns.should have_key('created_at')
+    columns['created_at'].should eq('org.apache.cassandra.db.marshal.TimeUUIDType')
+
+    subject.alter(drop: :created_at)
+
+    apps_column_family = client.schema.column_families.fetch(column_family_name)
+    columns = apps_column_family.columns
+    columns.should_not have_key('created_at')
+
+    subject.alter(with: {comment: 'Some new comment'})
+    apps_column_family = client.schema.column_families.fetch(column_family_name)
+    apps_column_family.comment.should eq('Some new comment')
+  end
+
   it "can create and drop indexes" do
     subject.create_index({
       name: :apps_name_index,

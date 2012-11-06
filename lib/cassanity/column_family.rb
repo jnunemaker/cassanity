@@ -99,6 +99,29 @@ module Cassanity
       })
     end
 
+    # Public: Alters the column family.
+    #
+    # args - The Hash of arguments to pass to the argument generator
+    #        (default: {}). :name and :keyspace_name are always included.
+    #
+    # Examples
+    #
+    #   alter(alter: {created_at: :timestamp})
+    #   alter(add: {description: :text})
+    #   alter(drop: :description)
+    #   alter(with: {read_repair_chance: 0.2})
+    #
+    # Returns whatever is returned by executor.
+    def alter(args = {})
+      @executor.call({
+        command: :column_family_alter,
+        arguments: args.merge({
+          name: @name,
+          keyspace_name: @keyspace.name,
+        }),
+      })
+    end
+
     # Public: Creates an index
     #
     # args - The Hash of arguments to pass to the argument generator

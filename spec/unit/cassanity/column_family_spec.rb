@@ -167,6 +167,20 @@ describe Cassanity::ColumnFamily do
     end
   end
 
+  describe "#alter" do
+    it "sends command and arguments, including :name and :keyspace_name, to executor" do
+      args = {drop: :name, something: 'else'}
+      executor.should_receive(:call).with({
+        command: :column_family_alter,
+        arguments: args.merge({
+          name: column_family_name,
+          keyspace_name: keyspace_name,
+        }),
+      })
+      subject.alter(args)
+    end
+  end
+
   describe "#create_index" do
     it "sends command and arguments, including :name, to executor" do
       args = {something: 'else'}
