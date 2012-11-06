@@ -48,29 +48,37 @@ module Cassanity
       attr_reader :client
 
       # Private
-      attr_reader :command_to_argument_generator_map
+      attr_reader :argument_generators
 
       # Private
-      attr_reader :command_to_result_transformer_map
+      attr_reader :result_transformers
 
       # Public: Initializes a cassandra-cql based CQL executor.
       #
       # args - The Hash of arguments.
       #        :client - The CassandraCQL::Database connection instance.
+      #        :argument_generators - A Hash where each key is a command name
+      #                               and each value is the related argument
+      #                               generator that responds to `call`
+      #                               (optional).
+      #        :result_transformers - A Hash where each key is a command name
+      #                               and each value is the related result
+      #                               transformer that responds to `call`
+      #                               (optional).
       #
       # Examples
       #
-      #   connection = CassandraCQL::Database.new('host')
-      #   Cassanity::Executors::CassandraCql.new(connection)
+      #   client = CassandraCQL::Database.new('host')
+      #   Cassanity::Executors::CassandraCql.new(client: client)
       #
       def initialize(args = {})
         @client = args.fetch(:client)
 
-        @command_to_argument_generator_map = args.fetch(:command_to_argument_generator_map) {
+        @argument_generators = args.fetch(:argument_generators) {
           CommandToArgumentGeneratorMap
         }
 
-        @command_to_result_transformer_map = args.fetch(:command_to_result_transformer_map) {
+        @result_transformers = args.fetch(:result_transformers) {
           CommandToResultTransformerMap
         }
       end
@@ -96,12 +104,12 @@ module Cassanity
       # Raises Cassanity::Error if anything goes wrong during execution.
       def call(args = {})
         command = args.fetch(:command)
-        generator = @command_to_argument_generator_map.fetch(command)
+        generator = @argument_generators.fetch(command)
         execute_arguments = generator.call(args[:arguments])
 
         result = @client.execute(*execute_arguments)
 
-        transformer = @command_to_result_transformer_map.fetch(command) { Mirror }
+        transformer = @result_transformers.fetch(command) { Mirror }
         transformer.call(result)
       rescue KeyError
         raise Cassanity::UnknownCommand

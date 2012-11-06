@@ -10,13 +10,13 @@ describe Cassanity::Executors::CassandraCql do
     }
   }
 
-  let(:command_to_argument_generator_map) {
+  let(:argument_generators) {
     {
       :foo => lambda { |args| ['mapped', args] },
     }
   }
 
-  let(:command_to_result_transformer_map) {
+  let(:result_transformers) {
     {
       :foo => lambda { |args| ['transformed', args] }
     }
@@ -36,28 +36,28 @@ describe Cassanity::Executors::CassandraCql do
       subject.client.should eq(client)
     end
 
-    it "defaults :command_to_argument_generator_map" do
-      subject.command_to_argument_generator_map.should eq(described_class::CommandToArgumentGeneratorMap)
+    it "defaults :argument_generators" do
+      subject.argument_generators.should eq(described_class::CommandToArgumentGeneratorMap)
     end
 
-    it "defaults :command_to_result_transformer_map" do
-      subject.command_to_result_transformer_map.should eq(described_class::CommandToResultTransformerMap)
+    it "defaults :result_transformers" do
+      subject.result_transformers.should eq(described_class::CommandToResultTransformerMap)
     end
 
-    it "allows overriding :command_to_argument_generator_map" do
+    it "allows overriding :argument_generators" do
       instance = described_class.new(required_arguments.merge({
-        command_to_argument_generator_map: command_to_argument_generator_map
+        argument_generators: argument_generators
       }))
 
-      instance.command_to_argument_generator_map.should eq(command_to_argument_generator_map)
+      instance.argument_generators.should eq(argument_generators)
     end
 
-    it "allows overriding :command_to_result_transformer_map" do
+    it "allows overriding :result_transformers" do
       instance = described_class.new(required_arguments.merge({
-        command_to_result_transformer_map: command_to_result_transformer_map
+        result_transformers: result_transformers
       }))
 
-      instance.command_to_result_transformer_map.should eq(command_to_result_transformer_map)
+      instance.result_transformers.should eq(result_transformers)
     end
   end
 
@@ -80,14 +80,14 @@ describe Cassanity::Executors::CassandraCql do
 
   KnownCommands.each do |key|
     it "responds to #{key} command by default" do
-      subject.command_to_argument_generator_map.should have_key(key)
+      subject.argument_generators.should have_key(key)
     end
   end
 
   describe "#call" do
     subject {
       described_class.new(required_arguments.merge({
-        command_to_argument_generator_map: command_to_argument_generator_map,
+        argument_generators: argument_generators,
       }))
     }
 
@@ -107,15 +107,15 @@ describe Cassanity::Executors::CassandraCql do
       context "with result transformer" do
         subject {
           described_class.new(required_arguments.merge({
-            command_to_argument_generator_map: command_to_argument_generator_map,
-            command_to_result_transformer_map: command_to_result_transformer_map,
+            argument_generators: argument_generators,
+            result_transformers: result_transformers,
           }))
         }
 
         it "returns result transformed" do
           result = double('Result')
           client.stub(:execute => result)
-          tranformer = command_to_result_transformer_map[:foo]
+          tranformer = result_transformers[:foo]
 
           args = {
             command: :foo,
@@ -131,15 +131,15 @@ describe Cassanity::Executors::CassandraCql do
       context "without result transformer" do
         subject {
           described_class.new(required_arguments.merge({
-            command_to_argument_generator_map: command_to_argument_generator_map,
-            command_to_result_transformer_map: {},
+            argument_generators: argument_generators,
+            result_transformers: {},
           }))
         }
 
         it "returns result transformed" do
           result = double('Result')
           client.stub(:execute => result)
-          tranformer = command_to_result_transformer_map[:foo]
+          tranformer = result_transformers[:foo]
 
           args = {
             command: :foo,
