@@ -1,6 +1,12 @@
+require 'cassanity/argument_generators/with_clause'
+
 module Cassanity
   module ArgumentGenerators
     class ColumnFamilyCreate
+      def initialize(args = {})
+        @with_clause = args.fetch(:with_clause) { WithClause.new }
+      end
+
       def call(args = {})
         name        = args.fetch(:name)
         schema      = args.fetch(:schema)
@@ -24,22 +30,9 @@ module Cassanity
 
         cql = "CREATE COLUMNFAMILY #{name} (%s)" % cql_definition
 
-        unless with.empty?
-          cql << " WITH "
-          withs = []
-          with.each do |key, value|
-            if value.is_a?(Hash)
-              value.each do |sub_key, sub_value|
-                withs << "#{key}:#{sub_key} = ?"
-                variables << sub_value
-              end
-            else
-              withs << "#{key} = ?"
-              variables << value
-            end
-          end
-          cql << withs.join(' AND ')
-        end
+        with_cql, *with_variables = @with_clause.call(with: with)
+        cql << with_cql
+        variables.concat(with_variables)
 
         [cql, *variables]
       end

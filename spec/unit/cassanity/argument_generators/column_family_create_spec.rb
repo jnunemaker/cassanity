@@ -73,30 +73,18 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyCreate do
       end
     end
 
-    context "when using with options" do
-      it "returns array of arguments" do
-        schema = Cassanity::Schema.new({
-          primary_key: :id,
-          columns: {
-            id: :text,
-            name: :text,
-          },
-          with: {
-            comment: "YOU CAN'T HANDLE THE TRUTH",
-            read_repair_chance: 1.0,
-          }
-        })
-        cql = "CREATE COLUMNFAMILY #{column_family_name} (id text, name text, PRIMARY KEY (id)) WITH comment = ? AND read_repair_chance = ?"
-        expected = [cql, "YOU CAN'T HANDLE THE TRUTH", 1.0]
-        subject.call({
-          name: column_family_name,
-          schema: schema,
-        }).should eq(expected)
-      end
-    end
+    context "when using WITH options" do
+      let(:with_clause) {
+        lambda { |args| [" WITH comment = ?", 'Testing']}
+      }
 
-    context "when using with options that have sub options" do
-      it "returns array of arguments" do
+      subject {
+        described_class.new({
+          with_clause: with_clause,
+        })
+      }
+
+      it "returns array of arguments with help from the with_clause" do
         schema = Cassanity::Schema.new({
           primary_key: :id,
           columns: {
@@ -104,17 +92,13 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyCreate do
             name: :text,
           },
           with: {
-            comment: "YOU CAN'T HANDLE THE TRUTH",
-            compaction_strategy_options: {
-              min_compaction_threshold: 6,
-              max_compaction_threshold: 40,
-            },
+            comment: "Testing",
           }
         })
-        cql = "CREATE COLUMNFAMILY #{column_family_name} (id text, name text, PRIMARY KEY (id)) WITH comment = ? AND compaction_strategy_options:min_compaction_threshold = ? AND compaction_strategy_options:max_compaction_threshold = ?"
-        expected = [cql, "YOU CAN'T HANDLE THE TRUTH", 6, 40]
+        cql = "CREATE COLUMNFAMILY apps (id text, name text, PRIMARY KEY (id)) WITH comment = ?"
+        expected = [cql, 'Testing']
         subject.call({
-          name: column_family_name,
+          name: :apps,
           schema: schema,
         }).should eq(expected)
       end
