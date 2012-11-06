@@ -44,9 +44,8 @@ keyspace = connection[:my_app]
 # tell client to use keyspace for future queries
 keyspace.use
 
-# create column family
-keyspace.create_column_family({
-  name: :apps,
+# schema for apps column family
+apps_schema = Cassanity::Schema.new({
   primary_key: :id,
   columns: {
     id: :text,
@@ -58,8 +57,14 @@ keyspace.create_column_family({
   }
 })
 
-# get column family instance
-apps = keyspace[:apps]
+# get instance of column family with name and schema set
+apps = keyspace.column_family({
+  name: :apps,
+  schema: apps_schema,
+})
+
+# create column family based on name and schema
+apps.create
 
 # insert row
 apps.insert(data: {
