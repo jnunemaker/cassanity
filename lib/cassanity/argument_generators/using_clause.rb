@@ -3,9 +3,11 @@ module Cassanity
     class UsingClause
       def call(args = {})
         using = args[:using]
-        cql, variables, usings = '', [], []
+        cql = ''
 
         return [cql] if using.nil? || using.empty?
+
+        variables, usings = [], []
 
         using.each do |key, value|
           usings << "#{key.upcase} #{value}"
