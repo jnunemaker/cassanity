@@ -161,6 +161,22 @@ module Cassanity
       })
     end
 
+    # Public: Makes it possible to query data from the column family.
+    #
+    # args - The Hash of arguments to pass to the argument generator
+    #        (default: {}). :name and :keyspace_name are always included.
+    #
+    # Returns whatever is returned by executor.
+    def select(args = {})
+      @executor.call({
+        command: :column_family_select,
+        arguments: args.merge({
+          name: @name,
+          keyspace_name: @keyspace.name,
+        })
+      })
+    end
+
     # Public: Makes it possible to insert data into the column family.
     #
     # args - The Hash of arguments to pass to the argument generator

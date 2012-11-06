@@ -148,6 +148,20 @@ describe Cassanity::ColumnFamily do
     index.should be_nil
   end
 
+  it "can select data" do
+    client.execute("INSERT INTO #{column_family_name} (id, name) VALUES (?, ?)", '1', 'github')
+    client.execute("INSERT INTO #{column_family_name} (id, name) VALUES (?, ?)", '2', 'gist')
+    result = subject.select({
+      select: :name,
+      where: {
+        id: '2',
+      },
+    })
+    result.should eq([
+      {'name' => 'gist'}
+    ])
+  end
+
   it "can insert data" do
     subject.insert({
       data: {

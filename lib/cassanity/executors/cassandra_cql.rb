@@ -7,12 +7,14 @@ require 'cassanity/argument_generators/keyspace_use'
 require 'cassanity/argument_generators/column_family_create'
 require 'cassanity/argument_generators/column_family_drop'
 require 'cassanity/argument_generators/column_family_truncate'
+require 'cassanity/argument_generators/column_family_select'
 require 'cassanity/argument_generators/column_family_insert'
 require 'cassanity/argument_generators/column_family_update'
 require 'cassanity/argument_generators/column_family_delete'
 require 'cassanity/argument_generators/column_family_alter'
 require 'cassanity/argument_generators/index_create'
 require 'cassanity/argument_generators/index_drop'
+require 'cassanity/result_transformers/column_family_select'
 
 module Cassanity
   module Executors
@@ -26,6 +28,7 @@ module Cassanity
         column_family_create: Cassanity::ArgumentGenerators::ColumnFamilyCreate.new,
         column_family_drop: Cassanity::ArgumentGenerators::ColumnFamilyDrop.new,
         column_family_truncate: Cassanity::ArgumentGenerators::ColumnFamilyTruncate.new,
+        column_family_select: Cassanity::ArgumentGenerators::ColumnFamilySelect.new,
         column_family_insert: Cassanity::ArgumentGenerators::ColumnFamilyInsert.new,
         column_family_update: Cassanity::ArgumentGenerators::ColumnFamilyUpdate.new,
         column_family_delete: Cassanity::ArgumentGenerators::ColumnFamilyDelete.new,
@@ -34,11 +37,18 @@ module Cassanity
         index_drop: Cassanity::ArgumentGenerators::IndexDrop.new,
       }
 
+      CommandToResultTransformerMap = {
+        column_family_select: Cassanity::ResultTransformers::ColumnFamilySelect.new,
+      }
+
       # Private
       attr_reader :client
 
       # Private
       attr_reader :command_to_argument_generator_map
+
+      # Private
+      attr_reader :command_to_result_transformer_map
 
       # Public: Initializes a cassandra-cql based CQL executor.
       #
@@ -52,8 +62,13 @@ module Cassanity
       #
       def initialize(args = {})
         @client = args.fetch(:client)
+
         @command_to_argument_generator_map = args.fetch(:command_to_argument_generator_map) {
           CommandToArgumentGeneratorMap
+        }
+
+        @command_to_result_transformer_map = args.fetch(:command_to_result_transformer_map) {
+          CommandToResultTransformerMap
         }
       end
 
@@ -81,7 +96,13 @@ module Cassanity
         generator = @command_to_argument_generator_map.fetch(command)
         execute_arguments = generator.call(args[:arguments])
 
-        @client.execute *execute_arguments
+        result = @client.execute(*execute_arguments)
+
+        if (transformer = @command_to_result_transformer_map[command])
+          transformer.call(result)
+        else
+          result
+        end
       rescue KeyError
         raise Cassanity::UnknownCommand
       rescue Exception => e

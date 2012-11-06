@@ -2,7 +2,7 @@ require 'helper'
 require 'cassanity/executors/cassandra_cql'
 
 describe Cassanity::Executors::CassandraCql do
-  let(:client) { lambda { |args| 'Called' } }
+  let(:client) { double('Client', :execute => nil) }
 
   let(:required_arguments) {
     {
@@ -13,6 +13,12 @@ describe Cassanity::Executors::CassandraCql do
   let(:command_to_argument_generator_map) {
     {
       :foo => lambda { |args| ['mapped', args] },
+    }
+  }
+
+  let(:command_to_result_transformer_map) {
+    {
+      :foo => lambda { |args| ['transformed', args] }
     }
   }
 
@@ -34,12 +40,24 @@ describe Cassanity::Executors::CassandraCql do
       subject.command_to_argument_generator_map.should eq(described_class::CommandToArgumentGeneratorMap)
     end
 
+    it "defaults :command_to_result_transformer_map" do
+      subject.command_to_result_transformer_map.should eq(described_class::CommandToResultTransformerMap)
+    end
+
     it "allows overriding :command_to_argument_generator_map" do
       instance = described_class.new(required_arguments.merge({
         command_to_argument_generator_map: command_to_argument_generator_map
       }))
 
       instance.command_to_argument_generator_map.should eq(command_to_argument_generator_map)
+    end
+
+    it "allows overriding :command_to_result_transformer_map" do
+      instance = described_class.new(required_arguments.merge({
+        command_to_result_transformer_map: command_to_result_transformer_map
+      }))
+
+      instance.command_to_result_transformer_map.should eq(command_to_result_transformer_map)
     end
   end
 
@@ -51,6 +69,7 @@ describe Cassanity::Executors::CassandraCql do
     :column_family_create,
     :column_family_drop,
     :column_family_truncate,
+    :column_family_select,
     :column_family_insert,
     :column_family_update,
     :column_family_delete,
@@ -83,6 +102,54 @@ describe Cassanity::Executors::CassandraCql do
 
         client.should_receive(:execute).with('mapped', args[:arguments])
         subject.call(args)
+      end
+
+      context "with result transformer" do
+        subject {
+          described_class.new(required_arguments.merge({
+            command_to_argument_generator_map: command_to_argument_generator_map,
+            command_to_result_transformer_map: command_to_result_transformer_map,
+          }))
+        }
+
+        it "returns result transformed" do
+          result = double('Result')
+          client.stub(:execute => result)
+          tranformer = command_to_result_transformer_map[:foo]
+
+          args = {
+            command: :foo,
+            arguments: {
+              something: 'else',
+            },
+          }
+
+          subject.call(args).should eq(['transformed', result])
+        end
+      end
+
+      context "without result transformer" do
+        subject {
+          described_class.new(required_arguments.merge({
+            command_to_argument_generator_map: command_to_argument_generator_map,
+            command_to_result_transformer_map: {},
+          }))
+        }
+
+        it "returns result transformed" do
+          result = double('Result')
+          client.stub(:execute => result)
+          tranformer = command_to_result_transformer_map[:foo]
+
+          args = {
+            command: :foo,
+            arguments: {
+              something: 'else',
+            },
+          }
+
+          subject.call(args).should eq(result)
+        end
       end
     end
 
