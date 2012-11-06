@@ -43,6 +43,28 @@ describe Cassanity::Executors::CassandraCql do
     end
   end
 
+  KnownCommands = [
+    :keyspaces,
+    :keyspace_create,
+    :keyspace_drop,
+    :keyspace_use,
+    :column_family_create,
+    :column_family_drop,
+    :column_family_truncate,
+    :column_family_insert,
+    :column_family_update,
+    :column_family_delete,
+    :column_family_alter,
+    :index_create,
+    :index_drop,
+  ]
+
+  KnownCommands.each do |key|
+    it "responds to #{key} command by default" do
+      subject.command_to_argument_generator_map.should have_key(key)
+    end
+  end
+
   describe "#call" do
     subject {
       described_class.new(required_arguments.merge({
