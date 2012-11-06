@@ -37,11 +37,11 @@ describe Cassanity::Executors::CassandraCql do
     end
 
     it "defaults :argument_generators" do
-      subject.argument_generators.should eq(described_class::CommandToArgumentGeneratorMap)
+      subject.argument_generators.should eq(described_class::ArgumentGenerators)
     end
 
     it "defaults :result_transformers" do
-      subject.result_transformers.should eq(described_class::CommandToResultTransformerMap)
+      subject.result_transformers.should eq(described_class::ResultTransformers)
     end
 
     it "allows overriding :argument_generators" do

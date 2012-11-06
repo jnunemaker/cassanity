@@ -101,7 +101,7 @@ module Cassanity
     #
     # name - The String name of the column family.
     # args - The Hash of arguments to use for ColumnFamily initialization
-    #        (optional, default: {}).
+    #        (optional, default: {}). :name and :keyspace are always included.
     #
     # Returns a Cassanity::ColumnFamily instance.
     def column_family(name, args = {})

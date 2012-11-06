@@ -22,7 +22,8 @@ module Cassanity
   module Executors
     class CassandraCql
 
-      CommandToArgumentGeneratorMap = {
+      # Private: Hash of commands to related argument generators.
+      ArgumentGenerators = {
         keyspaces: Cassanity::ArgumentGenerators::Keyspaces.new,
         keyspace_create: Cassanity::ArgumentGenerators::KeyspaceCreate.new,
         keyspace_drop: Cassanity::ArgumentGenerators::KeyspaceDrop.new,
@@ -40,10 +41,12 @@ module Cassanity
         batch: Cassanity::ArgumentGenerators::Batch.new,
       }
 
-      CommandToResultTransformerMap = {
+      # Private: Hash of commands to related result transformers.
+      ResultTransformers = {
         column_family_select: Cassanity::ResultTransformers::ColumnFamilySelect.new,
       }
 
+      # Private: Default result transformer for commands that do not have one.
       Mirror = Cassanity::ResultTransformers::Mirror.new
 
       # Private
@@ -75,14 +78,8 @@ module Cassanity
       #
       def initialize(args = {})
         @client = args.fetch(:client)
-
-        @argument_generators = args.fetch(:argument_generators) {
-          CommandToArgumentGeneratorMap
-        }
-
-        @result_transformers = args.fetch(:result_transformers) {
-          CommandToResultTransformerMap
-        }
+        @argument_generators = args.fetch(:argument_generators) { ArgumentGenerators }
+        @result_transformers = args.fetch(:result_transformers) { ResultTransformers }
       end
 
       # Public: Execute a CQL query.

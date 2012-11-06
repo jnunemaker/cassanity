@@ -21,7 +21,7 @@ module Cassanity
     #        :keyspace - The Cassanity::Keyspace the column family is in.
     #        :executor - What will execute the queries (optional).
     #                    Must respond to `call`.
-    #        :schema - The schema to use to create the column family.
+    #        :schema - The schema used to create the column family (optional).
     #
     def initialize(args = {})
       @name = args.fetch(:name)
@@ -32,8 +32,8 @@ module Cassanity
 
     # Public: Creates the column family in the keyspace based on the schema.
     #
-    # args - The Hash of arguments to pass to the executor. Always passes :name
-    #        and :keyspace_name.
+    # args - The Hash of arguments to pass to the executor. Always passes
+    #        :name and :keyspace_name.
     #        :schema - The Schema to use to create the column family
     #                  (defaults to schema provided during initialization).
     #
@@ -62,7 +62,7 @@ module Cassanity
     # Public: Truncates the column family.
     #
     # args - The Hash of arguments to pass to the argument generator
-    #        (default: {}). :name is always included.
+    #        (default: {}). :name and :keyspace_name are always included.
     #
     # Examples
     #
@@ -82,7 +82,7 @@ module Cassanity
     # Public: Drops the column family.
     #
     # args - The Hash of arguments to pass to the argument generator
-    #        (default: {}). :name is always included.
+    #        (default: {}). :name and :keyspace_name are always included.
     #
     # Examples
     #
@@ -180,7 +180,7 @@ module Cassanity
     # Public: Makes it possible to insert data into the column family.
     #
     # args - The Hash of arguments to pass to the argument generator
-    #        (default: {}). :name is always included.
+    #        (default: {}). :name and :keyspace_name are always included.
     #
     # Returns whatever is returned by executor.
     def insert(args = {})
@@ -196,7 +196,7 @@ module Cassanity
     # Public: Makes it possible to update data in the column family.
     #
     # args - The Hash of arguments to pass to the argument generator
-    #        (default: {}). :name is always included.
+    #        (default: {}). :name and :keyspace_name are always included.
     #
     # Returns whatever is returned by executor.
     def update(args = {})
@@ -212,7 +212,7 @@ module Cassanity
     # Public: Makes it possible to delete data from the column family.
     #
     # args - The Hash of arguments to pass to the argument generator
-    #        (default: {}). :name is always included.
+    #        (default: {}). :name and :keyspace_name are always included.
     #
     # Returns whatever is returned by executor.
     def delete(args = {})
