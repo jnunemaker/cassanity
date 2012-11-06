@@ -64,6 +64,10 @@ module Cassanity
     # args - The Hash of arguments to pass to the argument generator
     #        (default: {}). :name is always included.
     #
+    # Examples
+    #
+    #   truncate # you should rarely need more than this
+    #
     # Returns whatever is returned by executor.
     def truncate(args = {})
       @executor.call({
@@ -80,6 +84,10 @@ module Cassanity
     # args - The Hash of arguments to pass to the argument generator
     #        (default: {}). :name is always included.
     #
+    # Examples
+    #
+    #   drop # you should rarely need more than this
+    #
     # Returns whatever is returned by executor.
     def drop(args = {})
       @executor.call({
@@ -91,6 +99,18 @@ module Cassanity
       })
     end
 
+    # Public: Creates an index
+    #
+    # args - The Hash of arguments to pass to the argument generator
+    #        (default: {}). :column_family_name and :keyspace_name are
+    #        always included.
+    #
+    # Examples
+    #
+    #   create_index(column_name: 'ability_id')
+    #   create_index(name: 'ability_index', column_name: 'ability_id')
+    #
+    # Returns whatever is returned by executor.
     def create_index(args = {})
       @executor.call({
         command: :index_create,
@@ -101,6 +121,16 @@ module Cassanity
       })
     end
 
+    # Public: Drops an index
+    #
+    # args - The Hash of arguments to pass to the argument generator
+    #        (default: {}).
+    #
+    # Examples
+    #
+    #   drop_index(name: 'my_index_name')
+    #
+    # Returns whatever is returned by executor.
     def drop_index(args = {})
       @executor.call({
         command: :index_drop,
