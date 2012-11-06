@@ -91,6 +91,23 @@ module Cassanity
       })
     end
 
+    def create_index(args = {})
+      @executor.call({
+        command: :index_create,
+        arguments: args.merge({
+          column_family_name: @name,
+          keyspace_name: @keyspace.name,
+        }),
+      })
+    end
+
+    def drop_index(args = {})
+      @executor.call({
+        command: :index_drop,
+        arguments: args,
+      })
+    end
+
     # Public: Makes it possible to insert data into the column family.
     #
     # args - The Hash of arguments to pass to the argument generator

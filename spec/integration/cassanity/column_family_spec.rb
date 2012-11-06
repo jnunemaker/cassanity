@@ -101,6 +101,27 @@ describe Cassanity::ColumnFamily do
     client_column_family?(client, column_family_name).should be_false
   end
 
+  it "can create and drop indexes" do
+    subject.create_index({
+      name: :apps_name_index,
+      column_name: :name,
+    })
+
+    apps = client.schema.column_families['apps']
+    apps_meta = apps.column_metadata
+    index = apps_meta.detect { |c| c.index_name == 'apps_name_index' }
+    index.should_not be_nil
+
+    subject.drop_index({
+      name: :apps_name_index,
+    })
+
+    apps = client.schema.column_families['apps']
+    apps_meta = apps.column_metadata
+    index = apps_meta.detect { |c| c.index_name == 'apps_name_index' }
+    index.should be_nil
+  end
+
   it "can insert data" do
     subject.insert({
       data: {

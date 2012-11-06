@@ -10,6 +10,8 @@ require 'cassanity/argument_generators/column_family_truncate'
 require 'cassanity/argument_generators/column_family_insert'
 require 'cassanity/argument_generators/column_family_update'
 require 'cassanity/argument_generators/column_family_delete'
+require 'cassanity/argument_generators/index_create'
+require 'cassanity/argument_generators/index_drop'
 
 module Cassanity
   module Executors
@@ -26,6 +28,8 @@ module Cassanity
         column_family_insert: Cassanity::ArgumentGenerators::ColumnFamilyInsert.new,
         column_family_update: Cassanity::ArgumentGenerators::ColumnFamilyUpdate.new,
         column_family_delete: Cassanity::ArgumentGenerators::ColumnFamilyDelete.new,
+        index_create: Cassanity::ArgumentGenerators::IndexCreate.new,
+        index_drop: Cassanity::ArgumentGenerators::IndexDrop.new,
       }
 
       # Private
