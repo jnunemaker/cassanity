@@ -15,6 +15,7 @@ require 'cassanity/argument_generators/column_family_alter'
 require 'cassanity/argument_generators/index_create'
 require 'cassanity/argument_generators/index_drop'
 require 'cassanity/result_transformers/column_family_select'
+require 'cassanity/result_transformers/mirror'
 
 module Cassanity
   module Executors
@@ -40,6 +41,8 @@ module Cassanity
       CommandToResultTransformerMap = {
         column_family_select: Cassanity::ResultTransformers::ColumnFamilySelect.new,
       }
+
+      Mirror = Cassanity::ResultTransformers::Mirror.new
 
       # Private
       attr_reader :client
@@ -98,11 +101,8 @@ module Cassanity
 
         result = @client.execute(*execute_arguments)
 
-        if (transformer = @command_to_result_transformer_map[command])
-          transformer.call(result)
-        else
-          result
-        end
+        transformer = @command_to_result_transformer_map.fetch(command) { Mirror }
+        transformer.call(result)
       rescue KeyError
         raise Cassanity::UnknownCommand
       rescue Exception => e
