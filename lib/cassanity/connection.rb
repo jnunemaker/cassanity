@@ -42,17 +42,11 @@ module Cassanity
     #
     # Returns Array of Cassanity::Keyspace instances.
     def keyspaces
-      keyspaces = []
-
-      result = @executor.call({
+      rows = @executor.call({
         command: :keyspaces,
       })
 
-      result.fetch_hash do |row|
-        keyspaces << row
-      end
-
-      keyspaces.map { |row|
+      rows.map { |row|
         Keyspace.new({
           name: row['name'],
           executor: @executor,
