@@ -15,7 +15,6 @@ require 'cassanity/argument_generators/column_family_alter'
 require 'cassanity/argument_generators/index_create'
 require 'cassanity/argument_generators/index_drop'
 require 'cassanity/argument_generators/batch'
-require 'cassanity/result_transformers/column_family_select'
 require 'cassanity/result_transformers/result_to_array'
 require 'cassanity/result_transformers/mirror'
 
@@ -44,7 +43,7 @@ module Cassanity
 
       # Private: Hash of commands to related result transformers.
       ResultTransformers = {
-        column_family_select: Cassanity::ResultTransformers::ColumnFamilySelect.new,
+        column_family_select: Cassanity::ResultTransformers::ResultToArray.new,
         keyspaces: Cassanity::ResultTransformers::ResultToArray.new,
       }
 
