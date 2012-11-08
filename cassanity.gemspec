@@ -10,7 +10,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["nunemaker@gmail.com"]
   gem.description   = %q{Layer of goodness on top of cassandra-cql so you do not have to write CQL strings all over the place.}
   gem.summary       = %q{Layer of goodness on top of cassandra-cql so you do not have to write CQL strings all over the place.}
-  gem.homepage      = "https://github.com/jnunemaker/cassanity/"
+  gem.homepage      = "http://johnnunemaker.com/cassanity/"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
