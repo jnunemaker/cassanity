@@ -46,7 +46,7 @@ describe Cassanity::Schema do
 
       expect {
         described_class.new(args)
-      }.to raise_error(ArgumentError, "The following primary keys were not defined as a column: foo, bar")
+      }.to raise_error(ArgumentError, "Not all primary keys ([:foo, :bar]) were defined as columns ([:id])")
     end
   end
 

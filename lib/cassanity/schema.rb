@@ -49,12 +49,15 @@ module Cassanity
 
     # Private
     def ensure_primary_keys_are_columns
-      shared_columns = column_names & @primary_keys
-
-      if shared_columns != @primary_keys
-        missing_columns = @primary_keys - shared_columns
-        raise ArgumentError, "The following primary keys were not defined as a column: #{missing_columns.join(', ')}"
+      unless primary_keys_are_defined_as_columns?
+        raise ArgumentError, "Not all primary keys (#{primary_keys.inspect}) were defined as columns (#{column_names.inspect})"
       end
+    end
+
+    # Private
+    def primary_keys_are_defined_as_columns?
+      shared_columns = column_names & @primary_keys
+      shared_columns == @primary_keys
     end
   end
 end
