@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Cassanity by jnunemaker</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Cassanity</h1>
+        <p>CASSANITY NOW!</p>
+
+        <p class="view"><a href="https://github.com/jnunemaker/cassanity">View the Project on GitHub <small>jnunemaker/cassanity</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/jnunemaker/cassanity/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/jnunemaker/cassanity/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/jnunemaker/cassanity">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>Cassanity</h1>
+
+<p>Layer of goodness on top of cassandra-cql so you do not have to write CQL strings all over the place.</p>
+
+<h2>Usage</h2>
+
+<div class="highlight"><pre><span class="nb">require</span> <span class="s1">'cassanity'</span>
+
+<span class="c1"># cassandra-cql connection</span>
+<span class="n">client</span> <span class="o">=</span> <span class="no">CassandraCQL</span><span class="o">::</span><span class="no">Database</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">'127.0.0.1:9160'</span><span class="p">,</span> <span class="p">{</span>
+  <span class="n">cql_version</span><span class="p">:</span> <span class="s1">'3.0.0'</span><span class="p">,</span>
+<span class="p">})</span>
+
+<span class="c1"># what is going to execute the cql queries?</span>
+<span class="n">executor</span> <span class="o">=</span> <span class="no">Cassanity</span><span class="o">::</span><span class="no">Executors</span><span class="o">::</span><span class="no">CassandraCql</span><span class="o">.</span><span class="n">new</span><span class="p">({</span>
+  <span class="n">client</span><span class="p">:</span> <span class="n">client</span><span class="p">,</span>
+<span class="p">})</span>
+
+<span class="c1"># setup connection with something that can execute queries</span>
+<span class="n">connection</span> <span class="o">=</span> <span class="no">Cassanity</span><span class="o">::</span><span class="no">Connection</span><span class="o">.</span><span class="n">new</span><span class="p">({</span>
+  <span class="n">executor</span><span class="p">:</span> <span class="n">executor</span><span class="p">,</span>
+<span class="p">})</span>
+
+<span class="c1"># get keyspace instance</span>
+<span class="n">keyspace</span> <span class="o">=</span> <span class="n">connection</span><span class="o">[</span><span class="ss">:my_app</span><span class="o">]</span>
+
+<span class="c1"># tell client to use keyspace for future queries</span>
+<span class="n">keyspace</span><span class="o">.</span><span class="n">use</span>
+
+<span class="c1"># schema for apps column family</span>
+<span class="n">apps_schema</span> <span class="o">=</span> <span class="no">Cassanity</span><span class="o">::</span><span class="no">Schema</span><span class="o">.</span><span class="n">new</span><span class="p">({</span>
+  <span class="n">primary_key</span><span class="p">:</span> <span class="ss">:id</span><span class="p">,</span>
+  <span class="n">columns</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="ss">:text</span><span class="p">,</span>
+    <span class="nb">name</span><span class="p">:</span> <span class="ss">:text</span><span class="p">,</span>
+    <span class="n">created_at</span><span class="p">:</span> <span class="ss">:timestamp</span><span class="p">,</span>
+  <span class="p">},</span>
+  <span class="n">with</span><span class="p">:</span> <span class="p">{</span>
+    <span class="n">comment</span><span class="p">:</span> <span class="s1">'For storing apps'</span><span class="p">,</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+
+<span class="c1"># get instance of column family with name and schema set</span>
+<span class="n">apps</span> <span class="o">=</span> <span class="n">keyspace</span><span class="o">.</span><span class="n">column_family</span><span class="p">({</span>
+  <span class="nb">name</span><span class="p">:</span> <span class="ss">:apps</span><span class="p">,</span>
+  <span class="n">schema</span><span class="p">:</span> <span class="n">apps_schema</span><span class="p">,</span>
+<span class="p">})</span>
+
+<span class="c1"># create column family based on name and schema</span>
+<span class="n">apps</span><span class="o">.</span><span class="n">create</span>
+
+<span class="c1"># insert row</span>
+<span class="n">apps</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="p">{</span>
+  <span class="nb">id</span><span class="p">:</span> <span class="s1">'1'</span><span class="p">,</span>
+  <span class="nb">name</span><span class="p">:</span> <span class="s1">'GitHub.com'</span><span class="p">,</span>
+  <span class="n">created_at</span><span class="p">:</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="p">,</span>
+<span class="p">})</span>
+
+<span class="c1"># update name for row</span>
+<span class="n">apps</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">set</span><span class="p">:</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="s1">'GitHub'</span><span class="p">},</span> <span class="n">where</span><span class="p">:</span> <span class="p">{</span><span class="nb">id</span><span class="p">:</span> <span class="s1">'1'</span><span class="p">})</span>
+
+<span class="c1"># delete row</span>
+<span class="n">apps</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">where</span><span class="p">:</span> <span class="p">{</span><span class="nb">id</span><span class="p">:</span> <span class="s1">'1'</span><span class="p">})</span>
+
+<span class="c1"># truncate column family (remove all rows, still can add new stuff)</span>
+<span class="n">apps</span><span class="o">.</span><span class="n">truncate</span>
+
+<span class="c1"># drop column family (no more inserting into it, it is gone)</span>
+<span class="n">apps</span><span class="o">.</span><span class="n">drop</span>
+</pre></div>
+
+<h2>Installation</h2>
+
+<p>Add this line to your application's Gemfile:</p>
+
+<pre><code>gem 'cassanity'
+</code></pre>
+
+<p>And then execute:</p>
+
+<pre><code>$ bundle
+</code></pre>
+
+<p>Or install it yourself as:</p>
+
+<pre><code>$ gem install cassanity
+</code></pre>
+
+<h2>Compatibility</h2>
+
+<ul>
+<li>Ruby 1.9.3</li>
+</ul><h2>Contributing</h2>
+
+<ol>
+<li>Fork it</li>
+<li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
+<li>Commit your changes (<code>git commit -am 'Add some feature'</code>)</li>
+<li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
+<li>Create new Pull Request</li>
+</ol>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/jnunemaker">jnunemaker</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
