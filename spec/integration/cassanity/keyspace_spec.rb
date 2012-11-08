@@ -49,6 +49,12 @@ describe Cassanity::Keyspace do
     client_keyspace?(client, self_created_keyspace_name).should be_true
   end
 
+  it "knows if it exists" do
+    subject.exists?.should be_true
+    client_drop_keyspace(client, keyspace_name)
+    subject.exists?.should be_false
+  end
+
   it "can recreate when not created" do
     client_drop_keyspace(client, keyspace_name)
     client_keyspace?(client, keyspace_name).should be_false
