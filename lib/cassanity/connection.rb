@@ -54,15 +54,6 @@ module Cassanity
       }
     end
 
-    # Public: Find out if a keyspace exists or not
-    #
-    # name - The String name of the keyspace
-    #
-    # Returns true if keyspace exists else false.
-    def keyspace?(name)
-      keyspaces.map(&:name).include?(name)
-    end
-
     # Public: Get a keyspace instance
     #
     # name - The String name of the keyspace.

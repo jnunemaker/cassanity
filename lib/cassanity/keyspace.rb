@@ -31,6 +31,15 @@ module Cassanity
       @strategy_options = args[:strategy_options]
     end
 
+    # Public: Returns true or false depending on if keyspace exists in the
+    # current cluster.
+    #
+    # Returns true if keyspace exists, false if it does not.
+    def exists?
+      rows = @executor.call(command: :keyspaces)
+      rows.any? { |row| row['name'].to_s == name.to_s }
+    end
+
     # Public: Creates the keyspace
     #
     # args - The Hash of arguments to pass to the argument generator

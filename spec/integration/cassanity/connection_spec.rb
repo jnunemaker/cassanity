@@ -78,10 +78,4 @@ describe Cassanity::Connection do
     client_drop_keyspace(client, 'something1')
     client_drop_keyspace(client, 'something2')
   end
-
-  it "knows if a keyspace exists" do
-    subject.keyspace?(keyspace_name).should be_false
-    client_create_keyspace(client, keyspace_name)
-    subject.keyspace?(keyspace_name).should be_true
-  end
 end
