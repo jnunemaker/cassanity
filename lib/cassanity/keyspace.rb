@@ -113,18 +113,20 @@ module Cassanity
 
     # Public: Get a column family instance
     #
-    # name - The String name of the column family.
+    # name_or_args - The String name of the column family or a Hash which has
+    #                the name key and possibly other arguments.
     # args - The Hash of arguments to use for ColumnFamily initialization
-    #        (optional, default: {}). :name and :keyspace are always included.
+    #        (optional, default: {}). :keyspace is always included.
     #
     # Returns a Cassanity::ColumnFamily instance.
-    def column_family(name, args = {})
-      column_family_args = args.merge({
-        name: name,
-        keyspace: self,
-      })
+    def column_family(name_or_args, args = {})
+      column_family_args = if name_or_args.is_a?(Hash)
+        name_or_args.merge(args)
+      else
+        args.merge(name: name_or_args)
+      end
 
-      ColumnFamily.new(column_family_args)
+      ColumnFamily.new(column_family_args.merge(keyspace: self))
     end
     alias_method :table, :column_family
     alias_method :[], :column_family

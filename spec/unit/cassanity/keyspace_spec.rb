@@ -62,15 +62,21 @@ describe Cassanity::Keyspace do
   describe "#column_family" do
     let(:column_family_name) { 'apps' }
 
-    before do
-      @return_value = subject.column_family(column_family_name)
+    context "with only name" do
+      before do
+        @return_value = subject.column_family(column_family_name)
+      end
+
+      it "returns instance of column family" do
+        @return_value.should be_instance_of(Cassanity::ColumnFamily)
+      end
+
+      it "sets name" do
+        @return_value.name.should eq(column_family_name)
+      end
     end
 
-    it "returns instance of column family" do
-      @return_value.should be_instance_of(Cassanity::ColumnFamily)
-    end
-
-    context "with args" do
+    context "with name and hash" do
       let(:schema) { double('Schema') }
 
       before do
@@ -81,6 +87,57 @@ describe Cassanity::Keyspace do
 
       it "passes args to initialization" do
         @return_value.schema.should eq(schema)
+      end
+
+      it "sets name" do
+        @return_value.name.should eq(column_family_name)
+      end
+
+      it "returns instance of column family" do
+        @return_value.should be_instance_of(Cassanity::ColumnFamily)
+      end
+    end
+
+    context "with hash" do
+      let(:schema) { double('Schema') }
+
+      before do
+        @return_value = subject.column_family({
+          name: column_family_name,
+          schema: schema,
+        })
+      end
+
+      it "passes args to initialization" do
+        @return_value.schema.should eq(schema)
+      end
+
+      it "sets name" do
+        @return_value.name.should eq(column_family_name)
+      end
+
+      it "returns instance of column family" do
+        @return_value.should be_instance_of(Cassanity::ColumnFamily)
+      end
+    end
+
+    context "with two hashes" do
+      let(:schema) { double('Schema') }
+
+      before do
+        @return_value = subject.column_family({
+          name: column_family_name,
+        }, {
+          schema: schema,
+        })
+      end
+
+      it "passes args to initialization" do
+        @return_value.schema.should eq(schema)
+      end
+
+      it "sets name" do
+        @return_value.name.should eq(column_family_name)
       end
 
       it "returns instance of column family" do
@@ -96,6 +153,10 @@ describe Cassanity::Keyspace do
       @return_value = subject.table(column_family_name)
     end
 
+    it "sets name" do
+      @return_value.name.should eq(column_family_name)
+    end
+
     it "returns instance of column family" do
       @return_value.should be_instance_of(Cassanity::ColumnFamily)
     end
@@ -106,6 +167,10 @@ describe Cassanity::Keyspace do
 
     before do
       @return_value = subject[column_family_name]
+    end
+
+    it "sets name" do
+      @return_value.name.should eq(column_family_name)
     end
 
     it "returns instance of column family" do
