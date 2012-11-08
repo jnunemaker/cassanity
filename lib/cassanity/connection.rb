@@ -56,23 +56,20 @@ module Cassanity
 
     # Public: Get a keyspace instance
     #
-    # name - The String name of the keyspace.
+    # name_or_args - The String name of the keyspace or a Hash which has a name
+    #                key and possibly other arguments.
+    # args - The Hash of arguments to use for Keyspace initialization.
+    #        (optional, default: {}). :executor is always included.
     #
     # Returns a Cassanity::Keyspace instance.
     def keyspace(name_or_args, args = {})
       keyspace_args = if name_or_args.is_a?(Hash)
-        args.merge(name_or_args).merge({
-          executor: @executor,
-        })
+        name_or_args.merge(args)
       else
-        name = name_or_args
-        args.merge({
-          name: name,
-          executor: @executor,
-        })
+        args.merge(name: name_or_args)
       end
 
-      Keyspace.new(keyspace_args)
+      Keyspace.new(keyspace_args.merge(executor: executor))
     end
 
     alias_method :[], :keyspace
