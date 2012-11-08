@@ -31,7 +31,7 @@ module Cassanity
 
         cql_definition = definitions.join(', ')
 
-        cql = "CREATE COLUMNFAMILY #{name} (%s)" % cql_definition
+        cql = "CREATE COLUMNFAMILY #{name} (#{cql_definition})"
 
         with_cql, *with_variables = @with_clause.call(with: with)
         cql << with_cql

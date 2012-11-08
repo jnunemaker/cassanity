@@ -5,7 +5,7 @@ module Cassanity
       # Internal
       def call(args = {})
         name = args.fetch(:name)
-        cql = "DROP KEYSPACE %s" % name
+        cql = "DROP KEYSPACE #{name}"
         [cql]
       end
     end

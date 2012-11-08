@@ -10,7 +10,7 @@ module Cassanity
           name = "#{keyspace_name}.#{name}"
         end
 
-        cql = "DROP COLUMNFAMILY %s" % name
+        cql = "DROP COLUMNFAMILY #{name}"
         [cql]
       end
     end

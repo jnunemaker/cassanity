@@ -6,7 +6,7 @@ module Cassanity
       def call(args = {})
         options, variables = [], []
         name = args.fetch(:name)
-        cql = "CREATE KEYSPACE %s WITH " % name.to_s
+        cql = "CREATE KEYSPACE #{name} WITH "
 
         with = {
           strategy_class: default_strategy_class,
