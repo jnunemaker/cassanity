@@ -113,6 +113,17 @@ describe Cassanity::Keyspace do
     end
   end
 
+  describe "#create" do
+    it "sends command and arguments, including :name, to executor" do
+      args = {something: 'else'}
+      executor.should_receive(:call).with({
+        command: :keyspace_create,
+        arguments: args.merge(name: keyspace_name),
+      })
+      subject.create(args)
+    end
+  end
+
   describe "#use" do
     it "sends command and arguments, including :name, to executor" do
       args = {something: 'else'}
