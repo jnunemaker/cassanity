@@ -59,11 +59,18 @@ module Cassanity
     # name - The String name of the keyspace.
     #
     # Returns a Cassanity::Keyspace instance.
-    def keyspace(name, args = {})
-      keyspace_args = args.merge({
-        name: name,
-        executor: @executor,
-      })
+    def keyspace(name_or_args, args = {})
+      keyspace_args = if name_or_args.is_a?(Hash)
+        args.merge(name_or_args).merge({
+          executor: @executor,
+        })
+      else
+        name = name_or_args
+        args.merge({
+          name: name,
+          executor: @executor,
+        })
+      end
 
       Keyspace.new(keyspace_args)
     end

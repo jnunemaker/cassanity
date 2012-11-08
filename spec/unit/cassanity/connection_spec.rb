@@ -38,19 +38,29 @@ describe Cassanity::Connection do
   end
 
   describe "#keyspace" do
-    before do
-      @return_value = subject.keyspace(keyspace_name)
+    context "with only name" do
+      before do
+        @return_value = subject.keyspace(keyspace_name)
+      end
+
+      it "returns instance of keyspace" do
+        @return_value.should be_instance_of(Cassanity::Keyspace)
+      end
+
+      it "sets name" do
+        @return_value.name.should eq(keyspace_name)
+      end
     end
 
-    it "returns instance of keyspace" do
-      @return_value.should be_instance_of(Cassanity::Keyspace)
-    end
-
-    context "with args" do
+    context "with name and args" do
       before do
         @return_value = subject.keyspace(keyspace_name, {
           strategy_class: 'NetworkTopologyStrategy',
         })
+      end
+
+      it "correctly sets name" do
+        @return_value.name.should eq(keyspace_name)
       end
 
       it "passes args to initialization" do
@@ -59,6 +69,49 @@ describe Cassanity::Connection do
 
       it "returns instance of keyspace" do
         @return_value.should be_instance_of(Cassanity::Keyspace)
+      end
+    end
+
+    context "with single hash" do
+      before do
+        @return_value = subject.keyspace({
+          name: keyspace_name,
+          strategy_class: 'NetworkTopologyStrategy',
+        })
+      end
+
+      it "returns instance of keyspace" do
+        @return_value.should be_instance_of(Cassanity::Keyspace)
+      end
+
+      it "correctly sets name" do
+        @return_value.name.should eq(keyspace_name)
+      end
+
+      it "passes args to initialization" do
+        @return_value.strategy_class.should eq('NetworkTopologyStrategy')
+      end
+    end
+
+    context "with two hashes" do
+      before do
+        @return_value = subject.keyspace({
+          name: keyspace_name,
+        }, {
+          strategy_class: 'NetworkTopologyStrategy',
+        })
+      end
+
+      it "returns instance of keyspace" do
+        @return_value.should be_instance_of(Cassanity::Keyspace)
+      end
+
+      it "correctly sets name" do
+        @return_value.name.should eq(keyspace_name)
+      end
+
+      it "passes args to initialization" do
+        @return_value.strategy_class.should eq('NetworkTopologyStrategy')
       end
     end
   end
