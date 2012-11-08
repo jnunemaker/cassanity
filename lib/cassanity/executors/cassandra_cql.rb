@@ -63,6 +63,7 @@ module Cassanity
       #
       # args - The Hash of arguments.
       #        :client - The CassandraCQL::Database connection instance.
+      #        :logger - What to use to log the cql and such being executed.
       #        :argument_generators - A Hash where each key is a command name
       #                               and each value is the related argument
       #                               generator that responds to `call`
@@ -79,6 +80,7 @@ module Cassanity
       #
       def initialize(args = {})
         @client = args.fetch(:client)
+        @logger = args[:logger]
         @argument_generators = args.fetch(:argument_generators) { ArgumentGenerators }
         @result_transformers = args.fetch(:result_transformers) { ResultTransformers }
       end
@@ -106,6 +108,10 @@ module Cassanity
         command = args.fetch(:command)
         generator = @argument_generators.fetch(command)
         execute_arguments = generator.call(args[:arguments])
+
+        if @logger
+          @logger.debug { "#{self.class} executing #{execute_arguments.inspect}" }
+        end
 
         result = @client.execute(*execute_arguments)
 

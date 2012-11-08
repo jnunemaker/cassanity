@@ -105,6 +105,44 @@ describe Cassanity::Executors::CassandraCql do
         subject.call(args)
       end
 
+      context "with logger" do
+        let(:logger) {
+          Class.new do
+            attr_reader :logs
+
+            def initialize
+              @logs = []
+            end
+
+            def debug
+              @logs << {debug: yield}
+            end
+          end.new
+        }
+
+        subject {
+          described_class.new(required_arguments.merge({
+            argument_generators: argument_generators,
+            logger: logger,
+          }))
+        }
+
+        it "logs executed arguments" do
+          args = {
+            command: :foo,
+            arguments: {
+              something: 'else',
+            },
+          }
+
+          subject.call(args)
+
+          logger.logs.should eq([
+            {debug: 'Cassanity::Executors::CassandraCql executing ["mapped", {:something=>"else"}]'},
+          ])
+        end
+      end
+
       context "with result transformer" do
         subject {
           described_class.new(required_arguments.merge({
