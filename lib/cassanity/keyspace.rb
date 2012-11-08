@@ -68,6 +68,11 @@ module Cassanity
       })
     end
 
+    def recreate(args = {})
+      drop if exists?
+      create
+    end
+
     # Public: Uses a keyspace
     #
     # args - The Hash of arguments to pass to the argument generator

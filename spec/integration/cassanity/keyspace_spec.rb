@@ -49,6 +49,19 @@ describe Cassanity::Keyspace do
     client_keyspace?(client, self_created_keyspace_name).should be_true
   end
 
+  it "can recreate when not created" do
+    client_drop_keyspace(client, keyspace_name)
+    client_keyspace?(client, keyspace_name).should be_false
+    subject.recreate
+    client_keyspace?(client, keyspace_name).should be_true
+  end
+
+  it "can recreate when already created" do
+    client_keyspace?(client, keyspace_name).should be_true
+    subject.recreate
+    client_keyspace?(client, keyspace_name).should be_true
+  end
+
   it "can use" do
     client.execute("USE system")
     client.keyspace.should_not eq(keyspace_name)

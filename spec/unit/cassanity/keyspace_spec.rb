@@ -145,6 +145,39 @@ describe Cassanity::Keyspace do
     end
   end
 
+  describe "#recreate" do
+    context "for existing keyspace" do
+      before do
+        subject.stub(:exist? => true)
+      end
+      it "performs drop" do
+        subject.should_not_receive(:drop)
+        subject.recreate
+      end
+
+      it "performs create" do
+        subject.should_receive(:create)
+        subject.recreate
+      end
+    end
+
+    context "for non-existing keyspace" do
+      before do
+        subject.stub(:exist? => false)
+      end
+
+      it "does not perform drop" do
+        subject.should_not_receive(:drop)
+        subject.recreate
+      end
+
+      it "performs create" do
+        subject.should_receive(:create)
+        subject.recreate
+      end
+    end
+  end
+
   describe "#use" do
     it "sends command and arguments, including :name, to executor" do
       args = {something: 'else'}
