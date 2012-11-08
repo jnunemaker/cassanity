@@ -11,11 +11,11 @@ module Cassanity
 
       # Internal
       def call(args = {})
-        name        = args.fetch(:name)
-        schema      = args.fetch(:schema)
-        columns     = schema.columns
-        primary_key = schema.primary_key
-        with        = schema.with
+        name         = args.fetch(:name)
+        schema       = args.fetch(:schema)
+        columns      = schema.columns
+        primary_keys = schema.primary_keys
+        with         = schema.with
 
         definitions, variables = [], []
 
@@ -27,7 +27,7 @@ module Cassanity
           definitions << "#{name} #{type}"
         end
 
-        definitions << "PRIMARY KEY (%s)" % Array(primary_key).join(', ')
+        definitions << "PRIMARY KEY (#{primary_keys.join(', ')})"
 
         cql_definition = definitions.join(', ')
 
