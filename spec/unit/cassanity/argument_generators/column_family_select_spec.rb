@@ -93,11 +93,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilySelect do
         lambda { |args| [" USING CONSISTENCY BATMAN"]}
       }
 
-      subject {
-        described_class.new({
-          using_clause: using_clause,
-        })
-      }
+      subject { described_class.new(using_clause: using_clause) }
 
       it "returns array of arguments with help from using clause" do
         using = {consistency: :batman}
@@ -115,11 +111,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilySelect do
         lambda { |args| [" WHERE foo = ?", args.fetch(:where).fetch(:foo)]}
       }
 
-      subject {
-        described_class.new({
-          where_clause: where_clause,
-        })
-      }
+      subject { described_class.new(where_clause: where_clause) }
 
       it "returns array of arguments with help from where clause" do
         where = {foo: 'bar'}
