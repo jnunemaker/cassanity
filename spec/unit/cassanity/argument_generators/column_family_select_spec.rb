@@ -88,6 +88,28 @@ describe Cassanity::ArgumentGenerators::ColumnFamilySelect do
       end
     end
 
+    context "with using option" do
+      let(:using_clause) {
+        lambda { |args| [" USING CONSISTENCY BATMAN"]}
+      }
+
+      subject {
+        described_class.new({
+          using_clause: using_clause,
+        })
+      }
+
+      it "returns array of arguments with help from using clause" do
+        using = {consistency: :batman}
+        cql = "SELECT * FROM #{column_family_name} USING CONSISTENCY BATMAN"
+        expected = [cql]
+        subject.call({
+          name: column_family_name,
+          using: using,
+        }).should eq(expected)
+      end
+    end
+
     context "with where option" do
       let(:where_clause) {
         lambda { |args| [" WHERE foo = ?", args.fetch(:where).fetch(:foo)]}

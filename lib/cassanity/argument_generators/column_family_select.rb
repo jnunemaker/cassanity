@@ -1,3 +1,4 @@
+require 'cassanity/argument_generators/using_clause'
 require 'cassanity/argument_generators/where_clause'
 
 module Cassanity
@@ -6,6 +7,7 @@ module Cassanity
 
       # Internal
       def initialize(args = {})
+        @using_clause = args.fetch(:using_clause) { UsingClause.new }
         @where_clause = args.fetch(:where_clause) { WhereClause.new }
       end
 
@@ -14,6 +16,7 @@ module Cassanity
         select = Array(args.fetch(:select, '*'))
         name   = args.fetch(:name)
         where  = args[:where]
+        using = args[:using]
 
         variables = []
 
@@ -22,6 +25,10 @@ module Cassanity
         end
 
         cql = "SELECT #{select.join(', ')} FROM #{name}"
+
+        using_cql, *using_variables = @using_clause.call(using: using)
+        cql << using_cql
+        variables.concat(using_variables)
 
         where_cql, *where_variables = @where_clause.call(where: where)
         cql << where_cql
