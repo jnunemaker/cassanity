@@ -131,5 +131,39 @@ describe Cassanity::ArgumentGenerators::ColumnFamilySelect do
         }).should eq(expected)
       end
     end
+
+    context "with order option" do
+      let(:order_clause) {
+        lambda { |args| [" ORDER BY #{args.fetch(:order)}"]}
+      }
+
+      subject { described_class.new(order_clause: order_clause) }
+
+      it "returns array of arguments with help from order clause" do
+        cql = "SELECT * FROM #{column_family_name} ORDER BY name"
+        expected = [cql]
+        subject.call({
+          name: column_family_name,
+          order: :name,
+        }).should eq(expected)
+      end
+    end
+
+    context "with limit option" do
+      let(:limit_clause) {
+        lambda { |args| [" LIMIT #{args.fetch(:limit)}"]}
+      }
+
+      subject { described_class.new(limit_clause: limit_clause) }
+
+      it "returns array of arguments with help from limit clause" do
+        cql = "SELECT * FROM #{column_family_name} LIMIT 50"
+        expected = [cql]
+        subject.call({
+          name: column_family_name,
+          limit: 50,
+        }).should eq(expected)
+      end
+    end
   end
 end
