@@ -23,7 +23,7 @@ keyspace = connection.keyspace('cassanity_examples', {
 })
 
 # drop keyspace if it exists
-keyspace.drop if connection.keyspace?('cassanity_examples')
+keyspace.drop if keyspace.exists?
 
 # create the keyspace, uses options from above
 keyspace.create

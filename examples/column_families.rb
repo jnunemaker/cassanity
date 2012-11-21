@@ -6,8 +6,7 @@ executor = Cassanity::Executors::CassandraCql.new(client: client)
 
 connection = Cassanity::Connection.new(executor: executor)
 keyspace = connection['cassanity_examples']
-keyspace.drop if connection.keyspace?('cassanity_examples')
-keyspace.create
+keyspace.recreate
 
 apps_schema = Cassanity::Schema.new({
   primary_key: :id,

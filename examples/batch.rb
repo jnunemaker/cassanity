@@ -6,8 +6,7 @@ executor = Cassanity::Executors::CassandraCql.new(client: client)
 
 connection = Cassanity::Connection.new(executor: executor)
 keyspace = connection['cassanity_examples']
-keyspace.drop if connection.keyspace?('cassanity_examples')
-keyspace.create
+keyspace.recreate
 
 # setting up the apps column family
 apps_schema = Cassanity::Schema.new({
