@@ -66,6 +66,7 @@ describe Cassanity::Executors::CassandraCql do
     :keyspace_create,
     :keyspace_drop,
     :keyspace_use,
+    :column_families,
     :column_family_create,
     :column_family_drop,
     :column_family_truncate,

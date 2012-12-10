@@ -4,6 +4,7 @@ require 'cassanity/argument_generators/keyspaces'
 require 'cassanity/argument_generators/keyspace_create'
 require 'cassanity/argument_generators/keyspace_drop'
 require 'cassanity/argument_generators/keyspace_use'
+require 'cassanity/argument_generators/column_families'
 require 'cassanity/argument_generators/column_family_create'
 require 'cassanity/argument_generators/column_family_drop'
 require 'cassanity/argument_generators/column_family_truncate'
@@ -28,6 +29,7 @@ module Cassanity
         keyspace_create: Cassanity::ArgumentGenerators::KeyspaceCreate.new,
         keyspace_drop: Cassanity::ArgumentGenerators::KeyspaceDrop.new,
         keyspace_use: Cassanity::ArgumentGenerators::KeyspaceUse.new,
+        column_families: Cassanity::ArgumentGenerators::ColumnFamilies.new,
         column_family_create: Cassanity::ArgumentGenerators::ColumnFamilyCreate.new,
         column_family_drop: Cassanity::ArgumentGenerators::ColumnFamilyDrop.new,
         column_family_truncate: Cassanity::ArgumentGenerators::ColumnFamilyTruncate.new,
@@ -43,8 +45,9 @@ module Cassanity
 
       # Private: Hash of commands to related result transformers.
       ResultTransformers = {
-        column_family_select: Cassanity::ResultTransformers::ResultToArray.new,
         keyspaces: Cassanity::ResultTransformers::ResultToArray.new,
+        column_families: Cassanity::ResultTransformers::ResultToArray.new,
+        column_family_select: Cassanity::ResultTransformers::ResultToArray.new,
       }
 
       # Private: Default result transformer for commands that do not have one.
