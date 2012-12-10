@@ -68,7 +68,10 @@ module Cassanity
       })
     end
 
-    def recreate(args = {})
+    # Public: Drops keyspace if it exists and then calls create.
+    #
+    # Returns nothing.
+    def recreate
       drop if exists?
       create
     end
