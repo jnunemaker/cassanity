@@ -30,6 +30,27 @@ module Cassanity
       @schema = args[:schema]
     end
 
+    # Public: Returns true or false depending on if column family exists in
+    # the keyspace.
+    #
+    # Returns true if column family exists, false if it does not.
+    def exists?
+      @executor.call({
+        command: :column_families,
+        arguments: {
+          keyspace_name: @keyspace.name,
+        }
+      }).any? { |row| row['columnfamily'].to_s == @name.to_s }
+    end
+
+    # Public: Drops column family if it exists and then calls create.
+    #
+    # Returns nothing.
+    def recreate
+      drop if exists?
+      create
+    end
+
     # Public: Creates the column family in the keyspace based on the schema.
     #
     # args - The Hash of arguments to pass to the executor. Always passes

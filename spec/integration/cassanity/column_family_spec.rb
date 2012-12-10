@@ -62,6 +62,25 @@ describe Cassanity::ColumnFamily do
     client_drop_keyspace(client, keyspace_name)
   end
 
+  it "knows if it exists" do
+    subject.exists?.should be_true
+    client_drop_column_family(client, column_family_name)
+    subject.exists?.should be_false
+  end
+
+  it "can recreate when not created" do
+    client_drop_column_family(client, column_family_name)
+    client_column_family?(client, column_family_name).should be_false
+    subject.recreate
+    client_column_family?(client, column_family_name).should be_true
+  end
+
+  it "can recreate when already created" do
+    client_column_family?(client, column_family_name).should be_true
+    subject.recreate
+    client_column_family?(client, column_family_name).should be_true
+  end
+
   it "can create itself" do
     column_family = described_class.new(arguments.merge(name: 'people'))
     column_family.create
