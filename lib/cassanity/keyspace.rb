@@ -114,6 +114,23 @@ module Cassanity
       })
     end
 
+    # Public: Get all column families for keyspace.
+    #
+    # Returns Array of Cassanity::ColumnFamily instances.
+    def column_families
+      @executor.call({
+        command: :column_families,
+        arguments: {
+          keyspace_name: @name,
+        },
+      }).map { |row|
+        ColumnFamily.new({
+          name: row['columnfamily'],
+          keyspace: self,
+        })
+      }
+    end
+
     # Public: Get a column family instance
     #
     # name_or_args - The String name of the column family or a Hash which has

@@ -80,4 +80,22 @@ describe Cassanity::Keyspace do
     subject.drop
     client_keyspace?(client, keyspace_name).should be_false
   end
+
+  it "knows column families" do
+    client_create_column_family(client, 'something1')
+    client_create_column_family(client, 'something2')
+
+    result = subject.column_families
+    result.each do |column_family|
+      column_family.should be_instance_of(Cassanity::ColumnFamily)
+      column_family.keyspace.should eq(subject)
+    end
+
+    names = result.map(&:name)
+    names.should include('something1')
+    names.should include('something2')
+
+    client_drop_column_family(client, 'something1')
+    client_drop_column_family(client, 'something2')
+  end
 end
