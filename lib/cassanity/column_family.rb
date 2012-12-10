@@ -43,6 +43,8 @@ module Cassanity
       }).any? { |row| row['columnfamily'].to_s == @name.to_s }
     end
 
+    alias_method :exist?, :exists?
+
     # Public: Drops column family if it exists and then calls create.
     #
     # Returns nothing.

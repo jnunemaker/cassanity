@@ -178,25 +178,33 @@ describe Cassanity::Keyspace do
     end
   end
 
-  describe "#exists?" do
+  shared_examples_for "keyspace existence" do |method_name|
     it "returns true if name in existing keyspace names" do
       executor.should_receive(:call).with(command: :keyspaces).and_return([
         {'name' => keyspace_name.to_s},
       ])
-      subject.exists?.should be_true
+      subject.send(method_name).should be_true
     end
 
     it "returns false if name not in existing keyspace names" do
       executor.should_receive(:call).with(command: :keyspaces).and_return([
         {'name' => 'batman'},
       ])
-      subject.exists?.should be_false
+      subject.send(method_name).should be_false
     end
 
     it "returns false if no keyspaces" do
       executor.should_receive(:call).with(command: :keyspaces).and_return([])
-      subject.exists?.should be_false
+      subject.send(method_name).should be_false
     end
+  end
+
+  describe "#exists?" do
+    include_examples "keyspace existence", :exists?
+  end
+
+  describe "#exist?" do
+    include_examples "keyspace existence", :exist?
   end
 
   describe "#create" do

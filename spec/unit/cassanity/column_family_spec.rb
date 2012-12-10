@@ -80,6 +80,38 @@ describe Cassanity::ColumnFamily do
     end
   end
 
+  shared_examples_for "column family existence" do |method_name|
+    it "returns true if column family name included in column families" do
+      executor.should_receive(:call).with({
+        command: :column_families,
+        arguments: {keyspace_name: keyspace.name},
+      }).and_return([
+        {'columnfamily' => column_family_name},
+      ])
+
+      subject.send(method_name).should be_true
+    end
+
+    it "returns false if column family name not included in column families" do
+      executor.should_receive(:call).with({
+        command: :column_families,
+        arguments: {keyspace_name: keyspace.name},
+      }).and_return([
+        {'columnfamily' => 'boo'},
+      ])
+
+      subject.send(method_name).should be_false
+    end
+  end
+
+  describe "#exists?" do
+    include_examples "column family existence", :exists?
+  end
+
+  describe "#exist?" do
+    include_examples "column family existence", :exist?
+  end
+
   describe "#create" do
     context "with schema set during initialization" do
       subject {

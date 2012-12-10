@@ -40,6 +40,8 @@ module Cassanity
       rows.any? { |row| row['name'].to_s == name.to_s }
     end
 
+    alias_method :exist?, :exists?
+
     # Public: Creates the keyspace
     #
     # args - The Hash of arguments to pass to the argument generator
