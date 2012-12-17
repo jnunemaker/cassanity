@@ -1,3 +1,6 @@
+require 'cassanity/increment'
+require 'cassanity/decrement'
+
 module Cassanity
   module ArgumentGenerators
     class SetClause
@@ -8,8 +11,10 @@ module Cassanity
         cql, variables, sets = '', [], []
 
         set.each do |key, value|
-          if counter?(key, value)
-            sets << "#{key} = #{value}"
+          case value
+          when Cassanity::Increment, Cassanity::Decrement
+            sets << "#{key} = #{key} #{value.symbol} ?"
+            variables << value.value
           else
             sets << "#{key} = ?"
             variables << value
@@ -17,13 +22,7 @@ module Cassanity
         end
         cql << " SET #{sets.join(', ')}"
 
-
         [cql, *variables]
-      end
-
-      # Private
-      def counter?(key, value)
-        value.is_a?(String) && value.match(/#{key}(\s+)?[\+\-](\s+)?\d/)
       end
     end
   end

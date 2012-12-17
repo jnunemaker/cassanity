@@ -264,7 +264,7 @@ describe Cassanity::ColumnFamily do
     row['name'].should eq('gist')
   end
 
-  describe "updating a counter column" do
+  describe "incrementing a counter column" do
     subject {
       described_class.new({
         keyspace: keyspace,
@@ -274,7 +274,7 @@ describe Cassanity::ColumnFamily do
 
     it "works" do
       subject.update({
-        set: {views: 'views + 2'},
+        set: {views: Cassanity::Increment.new(2)},
         where: {id: '1'},
       })
 
@@ -283,6 +283,28 @@ describe Cassanity::ColumnFamily do
       row = result.fetch_hash
       row['id'].should eq('1')
       row['views'].should be(2)
+    end
+  end
+
+  describe "decrementing a counter column" do
+    subject {
+      described_class.new({
+        keyspace: keyspace,
+        name: counters_column_family_name,
+      })
+    }
+
+    it "works" do
+      subject.update({
+        set: {views: Cassanity::Decrement.new(2)},
+        where: {id: '1'},
+      })
+
+      result = client.execute("SELECT * FROM #{counters_column_family_name} WHERE id = '1'")
+      result.rows.should eq(1)
+      row = result.fetch_hash
+      row['id'].should eq('1')
+      row['views'].should be(-2)
     end
   end
 

@@ -31,54 +31,17 @@ describe Cassanity::ArgumentGenerators::SetClause do
       end
     end
 
-    context "with counter update" do
-      it "returns array of arguments where counter SET is correct" do
-        subject.call(set: {views: 'views + 5'}).
-          should eq([" SET views = views + 5"])
+    context "with increment" do
+      it "returns array of arguments with SET including counter increment" do
+        subject.call(set: {views: Cassanity::Increment.new(5)}).
+          should eq([" SET views = views + ?", 5])
       end
+    end
 
-      it "works with no spaces" do
-        subject.call(set: {views: 'views+5'}).
-          should eq([" SET views = views+5"])
-      end
-
-      it "works with one or more spaces before the operator" do
-        subject.call(set: {views: 'views +5'}).
-          should eq([" SET views = views +5"])
-
-        subject.call(set: {views: 'views  +5'}).
-          should eq([" SET views = views  +5"])
-      end
-
-      it "works with one or more spaces after the operator" do
-        subject.call(set: {views: 'views+ 5'}).
-          should eq([" SET views = views+ 5"])
-
-        subject.call(set: {views: 'views+  5'}).
-          should eq([" SET views = views+  5"])
-      end
-
-      it "works with spaces after before the key" do
-        subject.call(set: {views: ' views + 5'}).
-          should eq([" SET views =  views + 5"])
-      end
-
-      it "works with spaces after the number" do
-        subject.call(set: {views: 'views + 5 '}).
-          should eq([" SET views = views + 5 "])
-
-        subject.call(set: {views: 'views + 5  '}).
-          should eq([" SET views = views + 5  "])
-      end
-
-      it "works with negative operator" do
-        subject.call(set: {views: 'views - 5'}).
-          should eq([" SET views = views - 5"])
-      end
-
-      it "works with multiple digit numbers" do
-        subject.call(set: {views: 'views - 52737237'}).
-          should eq([" SET views = views - 52737237"])
+    context "with decrement" do
+      it "returns array of arguments with SET including counter decrement" do
+        subject.call(set: {views: Cassanity::Decrement.new(3)}).
+          should eq([" SET views = views - ?", 3])
       end
     end
   end
