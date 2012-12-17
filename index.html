@@ -32,6 +32,23 @@
 
 <p>Layer of goodness on top of cassandra-cql so you do not have to write CQL strings all over the place.</p>
 
+<h2>Installation</h2>
+
+<p>Add this line to your application's Gemfile:</p>
+
+<pre><code>gem 'cassanity'
+</code></pre>
+
+<p>And then execute:</p>
+
+<pre><code>$ bundle
+</code></pre>
+
+<p>Or install it yourself as:</p>
+
+<pre><code>$ gem install cassanity
+</code></pre>
+
 <h2>Usage</h2>
 
 <div class="highlight"><pre><span class="nb">require</span> <span class="s1">'cassanity'</span>
@@ -99,24 +116,15 @@
 <span class="n">apps</span><span class="o">.</span><span class="n">drop</span>
 </pre></div>
 
-<h2>Installation</h2>
+<p>You can also do a lot more. Here are a few more <a href="https://github.com/jnunemaker/cassanity/tree/master/examples">examples</a>:</p>
 
-<p>Add this line to your application's Gemfile:</p>
-
-<pre><code>gem 'cassanity'
-</code></pre>
-
-<p>And then execute:</p>
-
-<pre><code>$ bundle
-</code></pre>
-
-<p>Or install it yourself as:</p>
-
-<pre><code>$ gem install cassanity
-</code></pre>
-
-<h2>Compatibility</h2>
+<ul>
+<li><a href="https://github.com/jnunemaker/cassanity/tree/master/examples/batch.rb">Batch Operations</a></li>
+<li><a href="https://github.com/jnunemaker/cassanity/tree/master/examples/counters.rb">Counters</a></li>
+<li><a href="https://github.com/jnunemaker/cassanity/tree/master/examples/keyspaces.rb">Keyspaces</a></li>
+<li><a href="https://github.com/jnunemaker/cassanity/tree/master/examples/column_families.rb">Column Families</a></li>
+<li><a href="https://github.com/jnunemaker/cassanity/tree/master/examples/select_range.rb">Select a Range</a></li>
+</ul><h2>Compatibility</h2>
 
 <ul>
 <li>Ruby 1.9.3</li>
