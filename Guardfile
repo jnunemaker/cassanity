@@ -6,7 +6,14 @@ guard 'bundler' do
   watch(/^.+\.gemspec/)
 end
 
-guard 'rspec', :version => 2 do
+rspec_options = {
+  version: 2,
+  all_after_pass: false,
+  all_on_start: false,
+  keep_failed: false
+}
+
+guard 'rspec', rspec_options do
   watch(%r{^spec/.+_spec\.rb$})
   watch(%r{^lib/(.+)\.rb$}) { |m| [
     "spec/unit/#{m[1]}_spec.rb",
