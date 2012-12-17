@@ -43,7 +43,20 @@ rollups.update({
   where: {id: :views},
 })
 
-# returns 4
+# increment by 3
+rollups.update({
+  set:   {value: Cassanity::Increment(3)},
+  where: {id: :views},
+})
+
+# increment by 3
+# you can also use .incr and .increment
+rollups.update({
+  set:   {value: Cassanity.inc(3)},
+  where: {id: :views},
+})
+
+# returns 10
 pp rollups.select(where: {id: :views})[0]['value']
 
 # decrement by 1
@@ -58,7 +71,20 @@ rollups.update({
   where: {id: :views},
 })
 
-# returns 1
+# decrement by 2
+rollups.update({
+  set:   {value: Cassanity::Decrement(2)},
+  where: {id: :views},
+})
+
+# decrement by 2
+# you can also use .decr and .decrement
+rollups.update({
+  set:   {value: Cassanity.dec(2)},
+  where: {id: :views},
+})
+
+# returns 3
 pp rollups.select(where: {id: :views})[0]['value']
 
 keyspace.drop
