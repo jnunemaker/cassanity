@@ -1,7 +1,9 @@
 require_relative '_shared'
 require 'cassanity'
 
-client = CassandraCQL::Database.new('127.0.0.1:9160')
+client = CassandraCQL::Database.new('127.0.0.1:9160', {
+  cql_version: '3.0.0',
+})
 executor = Cassanity::Executors::CassandraCql.new(client: client)
 
 connection = Cassanity::Connection.new(executor: executor)

@@ -78,7 +78,7 @@ module Cassanity
       #
       # Examples
       #
-      #   client = CassandraCQL::Database.new('host')
+      #   client = CassandraCQL::Database.new('host', cql_version: '3.0.0')
       #   Cassanity::Executors::CassandraCql.new(client: client)
       #
       def initialize(args = {})
