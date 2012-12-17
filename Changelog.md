@@ -2,6 +2,11 @@
 
 Not all changes will be here, but the important ones will be for sure.
 
+## 0.3.0
+
+* Changed [update counter value API](https://github.com/jnunemaker/cassanity/commit/a0f5a76)
+* Added [support for range queries](https://github.com/jnunemaker/cassanity/commit/5d89ada)
+
 ## 0.2.2
 
 * Added [Keyspace#column_families](https://github.com/jnunemaker/cassanity/commit/8101835)
