@@ -11,9 +11,17 @@ module Cassanity
         variables, wheres = [], []
 
         where.each do |key, value|
-          if value.is_a?(Array)
+          case value
+          when Array
             wheres << "#{key} IN (?)"
             variables << value
+          when Range
+            start, finish = value.begin, value.end
+            end_operator = value.exclude_end? ? '<' : '<='
+            wheres << "#{key} >= ?"
+            wheres << "#{key} #{end_operator} ?"
+            variables << start
+            variables << finish
           else
             wheres << "#{key} = ?"
             variables << value

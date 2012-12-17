@@ -181,6 +181,51 @@ describe Cassanity::ColumnFamily do
     ])
   end
 
+  context "selecting a range of data" do
+    let(:name) { 'rollups_minute' }
+
+    subject {
+      described_class.new({
+        keyspace: keyspace,
+        name: name,
+      })
+    }
+
+    before do
+      client.execute("CREATE COLUMNFAMILY #{name} (id text, ts int, value counter, PRIMARY KEY(id, ts))")
+      @id = 'foo'
+      client.execute("UPDATE #{name} SET value = value + 1 WHERE id = ? AND ts = ?", @id, 1)
+      client.execute("UPDATE #{name} SET value = value + 1 WHERE id = ? AND ts = ?", @id, 2)
+      client.execute("UPDATE #{name} SET value = value + 1 WHERE id = ? AND ts = ?", @id, 3)
+      client.execute("UPDATE #{name} SET value = value + 1 WHERE id = ? AND ts = ?", @id, 4)
+    end
+
+    it "works including end" do
+      subject.select({
+        where: {
+          id: @id,
+          ts: Range.new(1, 3),
+        }
+      }).should eq([
+        {'id' => 'foo', 'ts' => 1, 'value' => 1},
+        {'id' => 'foo', 'ts' => 2, 'value' => 1},
+        {'id' => 'foo', 'ts' => 3, 'value' => 1},
+      ])
+    end
+
+    it "works excluding end" do
+      subject.select({
+        where: {
+          id: @id,
+          ts: Range.new(1, 3, true),
+        }
+      }).should eq([
+        {'id' => 'foo', 'ts' => 1, 'value' => 1},
+        {'id' => 'foo', 'ts' => 2, 'value' => 1},
+      ])
+    end
+  end
+
   it "can insert data" do
     subject.insert({
       data: {

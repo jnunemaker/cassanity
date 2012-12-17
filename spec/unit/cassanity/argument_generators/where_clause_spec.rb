@@ -39,6 +39,32 @@ describe Cassanity::ArgumentGenerators::WhereClause do
       end
     end
 
+    context "with inclusive range value for a where" do
+      it "returns range comparison including end of range" do
+        subject.call({
+          where: {
+            timestamp: Range.new(1, 3)
+          },
+        }).should eq([
+          " WHERE timestamp >= ? AND timestamp <= ?",
+          1, 3
+        ])
+      end
+    end
+
+    context "with exclusive range value for a where" do
+      it "returns range comparison including end of range" do
+        subject.call({
+          where: {
+            timestamp: Range.new(1, 3, true)
+          },
+        }).should eq([
+          " WHERE timestamp >= ? AND timestamp < ?",
+          1, 3
+        ])
+      end
+    end
+
     context "with multiple where values" do
       it "returns array of arguments with AND separating where keys" do
         subject.call({
