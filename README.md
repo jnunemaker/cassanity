@@ -84,6 +84,14 @@ apps.truncate
 apps.drop
 ```
 
+You can also do a lot more. Here are a few more [examples](https://github.com/jnunemaker/cassanity/tree/master/examples):
+
+* [Batch Operations](https://github.com/jnunemaker/cassanity/tree/master/examples/batch.rb)
+* [Counters](https://github.com/jnunemaker/cassanity/tree/master/examples/counters.rb)
+* [Keyspaces](https://github.com/jnunemaker/cassanity/tree/master/examples/keyspaces.rb)
+* [Column Families](https://github.com/jnunemaker/cassanity/tree/master/examples/column_families.rb)
+* [Select a Range](https://github.com/jnunemaker/cassanity/tree/master/examples/select_range.rb)
+
 ## Compatibility
 
 * Ruby 1.9.3

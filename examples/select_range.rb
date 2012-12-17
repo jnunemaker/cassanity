@@ -1,0 +1,92 @@
+require_relative '_shared'
+require 'cassanity'
+
+client = CassandraCQL::Database.new('127.0.0.1:9160', {
+  cql_version: '3.0.0',
+})
+
+executor = Cassanity::Executors::CassandraCql.new({
+  client: client,
+  logger: Logger.new(STDOUT),
+})
+
+connection = Cassanity::Connection.new(executor: executor)
+keyspace = connection['cassanity_examples']
+keyspace.recreate
+
+rollups_schema = Cassanity::Schema.new({
+  primary_key: [:id, :timestamp],
+  columns: {
+    id: :text,
+    timestamp: :int,
+    value: :counter,
+  },
+})
+
+# get an instance of a column family, providing schema means it can create itself
+rollups = keyspace.column_family({
+  name: :rollups,
+  schema: rollups_schema,
+})
+
+# create column family based on schema
+rollups.create
+
+[
+  [1, rand(1_000)],
+  [2, rand(1_000)],
+  [3, rand(1_000)],
+  [4, rand(1_000)],
+  [5, rand(1_000)],
+].each do |pair|
+  timestamp, value = pair
+  rollups.update({
+    set: {value: Cassanity::Increment.new(value)},
+    where: {
+      id: :views,
+      timestamp: timestamp,
+    }
+  })
+end
+
+# returns timestamps 1, 2 and 3
+pp rollups.select({
+  where: {
+    id: :views,
+    timestamp: Range.new(1, 3),
+  }
+})
+
+# also works with exclusion of end ranges
+# returns 1 and 2
+pp rollups.select({
+  where: {
+    id: :views,
+    timestamp: Range.new(1, 3, true),
+  }
+})
+
+# also works with operators
+# returns 3, 4 and 5
+pp rollups.select({
+  where: {
+    id: :views,
+    timestamp: Cassanity::Operator.new('>', 2),
+  }
+})
+
+# returns 2, 3, 4 and 5
+pp rollups.select({
+  where: {
+    id: :views,
+    timestamp: Cassanity::Operator.new('>=', 2),
+  }
+})
+
+# returns 1
+pp rollups.select({
+  where: {
+    id: :views,
+    timestamp: Cassanity::Operator.new('<', 2),
+  }
+})
