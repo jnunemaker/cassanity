@@ -71,7 +71,7 @@ pp rollups.select({
 pp rollups.select({
   where: {
     id: :views,
-    timestamp: Cassanity::Operator.new('>', 2),
+    timestamp: Cassanity::Operator.new(:>, 2),
   }
 })
 
@@ -79,7 +79,17 @@ pp rollups.select({
 pp rollups.select({
   where: {
     id: :views,
-    timestamp: Cassanity::Operator.new('>=', 2),
+    timestamp: Cassanity::Operator.new(:>=, 2),
+  }
+})
+
+puts "\n\n ALL BELOW SHOULD RETURN 1 \n\n"
+
+# returns 1
+pp rollups.select({
+  where: {
+    id: :views,
+    timestamp: Cassanity::Operator.new(:<, 2),
   }
 })
 
@@ -87,6 +97,22 @@ pp rollups.select({
 pp rollups.select({
   where: {
     id: :views,
-    timestamp: Cassanity::Operator.new('<', 2),
+    timestamp: Cassanity::Operators::Lt.new(2),
+  }
+})
+
+# returns 1
+pp rollups.select({
+  where: {
+    id: :views,
+    timestamp: Cassanity::Operators::Lt(2),
+  }
+})
+
+# returns 1
+pp rollups.select({
+  where: {
+    id: :views,
+    timestamp: Cassanity.lt(2),
   }
 })
