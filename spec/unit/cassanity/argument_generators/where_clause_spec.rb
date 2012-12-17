@@ -79,5 +79,18 @@ describe Cassanity::ArgumentGenerators::WhereClause do
         ])
       end
     end
+
+    context "with a cassanity operator value" do
+      it "returns correct cql" do
+        subject.call({
+          where: {
+            timestamp: Cassanity::Operator.new('<', 10)
+          },
+        }).should eq([
+          " WHERE timestamp < ?",
+          10
+        ])
+      end
+    end
   end
 end

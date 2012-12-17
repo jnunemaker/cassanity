@@ -1,3 +1,5 @@
+require 'cassanity/operator'
+
 module Cassanity
   module ArgumentGenerators
     class WhereClause
@@ -22,6 +24,9 @@ module Cassanity
             wheres << "#{key} #{end_operator} ?"
             variables << start
             variables << finish
+          when Cassanity::Operator
+            wheres << "#{key} #{value.symbol} ?"
+            variables << value.value
           else
             wheres << "#{key} = ?"
             variables << value
