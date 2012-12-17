@@ -1,4 +1,8 @@
 module Cassanity
+  def self.Increment(*args)
+    Increment.new(*args)
+  end
+
   class Increment
     # Internal
     attr_reader :symbol
@@ -13,5 +17,11 @@ module Cassanity
       @symbol = :+
       @value = value
     end
+
+    def eql?(other)
+      self.class.eql?(other.class) && value == other.value
+    end
+
+    alias_method :==, :eql?
   end
 end

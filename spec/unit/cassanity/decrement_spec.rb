@@ -2,6 +2,12 @@ require 'helper'
 require 'cassanity/decrement'
 
 describe Cassanity::Decrement do
+  describe "self named helper method" do
+    it "returns instance" do
+      Cassanity::Decrement(5).should eq(described_class.new(5))
+    end
+  end
+
   describe "#initialize" do
     context "with value" do
       before do
@@ -30,5 +36,33 @@ describe Cassanity::Decrement do
         }.to raise_error(ArgumentError, "value cannot be nil")
       end
     end
+  end
+
+  shared_examples_for "decrement equality" do |method_name|
+    it "returns true for same class and value" do
+      instance = described_class.new(5)
+      other = described_class.new(5)
+      instance.send(method_name, other).should be_true
+    end
+
+    it "returns false for same class and different value" do
+      instance = described_class.new(5)
+      other = described_class.new(7)
+      instance.send(method_name, other).should be_false
+    end
+
+    it "returns false for different class" do
+      instance = described_class.new(5)
+      other = Object.new
+      instance.send(method_name, other).should be_false
+    end
+  end
+
+  describe "#eql?" do
+    include_examples "decrement equality", :eql?
+  end
+
+  describe "#==" do
+    include_examples "decrement equality", :==
   end
 end
