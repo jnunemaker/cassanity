@@ -26,6 +26,21 @@ describe Cassanity::ArgumentGenerators::WhereClause do
       end
     end
 
+    context "with multiple where values" do
+      it "returns array of arguments with AND separating where keys" do
+        subject.call({
+          where: {
+            bucket: '2012',
+            id: '1',
+          }
+        }).should eq([
+          " WHERE bucket = ? AND id = ?",
+          '2012',
+          '1',
+        ])
+      end
+    end
+
     context "with array value for a where" do
       it "returns array of arguments using IN for key with array value" do
         subject.call({
@@ -61,21 +76,6 @@ describe Cassanity::ArgumentGenerators::WhereClause do
         }).should eq([
           " WHERE timestamp >= ? AND timestamp < ?",
           1, 3
-        ])
-      end
-    end
-
-    context "with multiple where values" do
-      it "returns array of arguments with AND separating where keys" do
-        subject.call({
-          where: {
-            bucket: '2012',
-            id: '1',
-          }
-        }).should eq([
-          " WHERE bucket = ? AND id = ?",
-          '2012',
-          '1',
         ])
       end
     end
