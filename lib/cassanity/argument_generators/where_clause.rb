@@ -1,4 +1,9 @@
 require 'cassanity/operator'
+require 'cassanity/operators/eq'
+require 'cassanity/operators/gt'
+require 'cassanity/operators/gte'
+require 'cassanity/operators/lt'
+require 'cassanity/operators/lte'
 
 module Cassanity
   module ArgumentGenerators

@@ -92,5 +92,45 @@ describe Cassanity::ArgumentGenerators::WhereClause do
         ])
       end
     end
+
+    context "with a cassanity less than operator value" do
+      it "returns correct cql" do
+        subject.call({
+          where: {timestamp: Cassanity::Operators::Lt.new(10)},
+        }).should eq([" WHERE timestamp < ?", 10])
+      end
+    end
+
+    context "with a cassanity less than or equal to operator value" do
+      it "returns correct cql" do
+        subject.call({
+          where: {timestamp: Cassanity::Operators::Lte.new(10)},
+        }).should eq([" WHERE timestamp <= ?", 10])
+      end
+    end
+
+    context "with a cassanity greater than operator value" do
+      it "returns correct cql" do
+        subject.call({
+          where: {timestamp: Cassanity::Operators::Gt.new(10)},
+        }).should eq([" WHERE timestamp > ?", 10])
+      end
+    end
+
+    context "with a cassanity greater than or equal to operator value" do
+      it "returns correct cql" do
+        subject.call({
+          where: {timestamp: Cassanity::Operators::Gte.new(10)},
+        }).should eq([" WHERE timestamp >= ?", 10])
+      end
+    end
+
+    context "with a cassanity equal to operator value" do
+      it "returns correct cql" do
+        subject.call({
+          where: {timestamp: Cassanity::Operators::Eq.new(10)},
+        }).should eq([" WHERE timestamp = ?", 10])
+      end
+    end
   end
 end
