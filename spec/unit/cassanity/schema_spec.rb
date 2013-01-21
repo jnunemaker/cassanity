@@ -115,4 +115,10 @@ describe Cassanity::Schema do
       end
     end
   end
+
+  describe "#inspect" do
+    it "return representation" do
+      subject.inspect.should eq("#<Cassanity::Schema:#{subject.object_id} primary_keys=[:id], columns={:id=>:text, :name=>:text}, with={}>")
+    end
+  end
 end

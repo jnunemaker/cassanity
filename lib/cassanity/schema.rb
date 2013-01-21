@@ -59,5 +59,14 @@ module Cassanity
       shared_columns = column_names & @primary_keys
       shared_columns == @primary_keys
     end
+
+    def inspect
+      attributes = [
+        "primary_keys=#{primary_keys.inspect}",
+        "columns=#{columns.inspect}",
+        "with=#{with.inspect}",
+      ]
+      "#<#{self.class.name}:#{object_id} #{attributes.join(', ')}>"
+    end
   end
 end
