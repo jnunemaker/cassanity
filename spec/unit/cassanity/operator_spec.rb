@@ -2,6 +2,10 @@ require 'helper'
 require 'cassanity/operator'
 
 describe Cassanity::Operator do
+  subject {
+    described_class.new(:<, 5)
+  }
+
   describe "self named helper method" do
     it "returns instance" do
       Cassanity::Operator(:<, 5).should eq(described_class.new(:<, 5))
@@ -54,5 +58,11 @@ describe Cassanity::Operator do
 
   describe "#==" do
     include_examples "operator equality", :==
+  end
+
+  describe "#inspect" do
+    it "return representation" do
+      subject.inspect.should eq("#<Cassanity::Operator:#{subject.object_id} symbol=:<, value=5>")
+    end
   end
 end

@@ -23,5 +23,14 @@ module Cassanity
     end
 
     alias_method :==, :eql?
+
+    # Public
+    def inspect
+      attributes = [
+        "symbol=#{symbol.inspect}",
+        "value=#{value.inspect}",
+      ]
+      "#<#{self.class.name}:#{object_id} #{attributes.join(', ')}>"
+    end
   end
 end
