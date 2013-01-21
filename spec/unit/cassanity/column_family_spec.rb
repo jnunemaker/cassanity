@@ -280,6 +280,17 @@ describe Cassanity::ColumnFamily do
     end
   end
 
+  describe "#batch" do
+    it "sends command and arguments, including :name, to executor" do
+      args = {modifications: [[:insert, data: {id: '1', name: 'GitHub'}]]}
+      executor.should_receive(:call).with({
+        command: :batch,
+        arguments: args,
+      })
+      subject.batch(args)
+    end
+  end
+
   describe "#inspect" do
     it "return representation" do
       result = subject.inspect

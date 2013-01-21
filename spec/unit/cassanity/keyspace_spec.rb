@@ -273,6 +273,17 @@ describe Cassanity::Keyspace do
     end
   end
 
+  describe "#batch" do
+    it "sends command and arguments, including :name, to executor" do
+      args = {modifications: [[:insert, data: {id: '1', name: 'GitHub'}]]}
+      executor.should_receive(:call).with({
+        command: :batch,
+        arguments: args,
+      })
+      subject.batch(args)
+    end
+  end
+
   describe "#inspect" do
     it "return representation" do
       subject.inspect.should eq("#<Cassanity::Keyspace:#{subject.object_id} name=\"analytics\">")
