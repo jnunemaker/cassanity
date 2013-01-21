@@ -1,13 +1,9 @@
 require_relative '_shared'
 require 'cassanity'
 
-client = CassandraCQL::Database.new('127.0.0.1:9160', {
-  cql_version: '3.0.0',
-})
-executor = Cassanity::Executors::CassandraCql.new(client: client)
+client = Cassanity::Client.new('127.0.0.1:9160', logger: Logger.new(STDOUT))
 
-connection = Cassanity::Connection.new(executor: executor)
-keyspace = connection['cassanity_examples']
+keyspace = client['cassanity_examples']
 keyspace.recreate
 
 apps_schema = Cassanity::Schema.new({
@@ -65,5 +61,6 @@ begin
 
 # All errors inherit from Cassanity::Error so you can catch everything easily
 rescue Cassanity::Error => e
+  puts "\n\nError should be raised here."
   puts e.inspect
 end

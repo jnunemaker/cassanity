@@ -85,5 +85,4 @@ module Cassanity
   end
 end
 
-require 'cassanity/connection'
-require 'cassanity/executors/cassandra_cql'
+require 'cassanity/client'
