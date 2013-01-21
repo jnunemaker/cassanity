@@ -34,6 +34,14 @@ module Cassanity
           command_name, command_arguments = modification
           command = @commands.fetch(command_name)
 
+          if args[:column_family_name]
+            command_arguments[:name] ||= args[:column_family_name]
+          end
+
+          if args[:keyspace_name]
+            command_arguments[:keyspace_name] ||= args[:keyspace_name]
+          end
+
           modification_cql, *modification_variables = command.call(command_arguments)
           modifications << modification_cql
           variables.concat(modification_variables)
