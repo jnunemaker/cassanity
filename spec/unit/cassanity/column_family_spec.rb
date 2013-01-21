@@ -281,12 +281,20 @@ describe Cassanity::ColumnFamily do
   end
 
   describe "#batch" do
-    it "sends command and arguments, including :name, to executor" do
-      args = {modifications: [[:insert, data: {id: '1', name: 'GitHub'}]]}
+    it "sends command and arguments, including :column_fmaily_name, to executor" do
+      args = {
+        keyspace_name: keyspace_name,
+        column_family_name: subject.name,
+        modifications: [
+          [:insert, data: {id: '1', name: 'GitHub'}],
+        ],
+      }
+
       executor.should_receive(:call).with({
         command: :batch,
         arguments: args,
       })
+
       subject.batch(args)
     end
   end

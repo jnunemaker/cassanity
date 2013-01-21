@@ -266,9 +266,14 @@ module Cassanity
     #
     # Returns whatever is returned by executor.
     def batch(args = {})
+      default_arguments = {
+        keyspace_name: @keyspace.name,
+        column_family_name: @name,
+      }
+
       @executor.call({
         command: :batch,
-        arguments: args,
+        arguments: default_arguments.merge(args),
       })
     end
 

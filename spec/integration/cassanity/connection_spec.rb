@@ -36,17 +36,14 @@ describe Cassanity::Connection do
     client_create_keyspace(client, keyspace_name)
     client_create_column_family(client, column_family_name, "id text PRIMARY KEY, name text")
 
-    default_arguments = {
-      keyspace_name: keyspace_name,
-      name: column_family_name,
-    }
-
     subject.batch({
+      keyspace_name: keyspace_name,
+      column_family_name: column_family_name,
       :modifications => [
-        [:insert, default_arguments.merge(data: {id: '1', name: 'github'})],
-        [:insert, default_arguments.merge(data: {id: '2', name: 'gist'})],
-        [:update, default_arguments.merge(set: {name: 'github.com'}, where: {id: '1'})],
-        [:delete, default_arguments.merge(where: {id: '2'})],
+        [:insert, data: {id: '1', name: 'github'}],
+        [:insert, data: {id: '2', name: 'gist'}],
+        [:update, set: {name: 'github.com'}, where: {id: '1'}],
+        [:delete, where: {id: '2'}],
       ]
     })
 

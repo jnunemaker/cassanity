@@ -274,8 +274,13 @@ describe Cassanity::Keyspace do
   end
 
   describe "#batch" do
-    it "sends command and arguments, including :name, to executor" do
-      args = {modifications: [[:insert, data: {id: '1', name: 'GitHub'}]]}
+    it "sends command and arguments, including :keyspace_name, to executor" do
+      args = {
+        keyspace_name: subject.name,
+        modifications: [
+          [:insert, data: {id: '1', name: 'GitHub'}],
+        ]
+      }
       executor.should_receive(:call).with({
         command: :batch,
         arguments: args,

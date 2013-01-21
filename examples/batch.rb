@@ -16,19 +16,15 @@ apps_schema = Cassanity::Schema.new({
 apps = keyspace.column_family('apps', schema: apps_schema)
 apps.create
 
-# passing in keyspace and column family names by default
-default_arguments = {
-  keyspace_name: keyspace.name,
-  name: apps.name,
-}
-
 # batch several operations in one network call
 client.batch({
+  keyspace_name: keyspace.name,
+  column_family_name: apps.name,
   modifications: [
-    [:insert, default_arguments.merge(data: {id: '1', name: 'github'})],
-    [:insert, default_arguments.merge(data: {id: '2', name: 'gist'})],
-    [:update, default_arguments.merge(set: {name: 'github.com'}, where: {id: '1'})],
-    [:delete, default_arguments.merge(where: {id: '2'})],
+    [:insert, data: {id: '1', name: 'github'}],
+    [:insert, data: {id: '2', name: 'gist'}],
+    [:update, set: {name: 'github.com'}, where: {id: '1'}],
+    [:delete, where: {id: '2'}],
   ],
 })
 
