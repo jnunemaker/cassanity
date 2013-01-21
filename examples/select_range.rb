@@ -1,17 +1,9 @@
 require_relative '_shared'
 require 'cassanity'
 
-client = CassandraCQL::Database.new('127.0.0.1:9160', {
-  cql_version: '3.0.0',
-})
+client = Cassanity::Client.new('127.0.0.1:9160', logger: Logger.new(STDOUT))
 
-executor = Cassanity::Executors::CassandraCql.new({
-  client: client,
-  logger: Logger.new(STDOUT),
-})
-
-connection = Cassanity::Connection.new(executor: executor)
-keyspace = connection['cassanity_examples']
+keyspace = client['cassanity_examples']
 keyspace.recreate
 
 rollups_schema = Cassanity::Schema.new({
