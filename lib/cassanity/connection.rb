@@ -73,5 +73,13 @@ module Cassanity
     end
 
     alias_method :[], :keyspace
+
+    # Public
+    def inspect
+      attributes = [
+        "executor=#{@executor.inspect}",
+      ]
+      "#<#{self.class.name}:#{object_id} #{attributes.join(', ')}>"
+    end
   end
 end

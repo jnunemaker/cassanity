@@ -279,4 +279,15 @@ describe Cassanity::ColumnFamily do
       subject.delete(args)
     end
   end
+
+  describe "#inspect" do
+    it "return representation" do
+      result = subject.inspect
+      result.should match(/#{described_class}/)
+      result.should match(/name=/)
+      result.should match(/keyspace=/)
+      result.should match(/executor=/)
+      result.should match(/schema=/)
+    end
+  end
 end

@@ -272,4 +272,10 @@ describe Cassanity::Keyspace do
       subject.drop(args)
     end
   end
+
+  describe "#inspect" do
+    it "return representation" do
+      subject.inspect.should eq("#<Cassanity::Keyspace:#{subject.object_id} name=\"analytics\">")
+    end
+  end
 end

@@ -146,4 +146,14 @@ describe Cassanity::Client do
       client.batch(modifications)
     end
   end
+
+  describe "#inspect" do
+    it "return representation" do
+      result = subject.inspect
+      result.should match(/#{described_class}/)
+      result.should match(/driver=/)
+      result.should match(/executor=/)
+      result.should match(/connection=/)
+    end
+  end
 end

@@ -214,4 +214,13 @@ describe Cassanity::Executors::CassandraCql do
       end
     end
   end
+
+  describe "#inspect" do
+    it "return representation" do
+      result = subject.inspect
+      result.should match(/#{described_class}/)
+      result.should match(/client=/)
+      result.should match(/logger=/)
+    end
+  end
 end

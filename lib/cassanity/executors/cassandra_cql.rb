@@ -125,6 +125,15 @@ module Cassanity
       rescue Exception => e
         raise Cassanity::Error
       end
+
+      # Public
+      def inspect
+        attributes = [
+          "client=#{@client.inspect}",
+          "logger=#{@logger.inspect}",
+        ]
+        "#<#{self.class.name}:#{object_id} #{attributes.join(', ')}>"
+      end
     end
   end
 end

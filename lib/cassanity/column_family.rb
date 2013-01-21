@@ -252,5 +252,16 @@ module Cassanity
     def schema
       @schema || raise(Cassanity::Error.new(message: "No schema found to create #{@name} column family. Please set :schema during initialization or include it as a key in #create call."))
     end
+
+    # Public
+    def inspect
+      attributes = [
+        "name=#{@name.inspect}",
+        "keyspace=#{@keyspace.inspect}",
+        "executor=#{@executor.inspect}",
+        "schema=#{@schema.inspect}",
+      ]
+      "#<#{self.class.name}:#{object_id} #{attributes.join(', ')}>"
+    end
   end
 end

@@ -152,5 +152,13 @@ module Cassanity
     end
     alias_method :table, :column_family
     alias_method :[], :column_family
+
+    # Public
+    def inspect
+      attributes = [
+        "name=#{@name.inspect}",
+      ]
+      "#<#{self.class.name}:#{object_id} #{attributes.join(', ')}>"
+    end
   end
 end

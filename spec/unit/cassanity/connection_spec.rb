@@ -125,4 +125,12 @@ describe Cassanity::Connection do
       @return_value.should be_instance_of(Cassanity::Keyspace)
     end
   end
+
+  describe "#inspect" do
+    it "return representation" do
+      result = subject.inspect
+      result.should match(/#{described_class}/)
+      result.should match(/executor=/)
+    end
+  end
 end

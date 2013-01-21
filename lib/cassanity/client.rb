@@ -51,5 +51,15 @@ module Cassanity
     ]
 
     def_delegators :@connection, *DelegateToConnectionMethods
+
+    # Public
+    def inspect
+      attributes = [
+        "driver=#{driver.inspect}",
+        "executor=#{executor.inspect}",
+        "connection=#{connection.inspect}",
+      ]
+      "#<#{self.class.name}:#{object_id} #{attributes.join(', ')}>"
+    end
   end
 end
