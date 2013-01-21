@@ -29,6 +29,8 @@ client = Cassanity::Client.new
 keyspace = client[:my_app]
 
 # tell client to use keyspace for future queries
+# this is optional as cassanity always sends the keyspace and column family name
+# whenever they are needed
 keyspace.use
 
 # schema for apps column family
