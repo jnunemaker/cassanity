@@ -1,23 +1,18 @@
 require_relative '_shared'
 require 'cassanity'
 
-client = CassandraCQL::Database.new('127.0.0.1:9160', {
-  cql_version: '3.0.0',
-})
-executor = Cassanity::Executors::CassandraCql.new(client: client)
-
-connection = Cassanity::Connection.new(executor: executor)
+client = Cassanity::Client.new('127.0.0.1:9160', logger: Logger.new(STDOUT))
 
 # gets instance of keyspace
-keyspace = connection['cassanity_examples']
+keyspace = client['cassanity_examples']
 
 # or you can do this...
-keyspace = connection.keyspace('cassanity_examples')
+keyspace = client.keyspace('cassanity_examples')
 
 pp keyspace
 
 # you can also provide options
-keyspace = connection.keyspace('cassanity_examples', {
+keyspace = client.keyspace('cassanity_examples', {
   strategy_class: 'SimpleStrategy',
   strategy_options: {
     replication_factor: 1,

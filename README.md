@@ -21,23 +21,12 @@ Or install it yourself as:
 ```ruby
 require 'cassanity'
 
-# cassandra-cql connection
-client = CassandraCQL::Database.new('127.0.0.1:9160', {
-  cql_version: '3.0.0',
-})
-
-# what is going to execute the cql queries?
-executor = Cassanity::Executors::CassandraCql.new({
-  client: client,
-})
-
-# setup connection with something that can execute queries
-connection = Cassanity::Connection.new({
-  executor: executor,
-})
+# client does the heavy lifting of setting up a cassandra cql database instance,
+# a cassanity executor for that database, and a cassanity connection
+client = Cassanity::Client.new
 
 # get keyspace instance
-keyspace = connection[:my_app]
+keyspace = client[:my_app]
 
 # tell client to use keyspace for future queries
 keyspace.use

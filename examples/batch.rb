@@ -1,14 +1,8 @@
 require_relative '_shared'
 require 'cassanity'
 
-client = CassandraCQL::Database.new('127.0.0.1:9160', {
-  cql_version: '3.0.0',
-})
-
-executor = Cassanity::Executors::CassandraCql.new(client: client)
-
-connection = Cassanity::Connection.new(executor: executor)
-keyspace = connection['cassanity_examples']
+client = Cassanity::Client.new('127.0.0.1:9160', logger: Logger.new(STDOUT))
+keyspace = client['cassanity_examples']
 keyspace.recreate
 
 # setting up the apps column family
@@ -29,7 +23,7 @@ default_arguments = {
 }
 
 # batch several operations in one network call
-connection.batch({
+client.batch({
   modifications: [
     [:insert, default_arguments.merge(data: {id: '1', name: 'github'})],
     [:insert, default_arguments.merge(data: {id: '2', name: 'gist'})],
