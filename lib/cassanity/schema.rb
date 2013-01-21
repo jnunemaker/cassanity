@@ -60,6 +60,7 @@ module Cassanity
       shared_columns == @primary_keys
     end
 
+    # Public
     def inspect
       attributes = [
         "primary_keys=#{primary_keys.inspect}",
