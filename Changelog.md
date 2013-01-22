@@ -2,6 +2,16 @@
 
 Not all changes will be here, but the important ones will be for sure.
 
+## 0.4.0
+
+* Added Cassanity::Client to make setup easier ([pull request](https://github.com/jnunemaker/cassanity/pull/8))
+* Added easy instrumenting of CQL calls and a log subscriber ([pull request](https://github.com/jnunemaker/cassanity/pull/9))
+* Added prettier inspecting of all the things
+* Added #batch to Keyspace and ColumnFamily [commit](https://github.com/jnunemaker/cassanity/commit/1a6393b)
+* Allow setting default keyspace and column family names when performing a batch
+* Added Cassanity::Range and Cassanity.range shortcuts for range queries. [commit](5834d9e)
+* Allow passing hash as schema instead of forcing Cassanity::Schema instance
+
 ## 0.3.0
 
 * Changed [update counter value API](https://github.com/jnunemaker/cassanity/commit/a0f5a76)
