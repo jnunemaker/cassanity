@@ -1,5 +1,6 @@
 require 'helper'
 require 'cassanity/executors/cassandra_cql'
+require 'cassanity/instrumenters/memory'
 
 describe Cassanity::Executors::CassandraCql do
   let(:client) { double('Client', :execute => nil) }
@@ -42,6 +43,10 @@ describe Cassanity::Executors::CassandraCql do
 
     it "defaults :result_transformers" do
       subject.result_transformers.should eq(described_class::ResultTransformers)
+    end
+
+    it "defaults :instrumentor" do
+      subject.instrumentor.should eq(Cassanity::Instrumenters::Noop)
     end
 
     it "allows overriding :argument_generators" do
@@ -106,29 +111,17 @@ describe Cassanity::Executors::CassandraCql do
         subject.call(args)
       end
 
-      context "with logger" do
-        let(:logger) {
-          Class.new do
-            attr_reader :logs
-
-            def initialize
-              @logs = []
-            end
-
-            def debug
-              @logs << {debug: yield}
-            end
-          end.new
-        }
+      context "with instrumentor" do
+        let(:instrumentor) { Cassanity::Instrumenters::Memory.new }
 
         subject {
           described_class.new(required_arguments.merge({
             argument_generators: argument_generators,
-            logger: logger,
+            instrumentor: instrumentor,
           }))
         }
 
-        it "logs executed arguments" do
+        it "instruments executed arguments" do
           args = {
             command: :foo,
             arguments: {
@@ -138,9 +131,17 @@ describe Cassanity::Executors::CassandraCql do
 
           subject.call(args)
 
-          logger.logs.should eq([
-            {debug: 'Cassanity::Executors::CassandraCql executing ["mapped", {:something=>"else"}]'},
-          ])
+          event = instrumentor.events.last
+          event.should_not be_nil
+          event.name.should eq('call.cassandra_cql.executor.cassanity')
+          event.payload.should eq({
+            command: :foo,
+            generator: argument_generators[:foo],
+            arguments: {something: 'else'},
+            execute_arguments: ['mapped', {something: 'else'}],
+            transformer: Cassanity::Executors::CassandraCql::Mirror,
+            result: nil,
+          })
         end
       end
 
@@ -220,7 +221,6 @@ describe Cassanity::Executors::CassandraCql do
       result = subject.inspect
       result.should match(/#{described_class}/)
       result.should match(/client=/)
-      result.should match(/logger=/)
     end
   end
 end

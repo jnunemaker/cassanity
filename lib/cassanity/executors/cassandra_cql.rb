@@ -1,5 +1,7 @@
+require 'forwardable'
 require 'cassandra-cql'
 require 'cassanity/error'
+require 'cassanity/instrumenters/noop'
 require 'cassanity/argument_generators/keyspaces'
 require 'cassanity/argument_generators/keyspace_create'
 require 'cassanity/argument_generators/keyspace_drop'
@@ -22,6 +24,7 @@ require 'cassanity/result_transformers/mirror'
 module Cassanity
   module Executors
     class CassandraCql
+      extend Forwardable
 
       # Private: Hash of commands to related argument generators.
       ArgumentGenerators = {
@@ -53,6 +56,9 @@ module Cassanity
       # Private: Default result transformer for commands that do not have one.
       Mirror = Cassanity::ResultTransformers::Mirror.new
 
+      # Private: Forward #instrument to instrumentor.
+      def_delegator :@instrumentor, :instrument
+
       # Private
       attr_reader :client
 
@@ -62,11 +68,13 @@ module Cassanity
       # Private
       attr_reader :result_transformers
 
+      # Private: What should be used to instrument all the things.
+      attr_reader :instrumentor
+
       # Internal: Initializes a cassandra-cql based CQL executor.
       #
       # args - The Hash of arguments.
       #        :client - The CassandraCQL::Database connection instance.
-      #        :logger - What to use to log the cql and such being executed.
       #        :argument_generators - A Hash where each key is a command name
       #                               and each value is the related argument
       #                               generator that responds to `call`
@@ -83,7 +91,7 @@ module Cassanity
       #
       def initialize(args = {})
         @client = args.fetch(:client)
-        @logger = args[:logger]
+        @instrumentor = args.fetch(:instrumentor) { Instrumenters::Noop }
         @argument_generators = args.fetch(:argument_generators) { ArgumentGenerators }
         @result_transformers = args.fetch(:result_transformers) { ResultTransformers }
       end
@@ -108,18 +116,26 @@ module Cassanity
       # Returns the result of execution.
       # Raises Cassanity::Error if anything goes wrong during execution.
       def call(args = {})
-        command = args.fetch(:command)
-        generator = @argument_generators.fetch(command)
-        execute_arguments = generator.call(args[:arguments])
+        instrument('call.cassandra_cql.executor.cassanity', {}) do |payload|
+          command = args.fetch(:command)
+          generator = @argument_generators.fetch(command)
+          arguments = args[:arguments]
+          execute_arguments = generator.call(arguments)
 
-        if @logger
-          @logger.debug { "#{self.class} executing #{execute_arguments.inspect}" }
+          result = @client.execute(*execute_arguments)
+
+          transformer = @result_transformers.fetch(command) { Mirror }
+          transformed_result = transformer.call(result)
+
+          payload[:command] = command
+          payload[:generator] = generator
+          payload[:arguments] = arguments
+          payload[:execute_arguments] = execute_arguments
+          payload[:result] = result
+          payload[:transformer] = transformer
+
+          transformed_result
         end
-
-        result = @client.execute(*execute_arguments)
-
-        transformer = @result_transformers.fetch(command) { Mirror }
-        transformer.call(result)
       rescue KeyError
         raise Cassanity::UnknownCommand
       rescue Exception => e
@@ -130,7 +146,6 @@ module Cassanity
       def inspect
         attributes = [
           "client=#{@client.inspect}",
-          "logger=#{@logger.inspect}",
         ]
         "#<#{self.class.name}:#{object_id} #{attributes.join(', ')}>"
       end
