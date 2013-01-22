@@ -1,49 +1,30 @@
 require 'helper'
 require 'cassanity/keyspace'
-require 'cassanity/executors/cassandra_cql'
 
 describe Cassanity::ColumnFamily do
   let(:keyspace_name)               { 'cassanity_test' }
   let(:column_family_name)          { 'apps' }
   let(:counters_column_family_name) { 'counters' }
 
-  let(:client) {
-    CassandraCQL::Database.new('127.0.0.1:9160', {
-      cql_version: '3.0.0',
-    })
-  }
+  let(:client) { Cassanity::Client.new }
+  let(:driver) { client.driver }
 
-  let(:keyspace) {
-    Cassanity::Keyspace.new({
-      name: keyspace_name,
-      executor: executor,
-    })
-  }
-
-  let(:executor) {
-    Cassanity::Executors::CassandraCql.new({
-      client: client,
-    })
-  }
-
-  let(:schema) {
-    Cassanity::Schema.new({
-      primary_key: :id,
-      columns: {
-        id: :timeuuid,
-        name: :text,
-      },
-      with: {
-        comment: 'For storing things',
-      }
-    })
-  }
+  let(:keyspace) { client[keyspace_name] }
 
   let(:arguments) {
     {
       keyspace: keyspace,
       name: column_family_name,
-      schema: schema,
+      schema: {
+        primary_key: :id,
+        columns: {
+          id: :timeuuid,
+          name: :text,
+        },
+        with: {
+          comment: 'For storing things',
+        }
+      },
     }
   }
 
@@ -52,40 +33,40 @@ describe Cassanity::ColumnFamily do
   }
 
   before do
-    client_drop_keyspace(client, keyspace_name)
-    client_create_keyspace(client, keyspace_name)
-    client_create_column_family(client, column_family_name, "id text PRIMARY KEY, name text")
-    client_create_column_family(client, counters_column_family_name, "id text PRIMARY KEY, views counter")
+    client_drop_keyspace(driver, keyspace_name)
+    client_create_keyspace(driver, keyspace_name)
+    client_create_column_family(driver, column_family_name, "id text PRIMARY KEY, name text")
+    client_create_column_family(driver, counters_column_family_name, "id text PRIMARY KEY, views counter")
   end
 
   after do
-    client_drop_keyspace(client, keyspace_name)
+    client_drop_keyspace(driver, keyspace_name)
   end
 
   it "knows if it exists" do
     subject.exists?.should be_true
-    client_drop_column_family(client, column_family_name)
+    client_drop_column_family(driver, column_family_name)
     subject.exists?.should be_false
   end
 
   it "can recreate when not created" do
-    client_drop_column_family(client, column_family_name)
-    client_column_family?(client, column_family_name).should be_false
+    client_drop_column_family(driver, column_family_name)
+    client_column_family?(driver, column_family_name).should be_false
     subject.recreate
-    client_column_family?(client, column_family_name).should be_true
+    client_column_family?(driver, column_family_name).should be_true
   end
 
   it "can recreate when already created" do
-    client_column_family?(client, column_family_name).should be_true
+    client_column_family?(driver, column_family_name).should be_true
     subject.recreate
-    client_column_family?(client, column_family_name).should be_true
+    client_column_family?(driver, column_family_name).should be_true
   end
 
   it "can create itself" do
     column_family = described_class.new(arguments.merge(name: 'people'))
     column_family.create
 
-    apps_column_family = client.schema.column_families.fetch(column_family.name)
+    apps_column_family = driver.schema.column_families.fetch(column_family.name)
     apps_column_family.comment.should eq('For storing things')
 
     columns = apps_column_family.columns
@@ -96,53 +77,53 @@ describe Cassanity::ColumnFamily do
   end
 
   it "can truncate" do
-    client.execute("INSERT INTO #{column_family_name} (id, name) VALUES (?, ?)", '1', 'github')
-    client.execute("INSERT INTO #{column_family_name} (id, name) VALUES (?, ?)", '2', 'gist')
-    result = client.execute("SELECT * FROM #{column_family_name}")
+    driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES (?, ?)", '1', 'github')
+    driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES (?, ?)", '2', 'gist')
+    result = driver.execute("SELECT * FROM #{column_family_name}")
     result.rows.should eq(2)
 
     subject.truncate
 
-    result = client.execute("SELECT * FROM #{column_family_name}")
+    result = driver.execute("SELECT * FROM #{column_family_name}")
     result.rows.should eq(0)
   end
 
   it "can drop" do
-    client_column_family?(client, column_family_name).should be_true
+    client_column_family?(driver, column_family_name).should be_true
     subject.drop
-    client_column_family?(client, column_family_name).should be_false
+    client_column_family?(driver, column_family_name).should be_false
   end
 
   it "can drop when using a different keyspace" do
-    client_column_family?(client, column_family_name).should be_true
-    client.execute('USE system')
+    client_column_family?(driver, column_family_name).should be_true
+    driver.execute('USE system')
     subject.drop
-    client_column_family?(client, column_family_name).should be_false
+    client_column_family?(driver, column_family_name).should be_false
   end
 
   it "can alter" do
     subject.alter(add: {created_at: :timestamp})
 
-    apps_column_family = client.schema.column_families.fetch(column_family_name)
+    apps_column_family = driver.schema.column_families.fetch(column_family_name)
     columns = apps_column_family.columns
     columns.should have_key('created_at')
     columns['created_at'].should eq('org.apache.cassandra.db.marshal.DateType')
 
     subject.alter(alter: {created_at: :timeuuid})
 
-    apps_column_family = client.schema.column_families.fetch(column_family_name)
+    apps_column_family = driver.schema.column_families.fetch(column_family_name)
     columns = apps_column_family.columns
     columns.should have_key('created_at')
     columns['created_at'].should eq('org.apache.cassandra.db.marshal.TimeUUIDType')
 
     subject.alter(drop: :created_at)
 
-    apps_column_family = client.schema.column_families.fetch(column_family_name)
+    apps_column_family = driver.schema.column_families.fetch(column_family_name)
     columns = apps_column_family.columns
     columns.should_not have_key('created_at')
 
     subject.alter(with: {comment: 'Some new comment'})
-    apps_column_family = client.schema.column_families.fetch(column_family_name)
+    apps_column_family = driver.schema.column_families.fetch(column_family_name)
     apps_column_family.comment.should eq('Some new comment')
   end
 
@@ -152,7 +133,7 @@ describe Cassanity::ColumnFamily do
       column_name: :name,
     })
 
-    apps = client.schema.column_families['apps']
+    apps = driver.schema.column_families['apps']
     apps_meta = apps.column_metadata
     index = apps_meta.detect { |c| c.index_name == 'apps_name_index' }
     index.should_not be_nil
@@ -161,15 +142,15 @@ describe Cassanity::ColumnFamily do
       name: :apps_name_index,
     })
 
-    apps = client.schema.column_families['apps']
+    apps = driver.schema.column_families['apps']
     apps_meta = apps.column_metadata
     index = apps_meta.detect { |c| c.index_name == 'apps_name_index' }
     index.should be_nil
   end
 
   it "can select data" do
-    client.execute("INSERT INTO #{column_family_name} (id, name) VALUES (?, ?)", '1', 'github')
-    client.execute("INSERT INTO #{column_family_name} (id, name) VALUES (?, ?)", '2', 'gist')
+    driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES (?, ?)", '1', 'github')
+    driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES (?, ?)", '2', 'gist')
     result = subject.select({
       select: :name,
       where: {
@@ -192,12 +173,12 @@ describe Cassanity::ColumnFamily do
     }
 
     before do
-      client.execute("CREATE COLUMNFAMILY #{name} (id text, ts int, value counter, PRIMARY KEY(id, ts))")
+      driver.execute("CREATE COLUMNFAMILY #{name} (id text, ts int, value counter, PRIMARY KEY(id, ts))")
       @id = 'foo'
-      client.execute("UPDATE #{name} SET value = value + 1 WHERE id = ? AND ts = ?", @id, 1)
-      client.execute("UPDATE #{name} SET value = value + 1 WHERE id = ? AND ts = ?", @id, 2)
-      client.execute("UPDATE #{name} SET value = value + 1 WHERE id = ? AND ts = ?", @id, 3)
-      client.execute("UPDATE #{name} SET value = value + 1 WHERE id = ? AND ts = ?", @id, 4)
+      driver.execute("UPDATE #{name} SET value = value + 1 WHERE id = ? AND ts = ?", @id, 1)
+      driver.execute("UPDATE #{name} SET value = value + 1 WHERE id = ? AND ts = ?", @id, 2)
+      driver.execute("UPDATE #{name} SET value = value + 1 WHERE id = ? AND ts = ?", @id, 3)
+      driver.execute("UPDATE #{name} SET value = value + 1 WHERE id = ? AND ts = ?", @id, 4)
     end
 
     it "works including end" do
@@ -234,7 +215,7 @@ describe Cassanity::ColumnFamily do
       },
     })
 
-    result = client.execute("SELECT * FROM #{column_family_name}")
+    result = driver.execute("SELECT * FROM #{column_family_name}")
     result.rows.should eq(1)
     row = result.fetch_hash
     row['id'].should eq('1')
@@ -242,22 +223,22 @@ describe Cassanity::ColumnFamily do
   end
 
   it "can update data" do
-    client.execute("INSERT INTO #{column_family_name} (id, name) VALUES (?, ?)", '1', 'github')
-    client.execute("INSERT INTO #{column_family_name} (id, name) VALUES (?, ?)", '2', 'gist')
+    driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES (?, ?)", '1', 'github')
+    driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES (?, ?)", '2', 'gist')
 
     subject.update({
       set: {name: 'New Name'},
       where: {id: '1'},
     })
 
-    result = client.execute("SELECT * FROM #{column_family_name} WHERE id = '1'")
+    result = driver.execute("SELECT * FROM #{column_family_name} WHERE id = '1'")
     result.rows.should eq(1)
     row = result.fetch_hash
     row['id'].should eq('1')
     row['name'].should eq('New Name')
 
     # does not update other rows
-    result = client.execute("SELECT * FROM #{column_family_name} WHERE id = '2'")
+    result = driver.execute("SELECT * FROM #{column_family_name} WHERE id = '2'")
     result.rows.should eq(1)
     row = result.fetch_hash
     row['id'].should eq('2')
@@ -278,7 +259,7 @@ describe Cassanity::ColumnFamily do
         where: {id: '1'},
       })
 
-      result = client.execute("SELECT * FROM #{counters_column_family_name} WHERE id = '1'")
+      result = driver.execute("SELECT * FROM #{counters_column_family_name} WHERE id = '1'")
       result.rows.should eq(1)
       row = result.fetch_hash
       row['id'].should eq('1')
@@ -300,7 +281,7 @@ describe Cassanity::ColumnFamily do
         where: {id: '1'},
       })
 
-      result = client.execute("SELECT * FROM #{counters_column_family_name} WHERE id = '1'")
+      result = driver.execute("SELECT * FROM #{counters_column_family_name} WHERE id = '1'")
       result.rows.should eq(1)
       row = result.fetch_hash
       row['id'].should eq('1')
@@ -309,21 +290,21 @@ describe Cassanity::ColumnFamily do
   end
 
   it "can delete data" do
-    client.execute("INSERT INTO #{column_family_name} (id, name) VALUES (?, ?)", '1', 'github')
-    client.execute("INSERT INTO #{column_family_name} (id, name) VALUES (?, ?)", '2', 'gist')
+    driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES (?, ?)", '1', 'github')
+    driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES (?, ?)", '2', 'gist')
 
-    result = client.execute("SELECT * FROM #{column_family_name}")
+    result = driver.execute("SELECT * FROM #{column_family_name}")
     result.rows.should eq(2)
 
     subject.delete({
       where: {id: '1'},
     })
 
-    result = client.execute("SELECT * FROM #{column_family_name} WHERE id = '1'")
+    result = driver.execute("SELECT * FROM #{column_family_name} WHERE id = '1'")
     result.rows.should eq(0)
 
     # does not delete other rows
-    result = client.execute("SELECT * FROM #{column_family_name} WHERE id = '2'")
+    result = driver.execute("SELECT * FROM #{column_family_name} WHERE id = '2'")
     result.rows.should eq(1)
   end
 end

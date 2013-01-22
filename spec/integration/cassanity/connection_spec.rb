@@ -6,35 +6,22 @@ describe Cassanity::Connection do
   let(:keyspace_name)      { 'cassanity_test' }
   let(:column_family_name) { 'apps' }
 
-  let(:client) {
-    CassandraCQL::Database.new('127.0.0.1:9160', {
-      cql_version: '3.0.0',
-    })
-  }
+  let(:client) { Cassanity::Client.new }
+  let(:driver) { client.driver }
 
-  let(:executor) {
-    Cassanity::Executors::CassandraCql.new({
-      client: client,
-    })
-  }
-
-  subject {
-    described_class.new({
-      executor: executor,
-    })
-  }
+  subject { client.connection }
 
   before do
-    client_drop_keyspace(client, keyspace_name)
+    client_drop_keyspace(driver, keyspace_name)
   end
 
   after do
-    client_drop_keyspace(client, keyspace_name)
+    client_drop_keyspace(driver, keyspace_name)
   end
 
   it "can batch" do
-    client_create_keyspace(client, keyspace_name)
-    client_create_column_family(client, column_family_name, "id text PRIMARY KEY, name text")
+    client_create_keyspace(driver, keyspace_name)
+    client_create_column_family(driver, column_family_name, "id text PRIMARY KEY, name text")
 
     subject.batch({
       keyspace_name: keyspace_name,
@@ -47,7 +34,7 @@ describe Cassanity::Connection do
       ]
     })
 
-    result = client.execute("SELECT * FROM apps")
+    result = driver.execute("SELECT * FROM apps")
     result.rows.should be(1)
 
     rows = []
@@ -59,8 +46,8 @@ describe Cassanity::Connection do
   end
 
   it "knows keyspaces" do
-    client_create_keyspace(client, 'something1')
-    client_create_keyspace(client, 'something2')
+    client_create_keyspace(driver, 'something1')
+    client_create_keyspace(driver, 'something2')
 
     result = subject.keyspaces
     result.each do |keyspace|
@@ -72,7 +59,7 @@ describe Cassanity::Connection do
     names.should include('something1')
     names.should include('something2')
 
-    client_drop_keyspace(client, 'something1')
-    client_drop_keyspace(client, 'something2')
+    client_drop_keyspace(driver, 'something1')
+    client_drop_keyspace(driver, 'something2')
   end
 end
