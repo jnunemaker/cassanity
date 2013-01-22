@@ -1,10 +1,9 @@
-require 'logger'
 require 'securerandom'
 require 'active_support/notifications'
 require 'active_support/log_subscriber'
 
 module Cassanity
-  module ExampleInstrumentation
+  module Instrumentation
     class LogSubscriber < ::ActiveSupport::LogSubscriber
       def cql(event)
         return unless logger.debug?
@@ -21,6 +20,4 @@ module Cassanity
   end
 end
 
-ActiveSupport::LogSubscriber.logger = Logger.new(STDOUT)
-
-Cassanity::ExampleInstrumentation::LogSubscriber.attach_to :cassanity
+Cassanity::Instrumentation::LogSubscriber.attach_to :cassanity
