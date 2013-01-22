@@ -27,7 +27,13 @@ module Cassanity
       @name = args.fetch(:name)
       @keyspace = args.fetch(:keyspace)
       @executor = args.fetch(:executor) { @keyspace.executor }
-      @schema = args[:schema]
+
+      schema = args[:schema]
+      @schema = if schema.is_a?(Hash)
+        Cassanity::Schema.new(schema)
+      else
+        schema
+      end
     end
 
     # Public: Returns true or false depending on if column family exists in

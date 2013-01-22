@@ -50,6 +50,21 @@ describe Cassanity::ColumnFamily do
       instance.schema.should eq(schema)
     end
 
+    it "wraps schema if schema is hash" do
+      schema = {
+        primary_key: :id,
+        columns: {
+          id: :text,
+          name: :text,
+        }
+      }
+
+      instance = described_class.new(required_arguments.merge({
+        schema: schema,
+      }))
+      instance.schema.should eq(Cassanity::Schema.new(schema))
+    end
+
     it "allows overriding executor" do
       other_executor = lambda { |args| }
       column_family = described_class.new(required_arguments.merge({

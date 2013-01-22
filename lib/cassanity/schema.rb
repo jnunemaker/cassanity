@@ -69,5 +69,15 @@ module Cassanity
       ]
       "#<#{self.class.name}:#{object_id} #{attributes.join(', ')}>"
     end
+
+    # Public: Is this schema equal to another object.
+    def eql?(other)
+      self.class.eql?(other.class) &&
+        @primary_keys == other.primary_keys &&
+        @columns == other.columns &&
+        @with == other.with
+    end
+
+    alias_method :==, :eql?
   end
 end
