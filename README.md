@@ -52,6 +52,22 @@ apps = keyspace.column_family({
   schema: apps_schema,
 })
 
+# you can also just pass a hash for the schema
+apps = keyspace.column_family({
+  name: :apps,
+  schema: {
+    primary_key: :id,
+    columns: {
+      id: :text,
+      name: :text,
+      created_at: :timestamp,
+    },
+    with: {
+      comment: 'For storing apps',
+    }
+  },
+})
+
 # create column family based on name and schema
 apps.create
 
