@@ -91,7 +91,7 @@ module Cassanity
       #
       def initialize(args = {})
         @client = args.fetch(:client)
-        @instrumenter = args.fetch(:instrumenter) { Instrumenters::Noop }
+        @instrumenter = args[:instrumenter] || Instrumenters::Noop
         @argument_generators = args.fetch(:argument_generators) { ArgumentGenerators }
         @result_transformers = args.fetch(:result_transformers) { ResultTransformers }
       end

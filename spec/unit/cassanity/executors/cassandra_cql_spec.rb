@@ -49,6 +49,13 @@ describe Cassanity::Executors::CassandraCql do
       subject.instrumenter.should eq(Cassanity::Instrumenters::Noop)
     end
 
+    it "defaults instrumenter if nil is passed in" do
+      instance = described_class.new(required_arguments.merge({
+        instrumenter: nil,
+      }))
+      instance.instrumenter.should eq(Cassanity::Instrumenters::Noop)
+    end
+
     it "allows overriding :argument_generators" do
       instance = described_class.new(required_arguments.merge({
         argument_generators: argument_generators
