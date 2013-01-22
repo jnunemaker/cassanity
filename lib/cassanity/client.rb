@@ -28,13 +28,13 @@ module Cassanity
       servers ||= '127.0.0.1:9160'
       options = options.dup
       options[:cql_version] ||= '3.0.0'
-      logger = options.delete(:logger)
+      instrumenter = options.delete(:instrumenter)
 
       @driver = CassandraCQL::Database.new(servers, options, thrift_options)
 
       @executor = Cassanity::Executors::CassandraCql.new({
         client: @driver,
-        logger: logger,
+        instrumenter: instrumenter,
       })
 
       @connection = Cassanity::Connection.new({
