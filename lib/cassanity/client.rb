@@ -25,16 +25,16 @@ module Cassanity
     # options - The Hash of CassandraCQL::Database options.
     # thrift_options - The Hash of CassandraCQL::Database thrift client options.
     def initialize(servers = nil, options = {}, thrift_options = {})
-      servers ||= '127.0.0.1:9160'
-      options = options.dup
-      options[:cql_version] ||= '3.0.0'
-      instrumenter = options.delete(:instrumenter)
+      @servers        = servers || '127.0.0.1:9160'
+      @options        = options.merge(cql_version: '3.0.0')
+      @thrift_options = thrift_options.dup
+      @instrumenter   = @options.delete(:instrumenter)
 
-      @driver = CassandraCQL::Database.new(servers, options, thrift_options)
+      @driver = CassandraCQL::Database.new(@servers, @options, @thrift_options)
 
       @executor = Cassanity::Executors::CassandraCql.new({
         client: @driver,
-        instrumenter: instrumenter,
+        instrumenter: @instrumenter,
       })
 
       @connection = Cassanity::Connection.new({
