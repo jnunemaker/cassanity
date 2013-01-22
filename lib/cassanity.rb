@@ -71,6 +71,14 @@ module Cassanity
     Decrement.new(value)
   end
 
+  # Public: Shortcut for returning a range value.
+  #
+  # start - The start value for the range.
+  # finish - The finish value for the range.
+  # exclusive - The Boolean value for whether or not to include the finish of
+  #             the range.
+  #
+  # Returns a Cassanity::Range instance.
   def self.range(start, finish, exclusive = false)
     Cassanity::Range.new(start, finish, exclusive)
   end
