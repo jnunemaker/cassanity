@@ -3,6 +3,7 @@ gemspec
 
 gem 'rake'
 gem 'rspec', '~> 2.8'
+gem 'activesupport', :require => false
 
 group(:guard) do
   gem 'guard'
