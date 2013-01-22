@@ -12,14 +12,20 @@ module Cassanity
         variables, withs = [], []
 
         with.each do |key, value|
-          if value.is_a?(Hash)
-            value.each do |sub_key, sub_value|
-              withs << "#{key}:#{sub_key} = ?"
-              variables << sub_value
+          if key == :compact_storage
+            if value
+              withs << "COMPACT STORAGE"
             end
           else
-            withs << "#{key} = ?"
-            variables << value
+            if value.is_a?(Hash)
+              value.each do |sub_key, sub_value|
+                withs << "#{key}:#{sub_key} = ?"
+                variables << sub_value
+              end
+            else
+              withs << "#{key} = ?"
+              variables << value
+            end
           end
         end
 

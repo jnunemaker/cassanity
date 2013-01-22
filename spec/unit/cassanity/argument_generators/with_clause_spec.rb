@@ -31,6 +31,32 @@ describe Cassanity::ArgumentGenerators::WithClause do
       end
     end
 
+    context "with :compact_storage option" do
+      context "set to true" do
+        it "returns array of arguments converting compact storage" do
+          subject.call({
+            with: {
+              compact_storage: true,
+            }
+          }).should eq([
+            " WITH COMPACT STORAGE",
+          ])
+        end
+      end
+
+      context "set to false" do
+        it "returns array of arguments not including compact storage" do
+          subject.call({
+            with: {
+              compact_storage: false,
+            }
+          }).should eq([
+            " WITH ",
+          ])
+        end
+      end
+    end
+
     context "when using :with option that has sub options" do
       it "returns array of arguments" do
         subject.call({
