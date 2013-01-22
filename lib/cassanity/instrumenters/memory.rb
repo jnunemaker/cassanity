@@ -12,8 +12,14 @@ module Cassanity
       end
 
       def instrument(name, payload = {})
-        result = yield payload if block_given?
+        result = if block_given?
+          yield payload
+        else
+          nil
+        end
+
         @events << Event.new(name, payload, result)
+
         result
       end
     end
