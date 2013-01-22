@@ -4,6 +4,7 @@ require 'cassanity/operators/gt'
 require 'cassanity/operators/gte'
 require 'cassanity/operators/lt'
 require 'cassanity/operators/lte'
+require 'cassanity/range'
 
 module Cassanity
   module ArgumentGenerators

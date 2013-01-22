@@ -120,4 +120,10 @@ describe Cassanity do
       Cassanity.decrement.should eq(Cassanity::Decrement.new(1))
     end
   end
+
+  describe ".range" do
+    it "returns increment instance" do
+      Cassanity.range(1, 5).should eq(Cassanity::Range.new(1, 5))
+    end
+  end
 end

@@ -80,6 +80,32 @@ describe Cassanity::ArgumentGenerators::WhereClause do
       end
     end
 
+    context "with inclusive cassanity range value for a where" do
+      it "returns range comparison including end of range" do
+        subject.call({
+          where: {
+            timestamp: Cassanity::Range.new(1, 3)
+          },
+        }).should eq([
+          " WHERE timestamp >= ? AND timestamp <= ?",
+          1, 3
+        ])
+      end
+    end
+
+    context "with exclusive cassanity range value for a where" do
+      it "returns range comparison including end of range" do
+        subject.call({
+          where: {
+            timestamp: Cassanity::Range.new(1, 3, true)
+          },
+        }).should eq([
+          " WHERE timestamp >= ? AND timestamp < ?",
+          1, 3
+        ])
+      end
+    end
+
     context "with a cassanity operator value" do
       it "returns correct cql" do
         subject.call({

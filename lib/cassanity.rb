@@ -3,6 +3,9 @@ require 'cassanity/operators/gt'
 require 'cassanity/operators/gte'
 require 'cassanity/operators/lt'
 require 'cassanity/operators/lte'
+require 'cassanity/increment'
+require 'cassanity/decrement'
+require 'cassanity/range'
 
 module Cassanity
   # Public: Shortcut for returning an equality operator.
@@ -66,6 +69,10 @@ module Cassanity
   # Returns a Cassanity::Decrement instance.
   def self.dec(value = 1)
     Decrement.new(value)
+  end
+
+  def self.range(start, finish, exclusive = false)
+    Cassanity::Range.new(start, finish, exclusive)
   end
 
   class << self

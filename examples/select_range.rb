@@ -60,6 +60,24 @@ pp rollups.select({
   }
 })
 
+# you can also use cassanity range
+# returns timestamps 1, 2 and 3
+pp rollups.select({
+  where: {
+    id: :views,
+    timestamp: Cassanity::Range.new(1, 3),
+  }
+})
+
+# or the shortcut for it
+# returns timestamps 1, 2 and 3
+pp rollups.select({
+  where: {
+    id: :views,
+    timestamp: Cassanity.range(1, 3),
+  }
+})
+
 # also works with operators
 # returns 3, 4 and 5
 pp rollups.select({
