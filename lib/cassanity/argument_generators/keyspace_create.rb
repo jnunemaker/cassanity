@@ -11,7 +11,7 @@ module Cassanity
       # Internal
       def call(args = {})
         options, variables = [], []
-        name = args.fetch(:name)
+        name = args.fetch(:keyspace_name)
         cql = "CREATE KEYSPACE #{name}"
 
         with = {

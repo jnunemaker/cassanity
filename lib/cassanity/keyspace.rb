@@ -45,7 +45,7 @@ module Cassanity
     # Public: Creates the keyspace
     #
     # args - The Hash of arguments to pass to the argument generator
-    #        (default: {}). :name is always included.
+    #        (default: {}). :keyspace_name is always included.
     #
     # Examples
     #
@@ -65,7 +65,7 @@ module Cassanity
       @executor.call({
         command: :keyspace_create,
         arguments: args.merge({
-          name: @name,
+          keyspace_name: @name,
         })
       })
     end
@@ -81,7 +81,7 @@ module Cassanity
     # Public: Uses a keyspace
     #
     # args - The Hash of arguments to pass to the argument generator
-    #        (default: {}). :name is always included.
+    #        (default: {}). :keyspace_name is always included.
     #
     # Examples
     #
@@ -92,7 +92,7 @@ module Cassanity
       @executor.call({
         command: :keyspace_use,
         arguments: args.merge({
-          name: @name,
+          keyspace_name: @name,
         }),
       })
     end
@@ -100,7 +100,7 @@ module Cassanity
     # Public: Drops a keyspace
     #
     # args - The Hash of arguments to pass to the argument generator
-    #        (default: {}). :name is always included.
+    #        (default: {}). :keyspace_name is always included.
     #
     # Examples
     #
@@ -111,7 +111,7 @@ module Cassanity
       @executor.call({
         command: :keyspace_drop,
         arguments: args.merge({
-          name: @name,
+          keyspace_name: @name,
         }),
       })
     end

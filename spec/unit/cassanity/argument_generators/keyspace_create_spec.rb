@@ -9,7 +9,7 @@ describe Cassanity::ArgumentGenerators::KeyspaceCreate do
       it "returns array of arguments" do
         cql = "CREATE KEYSPACE #{keyspace_name} WITH strategy_class = ? AND strategy_options:replication_factor = ?"
         expected = [cql, 'SimpleStrategy', 1]
-        subject.call(name: keyspace_name).should eq(expected)
+        subject.call(keyspace_name: keyspace_name).should eq(expected)
       end
     end
 
@@ -18,7 +18,7 @@ describe Cassanity::ArgumentGenerators::KeyspaceCreate do
         cql = "CREATE KEYSPACE #{keyspace_name} WITH strategy_class = ? AND strategy_options:replication_factor = ?"
         expected = [cql, 'FooStrategy', 1]
         subject.call({
-          name: keyspace_name,
+          keyspace_name: keyspace_name,
           strategy_class: 'FooStrategy',
         }).should eq(expected)
       end
@@ -29,7 +29,7 @@ describe Cassanity::ArgumentGenerators::KeyspaceCreate do
         cql = "CREATE KEYSPACE #{keyspace_name} WITH strategy_class = ? AND strategy_options:replication_factor = ?"
         expected = [cql, 'SimpleStrategy', 3]
         subject.call({
-          name: keyspace_name,
+          keyspace_name: keyspace_name,
           strategy_options: {
             replication_factor: 3,
           }
@@ -42,7 +42,7 @@ describe Cassanity::ArgumentGenerators::KeyspaceCreate do
         cql = "CREATE KEYSPACE #{keyspace_name} WITH strategy_class = ? AND strategy_options:replication_factor = ? AND strategy_options:batman = ?"
         expected = [cql, 'SimpleStrategy', 1, 'robin']
         subject.call({
-          name: keyspace_name,
+          keyspace_name: keyspace_name,
           strategy_options: {
             batman: 'robin',
           }

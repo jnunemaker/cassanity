@@ -8,7 +8,7 @@ describe Cassanity::ArgumentGenerators::KeyspaceDrop do
     it "returns array of arguments" do
       cql = "DROP KEYSPACE #{keyspace_name}"
       expected = [cql]
-      subject.call(name: keyspace_name).should eq(expected)
+      subject.call(keyspace_name: keyspace_name).should eq(expected)
     end
   end
 end

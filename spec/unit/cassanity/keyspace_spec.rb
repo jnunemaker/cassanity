@@ -212,7 +212,7 @@ describe Cassanity::Keyspace do
       args = {something: 'else'}
       executor.should_receive(:call).with({
         command: :keyspace_create,
-        arguments: args.merge(name: keyspace_name),
+        arguments: args.merge(keyspace_name: keyspace_name),
       })
       subject.create(args)
     end
@@ -256,7 +256,7 @@ describe Cassanity::Keyspace do
       args = {something: 'else'}
       executor.should_receive(:call).with({
         command: :keyspace_use,
-        arguments: args.merge(name: keyspace_name),
+        arguments: args.merge(keyspace_name: keyspace_name),
       })
       subject.use(args)
     end
@@ -267,7 +267,7 @@ describe Cassanity::Keyspace do
       args = {something: 'else'}
       executor.should_receive(:call).with({
         command: :keyspace_drop,
-        arguments: args.merge(name: keyspace_name),
+        arguments: args.merge(keyspace_name: keyspace_name),
       })
       subject.drop(args)
     end

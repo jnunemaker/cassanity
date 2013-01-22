@@ -4,7 +4,7 @@ module Cassanity
 
       # Internal
       def call(args = {})
-        name = args.fetch(:name)
+        name = args.fetch(:keyspace_name)
         cql = "USE #{name}"
         [cql]
       end
