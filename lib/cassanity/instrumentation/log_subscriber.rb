@@ -9,8 +9,12 @@ module Cassanity
         return unless logger.debug?
 
         name = '%s (%.1fms)' % ["CQL Query", event.duration]
+
+        # execute arguments are always an array where the first element is the
+        # cql string and the rest are the bound variables.
         cql, *args = event.payload[:execute_arguments]
         arguments = args.map { |arg| arg.inspect }.join(', ')
+
         query = "#{cql}"
         query += " (#{arguments})" unless arguments.empty?
 

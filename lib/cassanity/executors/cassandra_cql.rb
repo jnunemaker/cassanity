@@ -75,6 +75,8 @@ module Cassanity
       #
       # args - The Hash of arguments.
       #        :client - The CassandraCQL::Database connection instance.
+      #        :instrumenter - What should be used to instrument all the things
+      #                        (default: Cassanity::Instrumenters::Noop).
       #        :argument_generators - A Hash where each key is a command name
       #                               and each value is the related argument
       #                               generator that responds to `call`
