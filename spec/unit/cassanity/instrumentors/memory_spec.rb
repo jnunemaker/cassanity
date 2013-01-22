@@ -1,7 +1,7 @@
 require 'helper'
-require 'cassanity/instrumentors/memory'
+require 'cassanity/instrumenters/memory'
 
-describe Cassanity::Instrumentors::Memory do
+describe Cassanity::Instrumenters::Memory do
   describe "#initialize" do
     it "sets events to empty array" do
       instrumentor = described_class.new

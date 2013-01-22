@@ -1,7 +1,7 @@
 require 'helper'
-require 'cassanity/instrumentors/noop'
+require 'cassanity/instrumenters/noop'
 
-describe Cassanity::Instrumentors::Noop do
+describe Cassanity::Instrumenters::Noop do
   describe ".instrument" do
     context "with name" do
       it "yields block" do

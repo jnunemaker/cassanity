@@ -1,5 +1,5 @@
 module Cassanity
-  module Instrumentors
+  module Instrumenters
     # Instrumentor that is useful for tests as it stores each of the events that
     # are instrumented.
     class Memory
@@ -12,7 +12,7 @@ module Cassanity
       end
 
       def instrument(name, payload = {})
-        result = yield
+        result = yield payload if block_given?
         @events << Event.new(name, payload, result)
         result
       end
