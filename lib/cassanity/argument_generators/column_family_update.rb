@@ -13,29 +13,7 @@ module Cassanity
         @where_clause = args.fetch(:where_clause) { WhereClause.new }
       end
 
-      # Internal: Converts a Hash of arguments to CQL with bound variables.
-      #
-      # args - The Hash of arguments to use.
-      #        :column_family_name - The String name of the column family
-      #        :set - The Hash of data to actually update
-      #        :where - The Hash of options to use to filter the update
-      #        :using - The Hash of options for the query ie: consistency, ttl,
-      #                 and timestamp (optional).
-      #
-      # Examples
-      #
-      #   call({
-      #     column_family_name: 'apps',
-      #     set: {
-      #       name: 'GitHub',
-      #     },
-      #     where: {
-      #       :id => '1',
-      #     }
-      #   })
-      #
-      # Returns Array where first element is CQL string and the rest are
-      #   bound values.
+      # Internal
       def call(args = {})
         name  = args.fetch(:column_family_name)
         set   = args.fetch(:set)
