@@ -20,6 +20,7 @@ module Cassanity
     #        :columns - The Hash of columns where the name is the column name
     #                   and the value is the column type.
     #        :with - The Hash of options for the WITH clause.
+    #
     # Raises KeyError if missing required argument key.
     # Raises ArgumentError if primary key is not included in the columns.
     def initialize(args = {})
