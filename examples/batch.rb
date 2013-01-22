@@ -9,14 +9,15 @@ keyspace = client['cassanity_examples']
 keyspace.recreate
 
 # setting up the apps column family
-apps_schema = Cassanity::Schema.new({
-  primary_key: :id,
-  columns: {
-    id: :text,
-    name: :text,
+apps = keyspace.column_family('apps', {
+  schema: {
+    primary_key: :id,
+    columns: {
+      id: :text,
+      name: :text,
+    },
   },
 })
-apps = keyspace.column_family('apps', schema: apps_schema)
 apps.create
 
 # batch several operations in one network call

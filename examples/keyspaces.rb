@@ -34,16 +34,14 @@ keyspace.use
 apps = keyspace.column_family('apps')
 
 # you can also pass a schema so the column family is all knowing
-apps_schema = Cassanity::Schema.new({
-  primary_key: :id,
-  columns: {
-    id: :text,
-    name: :text,
-  },
-})
-
 apps = keyspace.column_family('apps', {
-  schema: apps_schema,
+  schema: {
+    primary_key: :id,
+    columns: {
+      id: :text,
+      name: :text,
+    },
+  },
 })
 pp apps
 

@@ -8,16 +8,16 @@ client = Cassanity::Client.new('127.0.0.1:9160', {
 keyspace = client['cassanity_examples']
 keyspace.recreate
 
-apps_schema = Cassanity::Schema.new({
-  primary_key: :id,
-  columns: {
-    id: :text,
-    name: :text,
+# get an instance of a column family, providing schema means it can create itself
+apps = keyspace.column_family('apps', {
+  schema: {
+    primary_key: :id,
+    columns: {
+      id: :text,
+      name: :text,
+    },
   },
 })
-
-# get an instance of a column family, providing schema means it can create itself
-apps = keyspace.column_family('apps', schema: apps_schema)
 
 # create column family based on schema
 apps.create

@@ -8,19 +8,17 @@ client = Cassanity::Client.new('127.0.0.1:9160', {
 keyspace = client['cassanity_examples']
 keyspace.recreate
 
-rollups_schema = Cassanity::Schema.new({
-  primary_key: [:id, :timestamp],
-  columns: {
-    id: :text,
-    timestamp: :int,
-    value: :counter,
-  },
-})
-
 # get an instance of a column family, providing schema means it can create itself
 rollups = keyspace.column_family({
   name: :rollups,
-  schema: rollups_schema,
+  schema: {
+    primary_key: [:id, :timestamp],
+    columns: {
+      id: :text,
+      timestamp: :int,
+      value: :counter,
+    },
+  },
 })
 
 # create column family based on schema
