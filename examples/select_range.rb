@@ -1,7 +1,9 @@
 require_relative '_shared'
 require 'cassanity'
 
-client = Cassanity::Client.new('127.0.0.1:9160', logger: Logger.new(STDOUT))
+client = Cassanity::Client.new('127.0.0.1:9160', {
+  instrumenter: ActiveSupport::Notifications,
+})
 
 keyspace = client['cassanity_examples']
 keyspace.recreate

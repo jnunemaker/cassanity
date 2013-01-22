@@ -58,24 +58,24 @@ describe Cassanity::Client do
       described_class.new('localhost:1234', some: 'thing')
     end
 
-    it "allows passing logger to executor, but does not pass it to driver instance" do
-      logger = double('Logger')
+    it "allows passing instrumenter to executor, but does not pass it to driver instance" do
+      instrumenter = double('Instrumenter')
       driver = double('Driver')
       executor = double('Executor')
 
       CassandraCQL::Database.should_receive(:new).
         with(
           anything,
-          hash_not_including(logger: logger),
+          hash_not_including(instrumenter: instrumenter),
           instance_of(Hash)
         ).
         and_return(driver)
 
       Cassanity::Executors::CassandraCql.should_receive(:new).
-        with(client: driver, logger: logger).
+        with(client: driver, instrumenter: instrumenter).
         and_return(executor)
 
-      described_class.new('localhost:1234', logger: logger)
+      described_class.new('localhost:1234', instrumenter: instrumenter)
     end
 
     it "sets cassandra cql database instance as driver" do
