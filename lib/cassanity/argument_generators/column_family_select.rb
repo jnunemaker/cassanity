@@ -18,7 +18,7 @@ module Cassanity
       # Internal
       def call(args = {})
         select = Array(args.fetch(:select, '*'))
-        name   = args.fetch(:name)
+        name   = args.fetch(:column_family_name)
         where  = args[:where]
         using  = args[:using]
         order  = args[:order]

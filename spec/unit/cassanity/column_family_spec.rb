@@ -140,7 +140,7 @@ describe Cassanity::ColumnFamily do
         executor.should_receive(:call).with({
           command: :column_family_create,
           arguments: args.merge({
-            name: column_family_name,
+            column_family_name: column_family_name,
             keyspace_name: keyspace_name,
             schema: schema,
           }),
@@ -154,7 +154,7 @@ describe Cassanity::ColumnFamily do
         executor.should_receive(:call).with({
           command: :column_family_create,
           arguments: args.merge({
-            name: column_family_name,
+            column_family_name: column_family_name,
             keyspace_name: keyspace_name,
             schema: schema_argument,
           }),
@@ -173,26 +173,28 @@ describe Cassanity::ColumnFamily do
       it "sends passed in schema if present" do
         args = {schema: schema}
         command_arguments = args.merge({
-          name: column_family_name,
+          column_family_name: column_family_name,
           keyspace_name: keyspace_name,
           schema: schema,
         })
+
         executor.should_receive(:call).with({
           command: :column_family_create,
           arguments: command_arguments,
         })
+
         subject.create(args)
       end
     end
   end
 
   describe "#truncate" do
-    it "sends command and arguments, including :name, to executor" do
+    it "sends command and arguments, including :column_family_name, to executor" do
       args = {something: 'else'}
       executor.should_receive(:call).with({
         command: :column_family_truncate,
         arguments: args.merge({
-          name: column_family_name,
+          column_family_name: column_family_name,
           keyspace_name: keyspace_name,
         }),
       })
@@ -201,12 +203,12 @@ describe Cassanity::ColumnFamily do
   end
 
   describe "#drop" do
-    it "sends command and arguments, including :name, to executor" do
+    it "sends command and arguments, including :column_family_name, to executor" do
       args = {something: 'else'}
       executor.should_receive(:call).with({
         command: :column_family_drop,
         arguments: args.merge({
-          name: column_family_name,
+          column_family_name: column_family_name,
           keyspace_name: keyspace_name,
         }),
       })
@@ -215,12 +217,12 @@ describe Cassanity::ColumnFamily do
   end
 
   describe "#alter" do
-    it "sends command and arguments, including :name and :keyspace_name, to executor" do
+    it "sends command and arguments, including :column_family_name and :keyspace_name, to executor" do
       args = {drop: :name, something: 'else'}
       executor.should_receive(:call).with({
         command: :column_family_alter,
         arguments: args.merge({
-          name: column_family_name,
+          column_family_name: column_family_name,
           keyspace_name: keyspace_name,
         }),
       })
@@ -229,7 +231,7 @@ describe Cassanity::ColumnFamily do
   end
 
   describe "#create_index" do
-    it "sends command and arguments, including :name, to executor" do
+    it "sends command and arguments, including :column_family_name, to executor" do
       args = {something: 'else'}
       executor.should_receive(:call).with({
         command: :index_create,
@@ -243,7 +245,7 @@ describe Cassanity::ColumnFamily do
   end
 
   describe "#drop_index" do
-    it "sends command and arguments, including :name, to executor" do
+    it "sends command and arguments, including :column_family_name, to executor" do
       args = {something: 'else', name: 'users_state_idx'}
       executor.should_receive(:call).with({
         command: :index_drop,
@@ -254,12 +256,12 @@ describe Cassanity::ColumnFamily do
   end
 
   describe "#insert" do
-    it "sends command and arguments, including :name, to executor" do
+    it "sends command and arguments, including :column_family_name, to executor" do
       args = {data: {id: '1', name: 'GitHub'}}
       executor.should_receive(:call).with({
         command: :column_family_insert,
         arguments: args.merge({
-          name: column_family_name,
+          column_family_name: column_family_name,
           keyspace_name: keyspace_name,
         }),
       })
@@ -268,12 +270,12 @@ describe Cassanity::ColumnFamily do
   end
 
   describe "#update" do
-    it "sends command and arguments, including :name, to executor" do
+    it "sends command and arguments, including :column_family_name, to executor" do
       args = {set: {name: 'GitHub'}, where: {id: '1'}}
       executor.should_receive(:call).with({
         command: :column_family_update,
         arguments: args.merge({
-          name: column_family_name,
+          column_family_name: column_family_name,
           keyspace_name: keyspace_name,
         }),
       })
@@ -282,12 +284,12 @@ describe Cassanity::ColumnFamily do
   end
 
   describe "#delete" do
-    it "sends command and arguments, including :name, to executor" do
+    it "sends command and arguments, including :column_family_name, to executor" do
       args = {where: {id: '1'}}
       executor.should_receive(:call).with({
         command: :column_family_delete,
         arguments: args.merge({
-          name: column_family_name,
+          column_family_name: column_family_name,
           keyspace_name: keyspace_name,
         }),
       })

@@ -7,9 +7,9 @@ describe Cassanity::ArgumentGenerators::Batch do
       cql = "BEGIN BATCH INSERT INTO users (id) VALUES (?) UPDATE users SET name = ? WHERE id = ? DELETE FROM users WHERE id = ? APPLY BATCH"
       subject.call({
         modifications: [
-          [:insert, name: :users, data: {id: '1'}],
-          [:update, name: :users, set: {name: 'GitHub'}, where: {id: '1'}],
-          [:delete, name: :users, where: {id: '1'}],
+          [:insert, column_family_name: :users, data: {id: '1'}],
+          [:update, column_family_name: :users, set: {name: 'GitHub'}, where: {id: '1'}],
+          [:delete, column_family_name: :users, where: {id: '1'}],
         ],
       }).should eq([cql, '1', 'GitHub', '1', '1'])
     end
@@ -32,7 +32,7 @@ describe Cassanity::ArgumentGenerators::Batch do
           column_family_name: :users,
           modifications: [
             [:insert, data: {id: '1'}],
-            [:update, name: :other_column_family, set: {name: 'GitHub'}, where: {id: '1'}],
+            [:update, column_family_name: :other_column_family, set: {name: 'GitHub'}, where: {id: '1'}],
           ],
         }).should eq([cql, '1', 'GitHub', '1'])
       end
@@ -44,8 +44,8 @@ describe Cassanity::ArgumentGenerators::Batch do
         subject.call({
           keyspace_name: :analytics,
           modifications: [
-            [:insert, name: :users, data: {id: '1'}],
-            [:update, name: :users, set: {name: 'GitHub'}, where: {id: '1'}],
+            [:insert, column_family_name: :users, data: {id: '1'}],
+            [:update, column_family_name: :users, set: {name: 'GitHub'}, where: {id: '1'}],
           ],
         }).should eq([cql, '1', 'GitHub', '1'])
       end
@@ -55,8 +55,8 @@ describe Cassanity::ArgumentGenerators::Batch do
         subject.call({
           keyspace_name: :analytics,
           modifications: [
-            [:insert, keyspace_name: :other_keyspace_name, name: :users, data: {id: '1'}],
-            [:update, name: :users, set: {name: 'GitHub'}, where: {id: '1'}],
+            [:insert, keyspace_name: :other_keyspace_name, column_family_name: :users, data: {id: '1'}],
+            [:update, column_family_name: :users, set: {name: 'GitHub'}, where: {id: '1'}],
           ],
         }).should eq([cql, '1', 'GitHub', '1'])
       end

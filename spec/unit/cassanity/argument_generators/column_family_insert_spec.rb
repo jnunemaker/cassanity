@@ -5,10 +5,10 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyInsert do
   let(:column_family_name) { 'apps' }
 
   describe "#call" do
-    [:name, :data].each do |key|
+    [:column_family_name, :data].each do |key|
       it "raises error if missing :#{key} key" do
         required_arguments = {
-          name: column_family_name,
+          column_family_name: column_family_name,
           data: {
             id: '1',
             name: 'GitHub',
@@ -24,7 +24,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyInsert do
       cql = "INSERT INTO #{column_family_name} (id, name) VALUES (?, ?)"
       expected = [cql, '1', 'GitHub']
       subject.call({
-        name: column_family_name,
+        column_family_name: column_family_name,
         data: {
           id: '1',
           name: 'GitHub',
@@ -38,7 +38,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyInsert do
         expected = [cql, '1', 'GitHub']
         subject.call({
           keyspace_name: :foo,
-          name: column_family_name,
+          column_family_name: column_family_name,
           data: {
             id: '1',
             name: 'GitHub',
@@ -53,7 +53,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyInsert do
         cql = "INSERT INTO #{column_family_name} (id, name) VALUES (?, ?) USING TTL 86400 AND TIMESTAMP #{millis} AND CONSISTENCY quorum"
         expected = [cql, '1', 'GitHub']
         subject.call({
-          name: column_family_name,
+          column_family_name: column_family_name,
           data: {
             id: '1',
             name: 'GitHub',

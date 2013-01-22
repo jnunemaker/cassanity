@@ -8,7 +8,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilySelect do
     it "returns array of arguments" do
       cql = "SELECT * FROM #{column_family_name}"
       expected = [cql]
-      subject.call(name: column_family_name).should eq(expected)
+      subject.call(column_family_name: column_family_name).should eq(expected)
     end
 
     context "with :keyspace_name" do
@@ -17,7 +17,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilySelect do
         expected = [cql]
         subject.call({
           keyspace_name: :foo,
-          name: column_family_name
+          column_family_name: column_family_name
         }).should eq(expected)
       end
     end
@@ -27,7 +27,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilySelect do
         cql = "SELECT name FROM #{column_family_name}"
         expected = [cql]
         subject.call({
-          name: column_family_name,
+          column_family_name: column_family_name,
           select: :name,
         }).should eq(expected)
       end
@@ -38,7 +38,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilySelect do
         cql = "SELECT id, name, created_at FROM #{column_family_name}"
         expected = [cql]
         subject.call({
-          name: column_family_name,
+          column_family_name: column_family_name,
           select: [:id, :name, :created_at],
         }).should eq(expected)
       end
@@ -49,7 +49,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilySelect do
         cql = "SELECT COUNT(*) FROM #{column_family_name}"
         expected = [cql]
         subject.call({
-          name: column_family_name,
+          column_family_name: column_family_name,
           select: 'COUNT(*)',
         }).should eq(expected)
       end
@@ -60,7 +60,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilySelect do
         cql = "SELECT COUNT(1) FROM #{column_family_name}"
         expected = [cql]
         subject.call({
-          name: column_family_name,
+          column_family_name: column_family_name,
           select: 'COUNT(1)',
         }).should eq(expected)
       end
@@ -71,7 +71,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilySelect do
         cql = "SELECT WRITETIME(name) FROM #{column_family_name}"
         expected = [cql]
         subject.call({
-          name: column_family_name,
+          column_family_name: column_family_name,
           select: 'WRITETIME(name)',
         }).should eq(expected)
       end
@@ -82,7 +82,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilySelect do
         cql = "SELECT TTL(name) FROM #{column_family_name}"
         expected = [cql]
         subject.call({
-          name: column_family_name,
+          column_family_name: column_family_name,
           select: 'TTL(name)',
         }).should eq(expected)
       end
@@ -100,7 +100,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilySelect do
         cql = "SELECT * FROM #{column_family_name} USING CONSISTENCY BATMAN"
         expected = [cql]
         subject.call({
-          name: column_family_name,
+          column_family_name: column_family_name,
           using: using,
         }).should eq(expected)
       end
@@ -118,7 +118,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilySelect do
         cql = "SELECT * FROM #{column_family_name} WHERE foo = ?"
         expected = [cql, 'bar']
         subject.call({
-          name: column_family_name,
+          column_family_name: column_family_name,
           where: where,
         }).should eq(expected)
       end
@@ -135,7 +135,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilySelect do
         cql = "SELECT * FROM #{column_family_name} ORDER BY name"
         expected = [cql]
         subject.call({
-          name: column_family_name,
+          column_family_name: column_family_name,
           order: :name,
         }).should eq(expected)
       end
@@ -152,7 +152,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilySelect do
         cql = "SELECT * FROM #{column_family_name} LIMIT 50"
         expected = [cql]
         subject.call({
-          name: column_family_name,
+          column_family_name: column_family_name,
           limit: 50,
         }).should eq(expected)
       end

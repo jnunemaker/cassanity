@@ -35,7 +35,7 @@ module Cassanity
           command = @commands.fetch(command_name)
 
           if args[:column_family_name]
-            command_arguments[:name] ||= args[:column_family_name]
+            command_arguments[:column_family_name] ||= args[:column_family_name]
           end
 
           if args[:keyspace_name]

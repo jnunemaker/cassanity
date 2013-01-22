@@ -14,7 +14,7 @@ module Cassanity
       # Internal: Converts a Hash of arguments to CQL with bound variables.
       #
       # args - The Hash of arguments to use.
-      #        :name - The String name of the column family
+      #        :column_family_name - The String name of the column family
       #        :where - The Hash of options to use to filter the delete
       #        :columns - The Array of columns you would like to delete
       #                   (default is all columns) (optional).
@@ -33,7 +33,7 @@ module Cassanity
       # Returns Array where first element is CQL string and the rest are
       #   bound values.
       def call(args = {})
-        name    = args.fetch(:name)
+        name    = args.fetch(:column_family_name)
         where   = args.fetch(:where)
         columns = args.fetch(:columns) { [] }
         using   = args[:using]

@@ -18,12 +18,12 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyCreate do
     context "when missing required argument key" do
       let(:required_arguments) {
         {
-          name: 'tracks',
+          column_family_name: column_family_name,
           schema: schema,
         }
       }
 
-      [:name, :schema].each do |key|
+      [:column_family_name, :schema].each do |key|
         it "raises error if missing :#{key} key" do
           args = required_arguments.reject { |k, v| k == key }
           expect { subject.call(args) }.to raise_error(KeyError)
@@ -36,7 +36,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyCreate do
         cql = "CREATE COLUMNFAMILY #{column_family_name} (id text, name text, PRIMARY KEY (id))"
         expected = [cql]
         subject.call({
-          name: column_family_name,
+          column_family_name: column_family_name,
           schema: schema,
         }).should eq(expected)
       end
@@ -48,7 +48,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyCreate do
         expected = [cql]
         subject.call({
           keyspace_name: :foo,
-          name: column_family_name,
+          column_family_name: column_family_name,
           schema: schema,
         }).should eq(expected)
       end
@@ -67,7 +67,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyCreate do
         cql = "CREATE COLUMNFAMILY #{column_family_name} (segment text, track_id timeuuid, page text, PRIMARY KEY (segment, track_id))"
         expected = [cql]
         subject.call({
-          name: column_family_name,
+          column_family_name: column_family_name,
           schema: schema,
         }).should eq(expected)
       end
@@ -98,7 +98,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyCreate do
         cql = "CREATE COLUMNFAMILY apps (id text, name text, PRIMARY KEY (id)) WITH comment = ?"
         expected = [cql, 'Testing']
         subject.call({
-          name: :apps,
+          column_family_name: :apps,
           schema: schema,
         }).should eq(expected)
       end

@@ -62,7 +62,7 @@ module Cassanity
     # Public: Creates the column family in the keyspace based on the schema.
     #
     # args - The Hash of arguments to pass to the executor. Always passes
-    #        :name and :keyspace_name.
+    #        :column_family_name and :keyspace_name.
     #        :schema - The Schema to use to create the column family
     #                  (defaults to schema provided during initialization).
     #
@@ -76,7 +76,7 @@ module Cassanity
     #   not passed in via arguments.
     def create(args = {})
       forced_arguments = {
-        name: @name,
+        column_family_name: @name,
         keyspace_name: @keyspace.name,
       }
       arguments = args.merge(forced_arguments)
@@ -91,7 +91,8 @@ module Cassanity
     # Public: Truncates the column family.
     #
     # args - The Hash of arguments to pass to the argument generator
-    #        (default: {}). :name and :keyspace_name are always included.
+    #        (default: {}). :column_family_name and :keyspace_name are
+    #        always included.
     #
     # Examples
     #
@@ -102,7 +103,7 @@ module Cassanity
       @executor.call({
         command: :column_family_truncate,
         arguments: args.merge({
-          name: @name,
+          column_family_name: @name,
           keyspace_name: @keyspace.name,
         }),
       })
@@ -111,7 +112,8 @@ module Cassanity
     # Public: Drops the column family.
     #
     # args - The Hash of arguments to pass to the argument generator
-    #        (default: {}). :name and :keyspace_name are always included.
+    #        (default: {}). :column_family_name and :keyspace_name are
+    #        always included.
     #
     # Examples
     #
@@ -122,7 +124,7 @@ module Cassanity
       @executor.call({
         command: :column_family_drop,
         arguments: args.merge({
-          name: @name,
+          column_family_name: @name,
           keyspace_name: @keyspace.name,
         }),
       })
@@ -131,7 +133,8 @@ module Cassanity
     # Public: Alters the column family.
     #
     # args - The Hash of arguments to pass to the argument generator
-    #        (default: {}). :name and :keyspace_name are always included.
+    #        (default: {}). :column_family_name and :keyspace_name are
+    #        always included.
     #
     # Examples
     #
@@ -145,7 +148,7 @@ module Cassanity
       @executor.call({
         command: :column_family_alter,
         arguments: args.merge({
-          name: @name,
+          column_family_name: @name,
           keyspace_name: @keyspace.name,
         }),
       })
@@ -193,14 +196,15 @@ module Cassanity
     # Public: Makes it possible to query data from the column family.
     #
     # args - The Hash of arguments to pass to the argument generator
-    #        (default: {}). :name and :keyspace_name are always included.
+    #        (default: {}). :column_family_name and :keyspace_name are
+    #        always included.
     #
     # Returns whatever is returned by executor.
     def select(args = {})
       @executor.call({
         command: :column_family_select,
         arguments: args.merge({
-          name: @name,
+          column_family_name: @name,
           keyspace_name: @keyspace.name,
         })
       })
@@ -209,14 +213,15 @@ module Cassanity
     # Public: Makes it possible to insert data into the column family.
     #
     # args - The Hash of arguments to pass to the argument generator
-    #        (default: {}). :name and :keyspace_name are always included.
+    #        (default: {}). :column_family_name and :keyspace_name are
+    #        always included.
     #
     # Returns whatever is returned by executor.
     def insert(args = {})
       @executor.call({
         command: :column_family_insert,
         arguments: args.merge({
-          name: @name,
+          column_family_name: @name,
           keyspace_name: @keyspace.name,
         }),
       })
@@ -225,14 +230,15 @@ module Cassanity
     # Public: Makes it possible to update data in the column family.
     #
     # args - The Hash of arguments to pass to the argument generator
-    #        (default: {}). :name and :keyspace_name are always included.
+    #        (default: {}). :column_family_name and :keyspace_name are
+    #        always included.
     #
     # Returns whatever is returned by executor.
     def update(args = {})
       @executor.call({
         command: :column_family_update,
         arguments: args.merge({
-          name: @name,
+          column_family_name: @name,
           keyspace_name: @keyspace.name,
         }),
       })
@@ -241,14 +247,15 @@ module Cassanity
     # Public: Makes it possible to delete data from the column family.
     #
     # args - The Hash of arguments to pass to the argument generator
-    #        (default: {}). :name and :keyspace_name are always included.
+    #        (default: {}). :column_family_name and :keyspace_name are
+    #        always included.
     #
     # Returns whatever is returned by executor.
     def delete(args = {})
       @executor.call({
         command: :column_family_delete,
         arguments: args.merge({
-          name: @name,
+          column_family_name: @name,
           keyspace_name: @keyspace.name,
         }),
       })
@@ -263,10 +270,10 @@ module Cassanity
     #
     #   batch({
     #     modifications: [
-    #       [:insert, name: 'apps', data: {id: '1', name: 'github'}],
-    #       [:insert, name: 'apps', data: {id: '2', name: 'gist'}],
-    #       [:update, name: 'apps', set: {name: 'github.com'}, where: {id: '1'}],
-    #       [:delete, name: 'apps', where: {id: '2'}],
+    #       [:insert, column_family_name: 'apps', data: {id: '1', name: 'github'}],
+    #       [:insert, column_family_name: 'apps', data: {id: '2', name: 'gist'}],
+    #       [:update, column_family_name: 'apps', set: {name: 'github.com'}, where: {id: '1'}],
+    #       [:delete, column_family_name: 'apps', where: {id: '2'}],
     #     ]
     #   })
     #

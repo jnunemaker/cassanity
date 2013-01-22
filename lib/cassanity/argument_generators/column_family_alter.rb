@@ -11,7 +11,7 @@ module Cassanity
 
       # Internal
       def call(args = {})
-        name = args.fetch(:name)
+        name = args.fetch(:column_family_name)
         with = args[:with] || {}
 
         variables = []

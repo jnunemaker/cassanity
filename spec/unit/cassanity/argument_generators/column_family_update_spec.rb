@@ -9,7 +9,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyUpdate do
       cql = "UPDATE #{column_family_name} SET name = ? WHERE id = ?"
       expected = [cql, 'New Name', '1']
       subject.call({
-        name: column_family_name,
+        column_family_name: column_family_name,
         set: {
           name: 'New Name',
         },
@@ -25,7 +25,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyUpdate do
         expected = [cql, 'New Name', '1']
         subject.call({
           keyspace_name: :foo,
-          name: column_family_name,
+          column_family_name: column_family_name,
           set: {
             name: 'New Name',
           },
@@ -49,7 +49,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyUpdate do
         cql = "UPDATE #{column_family_name} SET name = ? WHERE id = ?"
         expected = [cql, 'New Name', '4']
         subject.call({
-          name: column_family_name,
+          column_family_name: column_family_name,
           set: {
             name: 'New Name',
           },
@@ -73,7 +73,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyUpdate do
         cql = "UPDATE #{column_family_name} SET name = ? WHERE id = ?"
         expected = [cql, 'New Name', '4']
         subject.call({
-          name: column_family_name,
+          column_family_name: column_family_name,
           set: {
             name: 'New Name',
           },
@@ -90,7 +90,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyUpdate do
         cql = "UPDATE #{column_family_name} USING TTL 86400 AND TIMESTAMP #{millis} AND CONSISTENCY quorum SET name = ? WHERE id = ?"
         expected = [cql, 'New Name', '1']
         subject.call({
-          name: column_family_name,
+          column_family_name: column_family_name,
           using: {
             ttl: 86400,
             timestamp: millis,

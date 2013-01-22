@@ -16,7 +16,7 @@ module Cassanity
       # Internal: Converts a Hash of arguments to CQL with bound variables.
       #
       # args - The Hash of arguments to use.
-      #        :name - The String name of the column family
+      #        :column_family_name - The String name of the column family
       #        :set - The Hash of data to actually update
       #        :where - The Hash of options to use to filter the update
       #        :using - The Hash of options for the query ie: consistency, ttl,
@@ -25,7 +25,7 @@ module Cassanity
       # Examples
       #
       #   call({
-      #     name: 'apps',
+      #     column_family_name: 'apps',
       #     set: {
       #       name: 'GitHub',
       #     },
@@ -37,7 +37,7 @@ module Cassanity
       # Returns Array where first element is CQL string and the rest are
       #   bound values.
       def call(args = {})
-        name  = args.fetch(:name)
+        name  = args.fetch(:column_family_name)
         set   = args.fetch(:set)
         where = args.fetch(:where)
         using = args[:using] || {}

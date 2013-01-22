@@ -9,7 +9,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyDelete do
       cql = "DELETE FROM #{column_family_name} WHERE id = ?"
       expected = [cql, '1']
       subject.call({
-        name: column_family_name,
+        column_family_name: column_family_name,
         where: {
           id: '1',
         }
@@ -22,7 +22,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyDelete do
         expected = [cql, '1']
         subject.call({
           keyspace_name: :foo,
-          name: column_family_name,
+          column_family_name: column_family_name,
           where: {
             id: '1',
           }
@@ -35,7 +35,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyDelete do
         cql = "DELETE foo, bar FROM #{column_family_name} WHERE id = ?"
         expected = [cql, '1']
         subject.call({
-          name: column_family_name,
+          column_family_name: column_family_name,
           columns: [:foo, :bar],
           where: {
             id: '1',
@@ -57,7 +57,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyDelete do
         cql = "DELETE FROM #{column_family_name} WHERE id = ?"
         expected = [cql, '4']
         subject.call({
-          name: column_family_name,
+          column_family_name: column_family_name,
           where: {
             id: '4',
           }
@@ -78,7 +78,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyDelete do
         cql = "DELETE FROM #{column_family_name} USING TTL = 500 WHERE id = ?"
         expected = [cql, '4']
         subject.call({
-          name: column_family_name,
+          column_family_name: column_family_name,
           using: {
             ttl: 500,
           },

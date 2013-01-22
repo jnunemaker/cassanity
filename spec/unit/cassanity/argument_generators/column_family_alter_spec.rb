@@ -7,7 +7,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyAlter do
       cql = "ALTER COLUMNFAMILY apps"
       expected = [cql]
       subject.call({
-        name: :apps,
+        column_family_name: :apps,
       }).should eq(expected)
     end
 
@@ -16,7 +16,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyAlter do
         cql = "ALTER COLUMNFAMILY foo.apps"
         expected = [cql]
         subject.call({
-          name: :apps,
+          column_family_name: :apps,
           keyspace_name: 'foo',
         }).should eq(expected)
       end
@@ -27,7 +27,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyAlter do
         cql = "ALTER COLUMNFAMILY apps ALTER created_at TYPE timestamp"
         expected = [cql]
         subject.call({
-          name: :apps,
+          column_family_name: :apps,
           alter: {
             created_at: :timestamp,
           },
@@ -40,7 +40,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyAlter do
         cql = "ALTER COLUMNFAMILY apps ADD created_at timestamp"
         expected = [cql]
         subject.call({
-          name: :apps,
+          column_family_name: :apps,
           add: {
             created_at: :timestamp,
           },
@@ -53,7 +53,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyAlter do
         cql = "ALTER COLUMNFAMILY apps DROP created_at"
         expected = [cql]
         subject.call({
-          name: :apps,
+          column_family_name: :apps,
           drop: :created_at,
         }).should eq(expected)
       end
@@ -74,7 +74,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyAlter do
         cql = "ALTER COLUMNFAMILY apps WITH comment = ?"
         expected = [cql, 'Testing']
         subject.call({
-          name: :apps,
+          column_family_name: :apps,
           with: {
             comment: 'Testing',
           }

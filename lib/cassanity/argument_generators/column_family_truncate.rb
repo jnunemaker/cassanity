@@ -4,7 +4,7 @@ module Cassanity
 
       # Internal
       def call(args = {})
-        name = args.fetch(:name)
+        name = args.fetch(:column_family_name)
 
         if (keyspace_name = args[:keyspace_name])
           name = "#{keyspace_name}.#{name}"
