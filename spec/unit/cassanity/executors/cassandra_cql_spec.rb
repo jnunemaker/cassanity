@@ -45,8 +45,8 @@ describe Cassanity::Executors::CassandraCql do
       subject.result_transformers.should eq(described_class::ResultTransformers)
     end
 
-    it "defaults :instrumentor" do
-      subject.instrumentor.should eq(Cassanity::Instrumenters::Noop)
+    it "defaults :instrumenter" do
+      subject.instrumenter.should eq(Cassanity::Instrumenters::Noop)
     end
 
     it "allows overriding :argument_generators" do
@@ -111,13 +111,13 @@ describe Cassanity::Executors::CassandraCql do
         subject.call(args)
       end
 
-      context "with instrumentor" do
-        let(:instrumentor) { Cassanity::Instrumenters::Memory.new }
+      context "with instrumenter" do
+        let(:instrumenter) { Cassanity::Instrumenters::Memory.new }
 
         subject {
           described_class.new(required_arguments.merge({
             argument_generators: argument_generators,
-            instrumentor: instrumentor,
+            instrumenter: instrumenter,
           }))
         }
 
@@ -131,9 +131,9 @@ describe Cassanity::Executors::CassandraCql do
 
           subject.call(args)
 
-          event = instrumentor.events.last
+          event = instrumenter.events.last
           event.should_not be_nil
-          event.name.should eq('call.cassandra_cql.executor.cassanity')
+          event.name.should eq('cql.cassanity')
           event.payload.should eq({
             command: :foo,
             generator: argument_generators[:foo],

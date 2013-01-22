@@ -56,8 +56,8 @@ module Cassanity
       # Private: Default result transformer for commands that do not have one.
       Mirror = Cassanity::ResultTransformers::Mirror.new
 
-      # Private: Forward #instrument to instrumentor.
-      def_delegator :@instrumentor, :instrument
+      # Private: Forward #instrument to instrumenter.
+      def_delegator :@instrumenter, :instrument
 
       # Private
       attr_reader :client
@@ -69,7 +69,7 @@ module Cassanity
       attr_reader :result_transformers
 
       # Private: What should be used to instrument all the things.
-      attr_reader :instrumentor
+      attr_reader :instrumenter
 
       # Internal: Initializes a cassandra-cql based CQL executor.
       #
@@ -91,7 +91,7 @@ module Cassanity
       #
       def initialize(args = {})
         @client = args.fetch(:client)
-        @instrumentor = args.fetch(:instrumentor) { Instrumenters::Noop }
+        @instrumenter = args.fetch(:instrumenter) { Instrumenters::Noop }
         @argument_generators = args.fetch(:argument_generators) { ArgumentGenerators }
         @result_transformers = args.fetch(:result_transformers) { ResultTransformers }
       end
@@ -116,7 +116,7 @@ module Cassanity
       # Returns the result of execution.
       # Raises Cassanity::Error if anything goes wrong during execution.
       def call(args = {})
-        instrument('call.cassandra_cql.executor.cassanity', {}) do |payload|
+        instrument('cql.cassanity', {}) do |payload|
           command = args.fetch(:command)
           generator = @argument_generators.fetch(command)
           arguments = args[:arguments]
