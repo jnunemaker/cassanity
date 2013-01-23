@@ -6,6 +6,6 @@ rvm:
 notifications:
   email: false
 bundler_args: --without guard
-before_script: ps ax | grep cassandra
+before_script: sudo service cassandra status
 services:
  - cassandra
