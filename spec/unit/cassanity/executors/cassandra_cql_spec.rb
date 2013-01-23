@@ -203,7 +203,8 @@ describe Cassanity::Executors::CassandraCql do
     end
 
     context "for unknown command" do
-      it "generates arguments based on command to argument map and passes generated arguments client execute method" do
+      it "generates arguments based on command to argument map and passes
+            generated arguments client execute method" do
         expect {
           subject.call({
             command: :surprise,
