@@ -119,15 +119,23 @@ module Cassanity
       # Raises Cassanity::Error if anything goes wrong during execution.
       def call(args = {})
         instrument('cql.cassanity', {}) do |payload|
-          command = args.fetch(:command)
-          generator = @argument_generators.fetch(command)
+          begin
+            command = args.fetch(:command)
+            generator = @argument_generators.fetch(command)
+          rescue KeyError => e
+            raise Cassanity::UnknownCommand
+          end
+
           arguments = args[:arguments]
-          execute_arguments = generator.call(arguments)
 
-          result = @client.execute(*execute_arguments)
-
-          transformer = @result_transformers.fetch(command) { Mirror }
-          transformed_result = transformer.call(result)
+          begin
+            execute_arguments = generator.call(arguments)
+            result = @client.execute(*execute_arguments)
+            transformer = @result_transformers.fetch(command) { Mirror }
+            transformed_result = transformer.call(result)
+          rescue Exception => e
+            raise Cassanity::Error
+          end
 
           payload[:command] = command
           payload[:generator] = generator
@@ -138,10 +146,6 @@ module Cassanity
 
           transformed_result
         end
-      rescue KeyError
-        raise Cassanity::UnknownCommand
-      rescue Exception => e
-        raise Cassanity::Error
       end
 
       # Public
