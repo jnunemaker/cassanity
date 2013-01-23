@@ -30,18 +30,20 @@ keyspace.create
 # use this keyspace
 keyspace.use
 
+apps_schema = {
+  primary_key: :id,
+  columns: {
+    id: :text,
+    name: :text,
+  },
+}
+
 # get an instance of a column family
 apps = keyspace.column_family('apps')
 
 # you can also pass a schema so the column family is all knowing
 apps = keyspace.column_family('apps', {
-  schema: {
-    primary_key: :id,
-    columns: {
-      id: :text,
-      name: :text,
-    },
-  },
+  schema: apps_schema,
 })
 pp apps
 
@@ -52,3 +54,5 @@ apps = Cassanity::ColumnFamily.new({
   schema: apps_schema,
 })
 pp apps
+
+keyspace.recreate
