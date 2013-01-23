@@ -118,7 +118,7 @@ module Cassanity
       # Returns the result of execution.
       # Raises Cassanity::Error if anything goes wrong during execution.
       def call(args = {})
-        instrument('cql.cassanity', {}) do |payload|
+        instrument('cql.cassanity') do |payload|
           begin
             command = args.fetch(:command)
             generator = @argument_generators.fetch(command)
