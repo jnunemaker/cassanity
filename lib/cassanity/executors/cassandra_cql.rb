@@ -142,6 +142,7 @@ module Cassanity
           payload[:arguments] = arguments
           payload[:execute_arguments] = execute_arguments
           payload[:result] = result
+          payload[:transformed_result] = transformed_result
           payload[:transformer] = transformer
 
           transformed_result

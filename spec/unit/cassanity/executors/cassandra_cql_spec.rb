@@ -148,6 +148,7 @@ describe Cassanity::Executors::CassandraCql do
             execute_arguments: ['mapped', {something: 'else'}],
             transformer: Cassanity::Executors::CassandraCql::Mirror,
             result: nil,
+            transformed_result: nil,
           })
         end
       end
