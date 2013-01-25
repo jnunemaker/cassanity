@@ -99,6 +99,28 @@ You can also do a lot more. Here are a few more [examples](https://github.com/jn
 * [Column Families](https://github.com/jnunemaker/cassanity/tree/master/examples/column_families.rb)
 * [Select a Range](https://github.com/jnunemaker/cassanity/tree/master/examples/select_range.rb)
 
+## Instrumentation
+
+Cassanity comes with a log subscriber and automatic metriks instrumentation. By
+default these work with ActiveSupport::Notifications, but only require the
+pieces of ActiveSupport that are needed and only do so if you actually attempt
+to require the instrumentation files listed below.
+
+If you use any of this instrumentation, you will need to have activesupport in
+your Gemfile.
+
+To use the log subscriber:
+
+```ruby
+require 'cassanity/instrumentation/log_subscriber'
+```
+
+To use the metriks instrumentation:
+
+```ruby
+require 'cassanity/instrumentation/metriks'
+```
+
 ## Compatibility
 
 * Ruby 1.9.3
