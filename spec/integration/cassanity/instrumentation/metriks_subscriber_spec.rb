@@ -1,11 +1,9 @@
 require 'helper'
-require 'securerandom'
-require 'active_support/notifications'
-require 'cassanity/instrumentation/metriks_subscriber'
+require 'cassanity/instrumentation/metriks'
 
 describe Cassanity::Instrumentation::MetriksSubscriber do
   let(:client) {
-    Cassanity::Client.new(nil, {
+    Cassanity::Client.new('127.0.0.1:9160', {
       instrumenter: ActiveSupport::Notifications,
     })
   }
@@ -26,20 +24,15 @@ describe Cassanity::Instrumentation::MetriksSubscriber do
   }
 
   before do
-    keyspace.create unless keyspace.exists?
-    column_family.create unless column_family.exists?
-
-    @subscriber = ActiveSupport::Notifications.subscribe(
-                    'cql.cassanity',
-                    described_class
-                  )
-  end
-
-  after do
-    ActiveSupport::Notifications.unsubscribe(@subscriber)
+    keyspace.recreate
+    column_family.recreate
   end
 
   it "updates timers when cql calls happen" do
+    # Clear the registry so we don't count the operations required to re-create
+    # the keyspace and column family.
+    Metriks::Registry.default.clear
+
     column_family.insert({
       data: {
         id: SimpleUUID::UUID.new,
