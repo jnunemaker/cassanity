@@ -53,25 +53,16 @@
 
 <div class="highlight"><pre><span class="nb">require</span> <span class="s1">'cassanity'</span>
 
-<span class="c1"># cassandra-cql connection</span>
-<span class="n">client</span> <span class="o">=</span> <span class="no">CassandraCQL</span><span class="o">::</span><span class="no">Database</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">'127.0.0.1:9160'</span><span class="p">,</span> <span class="p">{</span>
-  <span class="n">cql_version</span><span class="p">:</span> <span class="s1">'3.0.0'</span><span class="p">,</span>
-<span class="p">})</span>
-
-<span class="c1"># what is going to execute the cql queries?</span>
-<span class="n">executor</span> <span class="o">=</span> <span class="no">Cassanity</span><span class="o">::</span><span class="no">Executors</span><span class="o">::</span><span class="no">CassandraCql</span><span class="o">.</span><span class="n">new</span><span class="p">({</span>
-  <span class="n">client</span><span class="p">:</span> <span class="n">client</span><span class="p">,</span>
-<span class="p">})</span>
-
-<span class="c1"># setup connection with something that can execute queries</span>
-<span class="n">connection</span> <span class="o">=</span> <span class="no">Cassanity</span><span class="o">::</span><span class="no">Connection</span><span class="o">.</span><span class="n">new</span><span class="p">({</span>
-  <span class="n">executor</span><span class="p">:</span> <span class="n">executor</span><span class="p">,</span>
-<span class="p">})</span>
+<span class="c1"># client does the heavy lifting of setting up a cassandra cql database instance,</span>
+<span class="c1"># a cassanity executor for that database, and a cassanity connection</span>
+<span class="n">client</span> <span class="o">=</span> <span class="no">Cassanity</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span>
 
 <span class="c1"># get keyspace instance</span>
-<span class="n">keyspace</span> <span class="o">=</span> <span class="n">connection</span><span class="o">[</span><span class="ss">:my_app</span><span class="o">]</span>
+<span class="n">keyspace</span> <span class="o">=</span> <span class="n">client</span><span class="o">[</span><span class="ss">:my_app</span><span class="o">]</span>
 
 <span class="c1"># tell client to use keyspace for future queries</span>
+<span class="c1"># this is optional as cassanity always sends the keyspace and column family name</span>
+<span class="c1"># whenever they are needed</span>
 <span class="n">keyspace</span><span class="o">.</span><span class="n">use</span>
 
 <span class="c1"># schema for apps column family</span>
@@ -91,6 +82,22 @@
 <span class="n">apps</span> <span class="o">=</span> <span class="n">keyspace</span><span class="o">.</span><span class="n">column_family</span><span class="p">({</span>
   <span class="nb">name</span><span class="p">:</span> <span class="ss">:apps</span><span class="p">,</span>
   <span class="n">schema</span><span class="p">:</span> <span class="n">apps_schema</span><span class="p">,</span>
+<span class="p">})</span>
+
+<span class="c1"># you can also just pass a hash for the schema</span>
+<span class="n">apps</span> <span class="o">=</span> <span class="n">keyspace</span><span class="o">.</span><span class="n">column_family</span><span class="p">({</span>
+  <span class="nb">name</span><span class="p">:</span> <span class="ss">:apps</span><span class="p">,</span>
+  <span class="n">schema</span><span class="p">:</span> <span class="p">{</span>
+    <span class="n">primary_key</span><span class="p">:</span> <span class="ss">:id</span><span class="p">,</span>
+    <span class="n">columns</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nb">id</span><span class="p">:</span> <span class="ss">:text</span><span class="p">,</span>
+      <span class="nb">name</span><span class="p">:</span> <span class="ss">:text</span><span class="p">,</span>
+      <span class="n">created_at</span><span class="p">:</span> <span class="ss">:timestamp</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">with</span><span class="p">:</span> <span class="p">{</span>
+      <span class="n">comment</span><span class="p">:</span> <span class="s1">'For storing apps'</span><span class="p">,</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
 <span class="p">})</span>
 
 <span class="c1"># create column family based on name and schema</span>
@@ -124,7 +131,29 @@
 <li><a href="https://github.com/jnunemaker/cassanity/tree/master/examples/keyspaces.rb">Keyspaces</a></li>
 <li><a href="https://github.com/jnunemaker/cassanity/tree/master/examples/column_families.rb">Column Families</a></li>
 <li><a href="https://github.com/jnunemaker/cassanity/tree/master/examples/select_range.rb">Select a Range</a></li>
-</ul><h2>Compatibility</h2>
+</ul><h2>Instrumentation</h2>
+
+<p>Cassanity comes with a log subscriber and automatic metriks instrumentation. By
+default these work with ActiveSupport::Notifications, but only require the
+pieces of ActiveSupport that are needed and only do so if you actually attempt
+to require the instrumentation files listed below.</p>
+
+<p>If you use any of this instrumentation, you will need to have activesupport in
+your Gemfile.</p>
+
+<p>To use the log subscriber:</p>
+
+<div class="highlight"><pre><span class="nb">require</span> <span class="s1">'cassanity/instrumentation/log_subscriber'</span>
+</pre></div>
+
+<p>To use the metriks instrumentation:</p>
+
+<div class="highlight"><pre><span class="nb">require</span> <span class="s1">'cassanity/instrumentation/metriks'</span>
+</pre></div>
+
+<p>For Rails, I typically drop these lines in an initialize named <code>cassanity.rb</code>.</p>
+
+<h2>Compatibility</h2>
 
 <ul>
 <li>Ruby 1.9.3</li>
