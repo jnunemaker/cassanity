@@ -143,12 +143,7 @@ describe Cassanity::Executors::CassandraCql do
           event.name.should eq('cql.cassanity')
           event.payload.should eq({
             command: :foo,
-            generator: argument_generators[:foo],
-            arguments: {something: 'else'},
-            execute_arguments: ['mapped', {something: 'else'}],
-            transformer: Cassanity::Executors::CassandraCql::Mirror,
             result: nil,
-            transformed_result: nil,
           })
         end
       end

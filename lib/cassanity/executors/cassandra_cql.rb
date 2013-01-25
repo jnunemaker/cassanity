@@ -112,7 +112,7 @@ module Cassanity
       #
       #   call({
       #     command: :keyspace_create,
-      #     arguments: {name: 'analytics'},
+      #     arguments: {keyspace_name: 'analytics'},
       #   })
       #
       # Returns the result of execution.
@@ -138,12 +138,17 @@ module Cassanity
           end
 
           payload[:command] = command
-          payload[:generator] = generator
-          payload[:arguments] = arguments
-          payload[:execute_arguments] = execute_arguments
-          payload[:result] = result
-          payload[:transformed_result] = transformed_result
-          payload[:transformer] = transformer
+          payload[:result] = transformed_result
+
+          if arguments
+            if (keyspace_name = arguments[:keyspace_name])
+              payload[:keyspace_name] = keyspace_name
+            end
+
+            if (column_family_name = arguments[:column_family_name])
+              payload[:column_family_name] = column_family_name
+            end
+          end
 
           transformed_result
         end
