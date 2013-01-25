@@ -121,6 +121,8 @@ To use the metriks instrumentation:
 require 'cassanity/instrumentation/metriks'
 ```
 
+For Rails, I typically drop these lines in an initialize named `cassanity.rb`.
+
 ## Compatibility
 
 * Ruby 1.9.3
