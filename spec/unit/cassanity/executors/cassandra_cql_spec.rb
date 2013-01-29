@@ -3,11 +3,11 @@ require 'cassanity/executors/cassandra_cql'
 require 'cassanity/instrumenters/memory'
 
 describe Cassanity::Executors::CassandraCql do
-  let(:client) { double('Client', :execute => nil) }
+  let(:driver) { double('Client', :execute => nil) }
 
   let(:required_arguments) {
     {
-      client: client,
+      driver: driver,
     }
   }
 
@@ -26,15 +26,15 @@ describe Cassanity::Executors::CassandraCql do
   subject { described_class.new(required_arguments) }
 
   describe "#initialize" do
-    [:client].each do |key|
+    [:driver].each do |key|
       it "raises error without :#{key} key" do
         args = required_arguments.reject { |k, v| k == key }
         expect { described_class.new(args) }.to raise_error(KeyError)
       end
     end
 
-    it "sets client" do
-      subject.client.should eq(client)
+    it "sets driver" do
+      subject.driver.should eq(driver)
     end
 
     it "defaults :argument_generators" do
@@ -106,7 +106,7 @@ describe Cassanity::Executors::CassandraCql do
     }
 
     context "for known command" do
-      it "generates arguments based on command to argument map and passes generated arguments client execute method" do
+      it "generates arguments based on command to argument map and passes generated arguments driver execute method" do
         args = {
           command: :foo,
           arguments: {
@@ -114,7 +114,7 @@ describe Cassanity::Executors::CassandraCql do
           },
         }
 
-        client.should_receive(:execute).with('mapped', args[:arguments])
+        driver.should_receive(:execute).with('mapped', args[:arguments])
         subject.call(args)
       end
 
@@ -160,7 +160,7 @@ describe Cassanity::Executors::CassandraCql do
 
         it "returns result transformed" do
           result = double('Result')
-          client.stub(:execute => result)
+          driver.stub(:execute => result)
           tranformer = result_transformers[:foo]
 
           args = {
@@ -184,7 +184,7 @@ describe Cassanity::Executors::CassandraCql do
 
         it "returns result transformed" do
           result = double('Result')
-          client.stub(:execute => result)
+          driver.stub(:execute => result)
           tranformer = result_transformers[:foo]
 
           args = {
@@ -201,7 +201,7 @@ describe Cassanity::Executors::CassandraCql do
 
     context "for unknown command" do
       it "generates arguments based on command to argument map and passes
-            generated arguments client execute method" do
+            generated arguments driver execute method" do
         expect {
           subject.call({
             command: :surprise,
@@ -210,9 +210,9 @@ describe Cassanity::Executors::CassandraCql do
       end
     end
 
-    context "when client raises exception" do
+    context "when driver raises exception" do
       it "raises Cassanity::Error" do
-        client.should_receive(:execute).and_raise(Exception.new)
+        driver.should_receive(:execute).and_raise(Exception.new)
         expect {
           subject.call({
             command: :foo,
@@ -226,7 +226,7 @@ describe Cassanity::Executors::CassandraCql do
     it "return representation" do
       result = subject.inspect
       result.should match(/#{described_class}/)
-      result.should match(/client=/)
+      result.should match(/driver=/)
     end
   end
 end

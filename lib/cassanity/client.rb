@@ -33,7 +33,7 @@ module Cassanity
       @driver = CassandraCQL::Database.new(@servers, @options, @thrift_options)
 
       @executor = Cassanity::Executors::CassandraCql.new({
-        client: @driver,
+        driver: @driver,
         instrumenter: @instrumenter,
       })
 

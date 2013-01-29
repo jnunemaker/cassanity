@@ -72,7 +72,7 @@ describe Cassanity::Client do
         and_return(driver)
 
       Cassanity::Executors::CassandraCql.should_receive(:new).
-        with(client: driver, instrumenter: instrumenter).
+        with(driver: driver, instrumenter: instrumenter).
         and_return(executor)
 
       described_class.new('localhost:1234', instrumenter: instrumenter)
@@ -91,7 +91,7 @@ describe Cassanity::Client do
       CassandraCQL::Database.should_receive(:new).and_return(driver)
 
       Cassanity::Executors::CassandraCql.should_receive(:new).
-        with(hash_including(client: driver)).
+        with(hash_including(driver: driver)).
         and_return(executor)
 
       Cassanity::Connection.should_receive(:new).

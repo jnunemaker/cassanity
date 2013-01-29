@@ -60,7 +60,7 @@ module Cassanity
       def_delegator :@instrumenter, :instrument
 
       # Private
-      attr_reader :client
+      attr_reader :driver
 
       # Private
       attr_reader :argument_generators
@@ -74,7 +74,7 @@ module Cassanity
       # Internal: Initializes a cassandra-cql based CQL executor.
       #
       # args - The Hash of arguments.
-      #        :client - The CassandraCQL::Database connection instance.
+      #        :driver - The CassandraCQL::Database connection instance.
       #        :instrumenter - What should be used to instrument all the things
       #                        (default: Cassanity::Instrumenters::Noop).
       #        :argument_generators - A Hash where each key is a command name
@@ -88,11 +88,11 @@ module Cassanity
       #
       # Examples
       #
-      #   client = CassandraCQL::Database.new('host', cql_version: '3.0.0')
-      #   Cassanity::Executors::CassandraCql.new(client: client)
+      #   driver = CassandraCQL::Database.new('host', cql_version: '3.0.0')
+      #   Cassanity::Executors::CassandraCql.new(driver: driver)
       #
       def initialize(args = {})
-        @client = args.fetch(:client)
+        @driver = args.fetch(:driver)
         @instrumenter = args[:instrumenter] || Instrumenters::Noop
         @argument_generators = args.fetch(:argument_generators) { ArgumentGenerators }
         @result_transformers = args.fetch(:result_transformers) { ResultTransformers }
@@ -143,7 +143,7 @@ module Cassanity
             execute_arguments = generator.call(arguments)
             payload[:cql] = execute_arguments[0]
             payload[:cql_variables] = execute_arguments[1..-1]
-            result = @client.execute(*execute_arguments)
+            result = @driver.execute(*execute_arguments)
             transformer = @result_transformers.fetch(command) { Mirror }
             transformed_result = transformer.call(result)
             payload[:result] = transformed_result
@@ -158,7 +158,7 @@ module Cassanity
       # Public
       def inspect
         attributes = [
-          "client=#{@client.inspect}",
+          "driver=#{@driver.inspect}",
         ]
         "#<#{self.class.name}:#{object_id} #{attributes.join(', ')}>"
       end
