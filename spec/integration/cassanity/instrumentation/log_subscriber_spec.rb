@@ -26,13 +26,15 @@ describe Cassanity::Instrumentation::LogSubscriber do
   before do
     keyspace.recreate
     column_family.recreate
+
+    @io = StringIO.new
+    logger = Logger.new(@io)
+    Cassanity::Instrumentation::LogSubscriber.logger = logger
   end
 
   it "works" do
     begin
-      io = StringIO.new
-      logger = Logger.new(io)
-      Cassanity::Instrumentation::LogSubscriber.logger = logger
+
 
       column_family.insert({
         data: {
@@ -42,12 +44,19 @@ describe Cassanity::Instrumentation::LogSubscriber do
       })
 
       query = "INSERT INTO cassanity_test.apps (id, name) VALUES (?, ?)"
-      log = io.string
+      log = @io.string
       log.should match(/#{Regexp.escape(query)}/i)
       log.should match(/UUID/i)
       log.should match(/GitHub\.com/i)
     ensure
       Cassanity::Instrumentation::LogSubscriber.logger = nil
     end
+  end
+
+  it "does not fail when no bind variables" do
+    client.keyspaces
+    query = "SELECT * FROM system.schema_keyspaces"
+    log = @io.string
+    log.should match(/#{Regexp.escape(query)}/i)
   end
 end

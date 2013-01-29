@@ -11,7 +11,7 @@ module Cassanity
         name = '%s (%.1fms)' % ["CQL Query", event.duration]
 
         cql = event.payload[:cql]
-        vars = event.payload[:cql_variables]
+        vars = event.payload[:cql_variables] || []
         variables = vars.map { |var| var.inspect }.join(', ')
 
         query = "#{cql}"
