@@ -10,13 +10,12 @@ module Cassanity
 
         name = '%s (%.1fms)' % ["CQL Query", event.duration]
 
-        # execute arguments are always an array where the first element is the
-        # cql string and the rest are the bound variables.
-        cql, *args = event.payload[:execute_arguments]
-        arguments = args.map { |arg| arg.inspect }.join(', ')
+        cql = event.payload[:cql]
+        vars = event.payload[:cql_variables]
+        variables = vars.map { |var| var.inspect }.join(', ')
 
         query = "#{cql}"
-        query += " (#{arguments})" unless arguments.empty?
+        query += " (#{variables})" unless variables.empty?
 
         debug "  #{color(name, CYAN, true)}  [ #{query} ]"
       end

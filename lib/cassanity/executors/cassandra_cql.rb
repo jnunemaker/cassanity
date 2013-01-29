@@ -138,6 +138,8 @@ module Cassanity
           end
 
           payload[:command] = command
+          payload[:cql] = execute_arguments[0]
+          payload[:cql_variables] = execute_arguments[1..-1]
           payload[:result] = transformed_result
 
           if arguments

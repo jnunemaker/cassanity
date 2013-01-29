@@ -144,6 +144,8 @@ describe Cassanity::Executors::CassandraCql do
           event.payload.should eq({
             command: :foo,
             result: nil,
+            cql: 'mapped',
+            cql_variables: [{something: 'else'}],
           })
         end
       end
