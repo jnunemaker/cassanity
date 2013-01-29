@@ -12,16 +12,16 @@ describe Cassanity::Connection do
   subject { client.connection }
 
   before do
-    client_drop_keyspace(driver, keyspace_name)
+    driver_drop_keyspace(driver, keyspace_name)
   end
 
   after do
-    client_drop_keyspace(driver, keyspace_name)
+    driver_drop_keyspace(driver, keyspace_name)
   end
 
   it "can batch" do
-    client_create_keyspace(driver, keyspace_name)
-    client_create_column_family(driver, column_family_name, "id text PRIMARY KEY, name text")
+    driver_create_keyspace(driver, keyspace_name)
+    driver_create_column_family(driver, column_family_name, "id text PRIMARY KEY, name text")
 
     subject.batch({
       keyspace_name: keyspace_name,
@@ -46,8 +46,8 @@ describe Cassanity::Connection do
   end
 
   it "knows keyspaces" do
-    client_create_keyspace(driver, 'something1')
-    client_create_keyspace(driver, 'something2')
+    driver_create_keyspace(driver, 'something1')
+    driver_create_keyspace(driver, 'something2')
 
     result = subject.keyspaces
     result.each do |keyspace|
@@ -59,7 +59,7 @@ describe Cassanity::Connection do
     names.should include('something1')
     names.should include('something2')
 
-    client_drop_keyspace(driver, 'something1')
-    client_drop_keyspace(driver, 'something2')
+    driver_drop_keyspace(driver, 'something1')
+    driver_drop_keyspace(driver, 'something2')
   end
 end

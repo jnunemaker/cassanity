@@ -33,33 +33,33 @@ describe Cassanity::ColumnFamily do
   }
 
   before do
-    client_drop_keyspace(driver, keyspace_name)
-    client_create_keyspace(driver, keyspace_name)
-    client_create_column_family(driver, column_family_name, "id text PRIMARY KEY, name text")
-    client_create_column_family(driver, counters_column_family_name, "id text PRIMARY KEY, views counter")
+    driver_drop_keyspace(driver, keyspace_name)
+    driver_create_keyspace(driver, keyspace_name)
+    driver_create_column_family(driver, column_family_name, "id text PRIMARY KEY, name text")
+    driver_create_column_family(driver, counters_column_family_name, "id text PRIMARY KEY, views counter")
   end
 
   after do
-    client_drop_keyspace(driver, keyspace_name)
+    driver_drop_keyspace(driver, keyspace_name)
   end
 
   it "knows if it exists" do
     subject.exists?.should be_true
-    client_drop_column_family(driver, column_family_name)
+    driver_drop_column_family(driver, column_family_name)
     subject.exists?.should be_false
   end
 
   it "can recreate when not created" do
-    client_drop_column_family(driver, column_family_name)
-    client_column_family?(driver, column_family_name).should be_false
+    driver_drop_column_family(driver, column_family_name)
+    driver_column_family?(driver, column_family_name).should be_false
     subject.recreate
-    client_column_family?(driver, column_family_name).should be_true
+    driver_column_family?(driver, column_family_name).should be_true
   end
 
   it "can recreate when already created" do
-    client_column_family?(driver, column_family_name).should be_true
+    driver_column_family?(driver, column_family_name).should be_true
     subject.recreate
-    client_column_family?(driver, column_family_name).should be_true
+    driver_column_family?(driver, column_family_name).should be_true
   end
 
   it "can create itself" do
@@ -89,16 +89,16 @@ describe Cassanity::ColumnFamily do
   end
 
   it "can drop" do
-    client_column_family?(driver, column_family_name).should be_true
+    driver_column_family?(driver, column_family_name).should be_true
     subject.drop
-    client_column_family?(driver, column_family_name).should be_false
+    driver_column_family?(driver, column_family_name).should be_false
   end
 
   it "can drop when using a different keyspace" do
-    client_column_family?(driver, column_family_name).should be_true
+    driver_column_family?(driver, column_family_name).should be_true
     driver.execute('USE system')
     subject.drop
-    client_column_family?(driver, column_family_name).should be_false
+    driver_column_family?(driver, column_family_name).should be_false
   end
 
   it "can alter" do
