@@ -24,18 +24,16 @@ describe Cassanity::Instrumentation::LogSubscriber do
   }
 
   before do
-    keyspace.recreate
-    column_family.recreate
-
     @io = StringIO.new
     logger = Logger.new(@io)
     Cassanity::Instrumentation::LogSubscriber.logger = logger
+
+    keyspace.recreate
+    column_family.recreate
   end
 
   it "works" do
     begin
-
-
       column_family.insert({
         data: {
           id: SimpleUUID::UUID.new,
@@ -57,6 +55,18 @@ describe Cassanity::Instrumentation::LogSubscriber do
     client.keyspaces
     query = "SELECT * FROM system.schema_keyspaces"
     log = @io.string
+    log.should match(/#{Regexp.escape(query)}/i)
+  end
+
+  it "works through exceptions" do
+    client.driver.should_receive(:execute).and_raise(Exception.new('boom'))
+    begin
+      client.keyspaces
+    rescue Exception => e
+    end
+
+    query = "SELECT * FROM system.schema_keyspaces"
+    log = @io.string.split("\n").last
     log.should match(/#{Regexp.escape(query)}/i)
   end
 end

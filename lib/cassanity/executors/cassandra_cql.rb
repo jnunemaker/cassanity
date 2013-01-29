@@ -121,26 +121,13 @@ module Cassanity
         instrument('cql.cassanity') do |payload|
           begin
             command = args.fetch(:command)
+            payload[:command] = command
             generator = @argument_generators.fetch(command)
           rescue KeyError => e
             raise Cassanity::UnknownCommand
           end
 
           arguments = args[:arguments]
-
-          begin
-            execute_arguments = generator.call(arguments)
-            result = @client.execute(*execute_arguments)
-            transformer = @result_transformers.fetch(command) { Mirror }
-            transformed_result = transformer.call(result)
-          rescue Exception => e
-            raise Cassanity::Error
-          end
-
-          payload[:command] = command
-          payload[:cql] = execute_arguments[0]
-          payload[:cql_variables] = execute_arguments[1..-1]
-          payload[:result] = transformed_result
 
           if arguments
             if (keyspace_name = arguments[:keyspace_name])
@@ -150,6 +137,18 @@ module Cassanity
             if (column_family_name = arguments[:column_family_name])
               payload[:column_family_name] = column_family_name
             end
+          end
+
+          begin
+            execute_arguments = generator.call(arguments)
+            payload[:cql] = execute_arguments[0]
+            payload[:cql_variables] = execute_arguments[1..-1]
+            result = @client.execute(*execute_arguments)
+            transformer = @result_transformers.fetch(command) { Mirror }
+            transformed_result = transformer.call(result)
+            payload[:result] = transformed_result
+          rescue Exception => e
+            raise Cassanity::Error
           end
 
           transformed_result
