@@ -46,7 +46,10 @@ module Cassanity
         arguments: {
           keyspace_name: @keyspace.name,
         }
-      }).any? { |row| row['columnfamily'].to_s == @name.to_s }
+      }).any? { |row|
+        row['columnfamily'].to_s == @name.to_s ||
+          row['columnfamily_name'].to_s == @name.to_s
+      }
     end
 
     alias_method :exist?, :exists?

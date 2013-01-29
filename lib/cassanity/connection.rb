@@ -48,7 +48,7 @@ module Cassanity
 
       rows.map { |row|
         Keyspace.new({
-          name: row['name'],
+          name: row['name'] || row['keyspace'] || row['keyspace_name'],
           executor: @executor,
         })
       }

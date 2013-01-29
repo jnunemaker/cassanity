@@ -37,7 +37,11 @@ module Cassanity
     # Returns true if keyspace exists, false if it does not.
     def exists?
       rows = @executor.call(command: :keyspaces)
-      rows.any? { |row| row['name'].to_s == name.to_s }
+      rows.any? { |row|
+        row['name'].to_s == @name.to_s ||
+          row['keyspace'].to_s == @name.to_s ||
+          row['keyspace_name'].to_s == @name.to_s
+      }
     end
 
     alias_method :exist?, :exists?
@@ -127,7 +131,7 @@ module Cassanity
         },
       }).map { |row|
         ColumnFamily.new({
-          name: row['columnfamily'],
+          name: row['columnfamily'] || row['columnfamily_name'],
           keyspace: self,
         })
       }
