@@ -1,5 +1,5 @@
 module Cassanity
-  class Error < Exception
+  class Error < StandardError
     # Public: The original error this exception is wrapping.
     attr_reader :original
 

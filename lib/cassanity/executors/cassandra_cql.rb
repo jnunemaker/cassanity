@@ -147,7 +147,7 @@ module Cassanity
             transformer = @result_transformers.fetch(command, Mirror)
             transformed_result = transformer.call(result)
             payload[:result] = transformed_result
-          rescue Exception => e
+          rescue StandardError => e
             raise Cassanity::Error
           end
 

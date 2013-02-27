@@ -58,10 +58,10 @@ describe Cassanity::Instrumentation::LogSubscriber do
   end
 
   it "works through exceptions" do
-    client.driver.should_receive(:execute).and_raise(Exception.new('boom'))
+    client.driver.should_receive(:execute).and_raise(StandardError.new('boom'))
     begin
       client.keyspaces
-    rescue Exception => e
+    rescue StandardError => e
     end
 
     query = "SELECT * FROM system.schema_keyspaces"

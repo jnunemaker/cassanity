@@ -212,12 +212,12 @@ describe Cassanity::Executors::CassandraCql do
 
     context "when driver raises exception" do
       it "raises Cassanity::Error" do
-        driver.should_receive(:execute).and_raise(Exception.new)
+        driver.should_receive(:execute).and_raise(StandardError.new)
         expect {
           subject.call({
             command: :foo,
           })
-        }.to raise_error(Cassanity::Error, /Exception: Exception/)
+        }.to raise_error(Cassanity::Error, /StandardError: StandardError/)
       end
     end
   end

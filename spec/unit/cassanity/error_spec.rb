@@ -2,7 +2,7 @@ require 'helper'
 require 'cassanity/error'
 
 describe Cassanity::Error do
-  HorribleBadThing = Class.new(Exception)
+  HorribleBadThing = Class.new(StandardError)
 
   it "can wrap original error" do
     original = HorribleBadThing.new
@@ -14,7 +14,7 @@ describe Cassanity::Error do
     begin
       begin
         raise HorribleBadThing, 'Yep, really bad'
-      rescue Exception => e
+      rescue StandardError => e
         raise described_class
       end
     rescue described_class => e
