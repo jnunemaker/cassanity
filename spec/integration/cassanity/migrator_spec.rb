@@ -49,12 +49,6 @@ describe Cassanity::Migrator do
         add_username_to_users['version'].should eq('20130226135004')
       end
     end
-
-    context "when some migrations have been run" do
-      it "runs migrations that need to be run" do
-
-      end
-    end
   end
 
   describe "#ensure_column_family_exists" do
