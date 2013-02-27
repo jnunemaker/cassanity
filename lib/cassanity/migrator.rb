@@ -16,7 +16,13 @@ module Cassanity
     end
 
     def migrate
+      migrations_to_run = migrations.without(ran_migrations)
       migrations_to_run.each { |migration| migration.run(self, :up) }
+
+      {
+        migrations: migrations,
+        ran_migrations: migrations_to_run
+      }
     end
 
     # Marks a migration as migrated.
@@ -38,11 +44,6 @@ module Cassanity
     # Private
     def ran_migrations
       Migration::Collection.from_column_family(column_family)
-    end
-
-    # Private
-    def migrations_to_run
-      migrations.without(ran_migrations)
     end
 
     # Private: The column family storing all
