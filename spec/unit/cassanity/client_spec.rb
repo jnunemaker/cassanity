@@ -2,6 +2,13 @@ require 'helper'
 require 'cassanity/client'
 
 describe Cassanity::Client do
+  let(:driver) { double('Driver') }
+
+  before do
+    # Ensure that we never hit cassandra for real here.
+    CassandraCQL::Database.stub(:new => driver)
+  end
+
   describe "#initialize" do
     it "passes arguments to cassandra cql database instance" do
       CassandraCQL::Database.should_receive(:new).
@@ -80,7 +87,7 @@ describe Cassanity::Client do
 
     it "sets cassandra cql database instance as driver" do
       client = described_class.new
-      client.driver.should be_instance_of(CassandraCQL::Database)
+      client.driver.should be_instance_of(driver.class)
     end
 
     it "builds driver, executor and connection" do
