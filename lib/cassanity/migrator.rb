@@ -18,6 +18,7 @@ module Cassanity
     def migrate
       ensure_column_family_exists
 
+      migrations_from_path = Migration::Collection.from_path(migrations_path)
       migrations_from_path.each do |migration|
         migration.run(self, :up)
       end
@@ -32,20 +33,6 @@ module Cassanity
           migrated_at: Time.now.utc,
         },
       })
-    end
-
-    def migrations_from_path
-      paths = Dir["#{migrations_path}/*.rb"]
-      migrations = paths.map { |path|
-        Migration.from_path(path)
-      }
-      Migration::Collection.new(migrations)
-    end
-
-    def migrations_from_column_family
-      rows = column_family.select
-      migrations = rows.map { |row| Migration.from_hash(row) }
-      Migration::Collection.new(migrations)
     end
 
     # Private: The column family storing all
