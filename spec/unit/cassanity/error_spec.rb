@@ -28,6 +28,11 @@ describe Cassanity::Error do
     error.message.should eq('Is this thing on?')
   end
 
+  it "works with only a string" do
+    error = described_class.new("Is this thing on?")
+    error.message.should eq('Is this thing on?')
+  end
+
   it "does not require any arguments" do
     error = described_class.new
     error.message.should eq("Something truly horrible went wrong")

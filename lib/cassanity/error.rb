@@ -10,19 +10,23 @@ module Cassanity
     #
     # Returns the duplicated String.
     def initialize(args = {})
-      @original = args.fetch(:original) { $! }
-      @message = args.fetch(:message) {
-        if @original
-          "Original Exception: #{@original.class}: #{@original.message}"
-        else
-          "Something truly horrible went wrong"
-        end
-      }
+      if args.is_a?(String)
+        @message = args
+      else
+        @original = args.fetch(:original) { $! }
+        @message = args.fetch(:message) {
+          if @original
+            "Original Exception: #{@original.class}: #{@original.message}"
+          else
+            "Something truly horrible went wrong"
+          end
+        }
+      end
 
       super @message
     end
   end
 
-  class UnknownCommand < Error
-  end
+  # Raised when an argument generator is asked to perform an unknown command.
+  UnknownCommand = Class.new(Error)
 end
