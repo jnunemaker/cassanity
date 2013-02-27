@@ -46,6 +46,18 @@ module Cassanity
       @name = name
     end
 
+    # Public: Runs a migration operation for a migrator.
+    def run(migrator, operation)
+      case operation
+      when :up
+        up
+        migrator.migrated(self)
+      else
+        raise MigrationOperationNotSupported,
+          "#{operation.inspect} is not a supported migration operation"
+      end
+    end
+
     def up
       # override in subclass
     end

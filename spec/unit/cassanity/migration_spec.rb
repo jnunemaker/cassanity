@@ -108,4 +108,18 @@ describe Cassanity::Migration do
       described_class.new(1, 'a').eql?(other).should be_false
     end
   end
+
+  describe "#run" do
+    context "for unsupported operation" do
+      it "raises error" do
+        migration = described_class.new(2, 'foo')
+        migrator = double('Migrator')
+
+        expect {
+          migration.run(migrator, :fooooooooo)
+        }.to raise_error(Cassanity::MigrationOperationNotSupported,
+            ":fooooooooo is not a supported migration operation")
+      end
+    end
+  end
 end

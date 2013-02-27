@@ -29,4 +29,7 @@ module Cassanity
 
   # Raised when an argument generator is asked to perform an unknown command.
   UnknownCommand = Class.new(Error)
+
+  # Raised when a migration operation is attempted that is not supported.
+  MigrationOperationNotSupported = Class.new(Error)
 end
