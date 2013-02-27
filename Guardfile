@@ -20,4 +20,3 @@ guard 'rspec', rspec_options do
   ] }
   watch('spec/helper.rb')  { "spec" }
 end
-
