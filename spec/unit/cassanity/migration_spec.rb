@@ -15,4 +15,14 @@ describe Cassanity::Migration do
       @result.version.should eq(1234)
     end
   end
+
+  it "responds to up" do
+    instance = described_class.new('CreateUsers', 1234)
+    instance.should respond_to(:up)
+  end
+
+  it "responds to down" do
+    instance = described_class.new('CreateUsers', 1234)
+    instance.should respond_to(:down)
+  end
 end

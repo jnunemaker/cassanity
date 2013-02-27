@@ -10,5 +10,13 @@ module Cassanity
       @name = name
       @version = version
     end
+
+    def up
+      # override in subclass
+    end
+
+    def down
+      # override in subclass
+    end
   end
 end
