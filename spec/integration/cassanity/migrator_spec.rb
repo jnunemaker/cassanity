@@ -84,4 +84,28 @@ describe Cassanity::Migrator do
       end
     end
   end
+
+  describe "#migrate_to" do
+    context "migrating to specific versions" do
+      it "works" do
+        subject.migrate_to(migrations[0].version)
+        subject.ran_migrations.size.should be(1)
+
+        subject.migrate_to(migrations[1].version)
+        subject.ran_migrations.size.should be(2)
+
+        subject.migrate_to(migrations[2].version)
+        subject.ran_migrations.size.should be(3)
+
+        subject.migrate_to(migrations[1].version, :down)
+        subject.ran_migrations.size.should be(2)
+
+        subject.migrate_to(migrations[0].version, :down)
+        subject.ran_migrations.size.should be(1)
+
+        subject.migrate_to(migrations[0].version - 1, :down)
+        subject.ran_migrations.size.should be(0)
+      end
+    end
+  end
 end

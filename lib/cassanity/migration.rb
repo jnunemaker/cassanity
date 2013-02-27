@@ -52,6 +52,9 @@ module Cassanity
       when :up
         up
         migrator.migrated(self)
+      when :down
+        down
+        migrator.unmigrated(self)
       else
         raise MigrationOperationNotSupported,
           "#{operation.inspect} is not a supported migration operation"

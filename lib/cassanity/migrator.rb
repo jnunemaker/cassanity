@@ -25,6 +25,24 @@ module Cassanity
       }
     end
 
+    def migrate_to(version, direction = :up)
+      version = version.to_i
+
+      case direction
+      when :up
+        not_ran_migrations = migrations.without(ran_migrations)
+        migrations_to_run = not_ran_migrations.delete_if { |migration|
+          migration.version > version
+        }
+        migrations_to_run.each { |migration| migration.run(self, :up) }
+      when :down
+        migrations_to_run = ran_migrations.delete_if { |migration|
+          migration.version <= version
+        }
+        migrations_to_run.each { |migration| migration.run(self, :down) }
+      end
+    end
+
     # Marks a migration as migrated.
     def migrated(migration)
       column_family.insert({
@@ -32,6 +50,15 @@ module Cassanity
           version: migration.version,
           name: migration.name,
           migrated_at: Time.now.utc,
+        },
+      })
+    end
+
+    def unmigrated(migration)
+      column_family.delete({
+        where: {
+          version: migration.version,
+          name: migration.name,
         },
       })
     end
