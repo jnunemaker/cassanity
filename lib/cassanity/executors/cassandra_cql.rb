@@ -27,34 +27,34 @@ module Cassanity
       extend Forwardable
 
       # Private: Hash of commands to related argument generators.
-      ArgumentGenerators = {
-        keyspaces: Cassanity::ArgumentGenerators::Keyspaces.new,
-        keyspace_create: Cassanity::ArgumentGenerators::KeyspaceCreate.new,
-        keyspace_drop: Cassanity::ArgumentGenerators::KeyspaceDrop.new,
-        keyspace_use: Cassanity::ArgumentGenerators::KeyspaceUse.new,
-        column_families: Cassanity::ArgumentGenerators::ColumnFamilies.new,
-        column_family_create: Cassanity::ArgumentGenerators::ColumnFamilyCreate.new,
-        column_family_drop: Cassanity::ArgumentGenerators::ColumnFamilyDrop.new,
-        column_family_truncate: Cassanity::ArgumentGenerators::ColumnFamilyTruncate.new,
-        column_family_select: Cassanity::ArgumentGenerators::ColumnFamilySelect.new,
-        column_family_insert: Cassanity::ArgumentGenerators::ColumnFamilyInsert.new,
-        column_family_update: Cassanity::ArgumentGenerators::ColumnFamilyUpdate.new,
-        column_family_delete: Cassanity::ArgumentGenerators::ColumnFamilyDelete.new,
-        column_family_alter: Cassanity::ArgumentGenerators::ColumnFamilyAlter.new,
-        index_create: Cassanity::ArgumentGenerators::IndexCreate.new,
-        index_drop: Cassanity::ArgumentGenerators::IndexDrop.new,
-        batch: Cassanity::ArgumentGenerators::Batch.new,
+      DefaultArgumentGenerators = {
+        keyspaces: ArgumentGenerators::Keyspaces.new,
+        keyspace_create: ArgumentGenerators::KeyspaceCreate.new,
+        keyspace_drop: ArgumentGenerators::KeyspaceDrop.new,
+        keyspace_use: ArgumentGenerators::KeyspaceUse.new,
+        column_families: ArgumentGenerators::ColumnFamilies.new,
+        column_family_create: ArgumentGenerators::ColumnFamilyCreate.new,
+        column_family_drop: ArgumentGenerators::ColumnFamilyDrop.new,
+        column_family_truncate: ArgumentGenerators::ColumnFamilyTruncate.new,
+        column_family_select: ArgumentGenerators::ColumnFamilySelect.new,
+        column_family_insert: ArgumentGenerators::ColumnFamilyInsert.new,
+        column_family_update: ArgumentGenerators::ColumnFamilyUpdate.new,
+        column_family_delete: ArgumentGenerators::ColumnFamilyDelete.new,
+        column_family_alter: ArgumentGenerators::ColumnFamilyAlter.new,
+        index_create: ArgumentGenerators::IndexCreate.new,
+        index_drop: ArgumentGenerators::IndexDrop.new,
+        batch: ArgumentGenerators::Batch.new,
       }
 
       # Private: Hash of commands to related result transformers.
-      ResultTransformers = {
-        keyspaces: Cassanity::ResultTransformers::ResultToArray.new,
-        column_families: Cassanity::ResultTransformers::ResultToArray.new,
-        column_family_select: Cassanity::ResultTransformers::ResultToArray.new,
+      DefaultResultTransformers = {
+        keyspaces: ResultTransformers::ResultToArray.new,
+        column_families: ResultTransformers::ResultToArray.new,
+        column_family_select: ResultTransformers::ResultToArray.new,
       }
 
       # Private: Default result transformer for commands that do not have one.
-      Mirror = Cassanity::ResultTransformers::Mirror.new
+      Mirror = ResultTransformers::Mirror.new
 
       # Private: Forward #instrument to instrumenter.
       def_delegator :@instrumenter, :instrument
@@ -94,8 +94,8 @@ module Cassanity
       def initialize(args = {})
         @driver = args.fetch(:driver)
         @instrumenter = args[:instrumenter] || Instrumenters::Noop
-        @argument_generators = args.fetch(:argument_generators) { ArgumentGenerators }
-        @result_transformers = args.fetch(:result_transformers) { ResultTransformers }
+        @argument_generators = args.fetch(:argument_generators, DefaultArgumentGenerators)
+        @result_transformers = args.fetch(:result_transformers, DefaultResultTransformers)
       end
 
       # Internal: Execute a CQL query.
@@ -144,7 +144,7 @@ module Cassanity
             payload[:cql] = execute_arguments[0]
             payload[:cql_variables] = execute_arguments[1..-1]
             result = @driver.execute(*execute_arguments)
-            transformer = @result_transformers.fetch(command) { Mirror }
+            transformer = @result_transformers.fetch(command, Mirror)
             transformed_result = transformer.call(result)
             payload[:result] = transformed_result
           rescue Exception => e

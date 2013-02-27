@@ -38,11 +38,11 @@ describe Cassanity::Executors::CassandraCql do
     end
 
     it "defaults :argument_generators" do
-      subject.argument_generators.should eq(described_class::ArgumentGenerators)
+      subject.argument_generators.should eq(described_class::DefaultArgumentGenerators)
     end
 
     it "defaults :result_transformers" do
-      subject.result_transformers.should eq(described_class::ResultTransformers)
+      subject.result_transformers.should eq(described_class::DefaultResultTransformers)
     end
 
     it "defaults :instrumenter" do
