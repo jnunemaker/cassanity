@@ -3,7 +3,7 @@ require 'cassanity/instrumentation/metriks'
 
 describe Cassanity::Instrumentation::MetriksSubscriber do
   let(:client) {
-    Cassanity::Client.new(CassanityDefaultHostWithPort, {
+    Cassanity::Client.new(CassanityServers, {
       instrumenter: ActiveSupport::Notifications,
     })
   }

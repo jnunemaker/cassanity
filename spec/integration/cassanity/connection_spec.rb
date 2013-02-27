@@ -6,7 +6,7 @@ describe Cassanity::Connection do
   let(:keyspace_name)      { 'cassanity_test' }
   let(:column_family_name) { 'apps' }
 
-  let(:client) { Cassanity::Client.new(CassanityDefaultHostWithPort) }
+  let(:client) { Cassanity::Client.new(CassanityServers) }
   let(:driver) { client.driver }
 
   subject { client.connection }

@@ -3,7 +3,7 @@ require 'cassanity/instrumentation/log_subscriber'
 
 describe Cassanity::Instrumentation::LogSubscriber do
   let(:client) {
-    Cassanity::Client.new(CassanityDefaultHostWithPort, {
+    Cassanity::Client.new(CassanityServers, {
       instrumenter: ActiveSupport::Notifications,
     })
   }

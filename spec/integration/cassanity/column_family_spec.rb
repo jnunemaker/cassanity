@@ -6,7 +6,7 @@ describe Cassanity::ColumnFamily do
   let(:column_family_name)          { 'apps' }
   let(:counters_column_family_name) { 'counters' }
 
-  let(:client) { Cassanity::Client.new(CassanityDefaultHostWithPort) }
+  let(:client) { Cassanity::Client.new(CassanityServers) }
   let(:driver) { client.driver }
 
   let(:keyspace) { client[keyspace_name] }

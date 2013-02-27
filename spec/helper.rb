@@ -31,4 +31,4 @@ end
 host = ENV.fetch('CASSANITY_HOST', '127.0.0.1')
 port = ENV.fetch('CASSANITY_PORT', '9160')
 
-CassanityDefaultHostWithPort = "#{host}:#{port}"
+CassanityServers = "#{host}:#{port}"
