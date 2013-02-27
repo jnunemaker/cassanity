@@ -1,9 +1,11 @@
 $:.unshift(File.expand_path('../../lib', __FILE__))
 
+
 require 'rubygems'
 require 'bundler'
 
 Bundler.require :default
+Dotenv.load
 
 require 'cassanity'
 
@@ -25,3 +27,8 @@ RSpec.configure do |config|
 
   config.include CassanityHelpers
 end
+
+host = ENV.fetch('CASSANITY_HOST', '127.0.0.1')
+port = ENV.fetch('CASSANITY_PORT', '9160')
+
+CassanityDefaultHostWithPort = "#{host}:#{port}"

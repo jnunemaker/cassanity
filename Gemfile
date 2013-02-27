@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 gemspec
 
+gem 'dotenv'
 gem 'rake'
 gem 'rspec', '~> 2.8'
 gem 'activesupport', :require => false

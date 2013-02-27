@@ -6,7 +6,7 @@ describe Cassanity::Keyspace do
   let(:self_created_keyspace_name) { 'self_created' }
   let(:column_family_name)         { 'apps' }
 
-  let(:client) { Cassanity::Client.new }
+  let(:client) { Cassanity::Client.new(CassanityDefaultHostWithPort) }
   let(:driver) { client.driver }
 
   let(:required_arguments) {
