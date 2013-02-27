@@ -1,11 +1,33 @@
 module Cassanity
   class Migration
+    # Public: Converts a path to migration instance.
+    #
+    # path - The String or Pathname path for the migration.
+    #
+    # Examples
+    #
+    #   migration = Cassanity::Migration.from_path('/db/migrations/1234_foo.rb')
+    #   puts migration.version # 1234
+    #   puts migration.name # "foo"
+    #
+    # Returns Cassanity::Migration instance.
     def self.from_path(path)
       basename = File.basename(path, '.rb')
       version, name = basename.split('_', 2)
       new(version, name)
     end
 
+    # Public: Converts a hash to migration instance.
+    #
+    # hash - The Hash for that has migration details.
+    #
+    # Examples
+    #
+    #   migration = Cassanity::Migration.from_hash({version: 1234, name: 'foo'})
+    #   puts migration.version # 1234
+    #   puts migration.name # "foo"
+    #
+    # Returns Cassanity::Migration instance.
     def self.from_hash(hash)
       new(hash['version'], hash['name'])
     end
