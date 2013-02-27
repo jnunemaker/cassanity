@@ -16,12 +16,7 @@ module Cassanity
     end
 
     def migrate
-      ensure_column_family_exists
-
-      migrations_from_path = Migration::Collection.from_path(migrations_path)
-      migrations_from_path.each do |migration|
-        migration.run(self, :up)
-      end
+      migrations_to_run.each { |migration| migration.run(self, :up) }
     end
 
     # Marks a migration as migrated.
@@ -35,25 +30,39 @@ module Cassanity
       })
     end
 
+    # Private
+    def migrations
+      @migrations ||= Migration::Collection.from_path(migrations_path)
+    end
+
+    # Private
+    def ran_migrations
+      Migration::Collection.from_column_family(column_family)
+    end
+
+    # Private
+    def migrations_to_run
+      migrations.without(ran_migrations)
+    end
+
     # Private: The column family storing all
     # migration information.
     def column_family
-      @column_family ||= keyspace.column_family({
-        name: :migrations,
-        schema: {
-          primary_key: [:version, :name],
-          columns: {
-            version: :text,
-            name: :text,
-            migrated_at: :timestamp,
+      @column_family ||= begin
+        column_family = keyspace.column_family({
+          name: :migrations,
+          schema: {
+            primary_key: [:version, :name],
+            columns: {
+              version: :text,
+              name: :text,
+              migrated_at: :timestamp,
+            },
           },
-        },
-      })
-    end
-
-    # Private: Ensures that the column family exists.
-    def ensure_column_family_exists
-      column_family.create unless column_family.exists?
+        })
+        column_family.create unless column_family.exists?
+        column_family
+      end
     end
   end
 end
