@@ -27,8 +27,8 @@ module Cassanity
     def migrated(migration)
       column_family.insert({
         data: {
-          version: version,
-          name: name,
+          version: migration.version,
+          name: migration.name,
           migrated_at: Time.now.utc,
         },
       })
