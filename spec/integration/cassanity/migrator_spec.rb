@@ -67,8 +67,8 @@ describe Cassanity::Migrator do
       end
 
       it "runs only migrations that need to be" do
-        @result[:ran_migrations].size.should be(1)
-        @result[:ran_migrations].should eq([migrations[2]])
+        versions = @result[:ran_migrations].map(&:version)
+        versions.should eq([migrations[2].version])
       end
     end
 
@@ -80,7 +80,8 @@ describe Cassanity::Migrator do
       end
 
       it "runs migration that has not been run" do
-        @result[:ran_migrations].should eq([migrations[1]])
+        versions = @result[:ran_migrations].map(&:version)
+        versions.should eq([migrations[1].version])
       end
     end
   end
