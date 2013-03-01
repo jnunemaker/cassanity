@@ -27,17 +27,22 @@ module Cassanity
 
     # Public: Runs a migration operation for a migrator on a keyspace.
     def run(migrator, operation)
-      case operation
-      when :up
-        migration_class.new(migrator.keyspace).up
-        migrator.migrated(self)
-      when :down
-        migration_class.new(migrator.keyspace).down
-        migrator.unmigrated(self)
+      if respond_to?(operation)
+        send(operation, migrator)
       else
         raise MigrationOperationNotSupported,
           "#{operation.inspect} is not a supported migration operation"
       end
+    end
+
+    def up(migrator)
+      migration_class.new(migrator).up
+      migrator.migrated(self)
+    end
+
+    def down(migrator)
+      migration_class.new(migrator).down
+      migrator.unmigrated(self)
     end
 
     def migration_class
