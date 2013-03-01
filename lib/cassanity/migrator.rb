@@ -1,6 +1,5 @@
 require 'pathname'
 require 'cassanity/migration'
-require 'cassanity/migration/collection'
 
 module Cassanity
   class Migrator
@@ -54,22 +53,19 @@ module Cassanity
 
     # Private
     def migrations_to_run(version, direction)
-      case direction
-      when :up
-        up_migrations_to_run(version)
-      when :down
-        down_migrations_to_run(version)
-      end
+      send("#{direction}_migrations_to_run", version)
     end
 
     # Private
     def up_migrations_to_run(version)
-      not_ran_migrations.up_to(version)
+      version = version.to_i
+      not_ran_migrations.select { |migration| migration.version <= version }
     end
 
     # Private
     def down_migrations_to_run(version)
-      ran_migrations.down_to(version)
+      version = version.to_i
+      ran_migrations.select { |migration| migration.version > version }
     end
 
     # Private
@@ -81,17 +77,29 @@ module Cassanity
 
     # Private
     def migrations
-      @migrations ||= Migration::Collection.from_path(migrations_path)
+      @migrations ||= begin
+        paths = Dir["#{migrations_path}/*.rb"]
+        sort_by_version paths.map { |path| Migration.from_path(path) }
+      end
+    end
+
+    def sort_by_version(migrations)
+      migrations.sort { |a, b| a.version <=> b.version }
     end
 
     # Private
     def ran_migrations
-      Migration::Collection.from_array_of_hashes(column_family.select)
+      rows = column_family.select
+      sort_by_version rows.map { |row|
+        path = migrations_path.join("#{row['version']}_#{row['name']}.rb")
+        Migration.from_path(path)
+      }
     end
 
     # Private
     def not_ran_migrations
-      migrations.without(ran_migrations)
+      excluded = ran_migrations
+      migrations.reject { |migration| excluded.include?(migration) }
     end
 
     # Private: The column family storing all

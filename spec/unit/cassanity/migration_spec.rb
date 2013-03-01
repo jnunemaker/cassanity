@@ -20,100 +20,70 @@ describe Cassanity::Migration do
     end
   end
 
-  describe ".from_hash" do
-    before do
-      @result = described_class.from_hash({'version' => '1', 'name' => 'foo'})
-    end
-
-    it "returns instance of migration" do
-      @result.should be_instance_of(described_class)
-    end
-
-    it "sets version" do
-      @result.version.should be(1)
-    end
-
-    it "sets name" do
-      @result.name.should eq('foo')
-    end
-  end
-
   describe "#initialize" do
-    context "with nil version" do
+    context "with nil path" do
       it "raises argument error" do
         expect {
-          described_class.new(nil, 'foo')
-        }.to raise_error(ArgumentError, 'version cannot be nil')
+          described_class.new(nil)
+        }.to raise_error(ArgumentError, 'path cannot be nil')
       end
     end
 
     context "with nil name" do
       it "raises argument error" do
         expect {
-          described_class.new(1, nil)
+          described_class.new('/some/1')
         }.to raise_error(ArgumentError, 'name cannot be nil')
       end
     end
 
-    context "with integer version" do
-      before do
-        @result = described_class.new(1234, 'CreateUsers')
-      end
-
-      it "sets version" do
-        @result.version.should eq(1234)
-      end
-
-      it "sets name" do
-        @result.name.should eq('CreateUsers')
+    context "with path that is string" do
+      it "sets path to pathname" do
+        instance = described_class.new('/some/path/1_foo.rb')
+        instance.path.should eq(Pathname('/some/path/1_foo.rb'))
       end
     end
 
-    context "with string version" do
-      it "sets version to integer" do
-        migration = described_class.new('1234', 'CreateUsers')
-        migration.version.should be(1234)
+    context "with path that is pathname" do
+      it "sets path" do
+        instance = described_class.new(Pathname('/some/path/1_foo.rb'))
+        instance.path.should eq(Pathname('/some/path/1_foo.rb'))
       end
     end
   end
 
   it "responds to up" do
-    instance = described_class.new(1234, 'CreateUsers')
+    instance = described_class.new('/some/path/1_foo.rb')
     instance.should respond_to(:up)
   end
 
   it "responds to down" do
-    instance = described_class.new(1234, 'CreateUsers')
+    instance = described_class.new('/some/path/1_foo.rb')
     instance.should respond_to(:down)
   end
 
   describe "#eql?" do
-    it "returns true for same class, name, and version" do
-      other = described_class.new(1, 'a')
-      described_class.new(1, 'a').eql?(other).should be_true
+    it "returns true for same path" do
+      other = described_class.new('/some/path/1_foo.rb')
+      described_class.new('/some/path/1_foo.rb').eql?(other).should be_true
     end
 
-    it "returns false for different name" do
-      other = described_class.new(1, 'b')
-      described_class.new(1, 'a').eql?(other).should be_false
-    end
-
-    it "returns false for different version" do
-      other = described_class.new(2, 'a')
-      described_class.new(1, 'a').eql?(other).should be_false
+    it "returns false for different path" do
+      other = described_class.new('/some/path/1_foo.rb')
+      described_class.new('/some/path/2_foo.rb').eql?(other).should be_false
     end
 
     it "returns false for different class" do
       other = Object.new
-      described_class.new(1, 'a').eql?(other).should be_false
+      described_class.new('/some/path/1_foo.rb').eql?(other).should be_false
     end
   end
 
   describe "#run" do
     context "for unsupported operation" do
       it "raises error" do
-        migration = described_class.new(2, 'foo')
-        migrator = double('Migrator')
+        migration = described_class.new('/some/path/1_foo.rb')
+        migrator = double('Migrator', keyspace: nil)
 
         expect {
           migration.run(migrator, :fooooooooo)

@@ -1,3 +1,5 @@
+require 'pathname'
+
 module Cassanity
   class Migration
     # Public: Converts a path to migration instance.
@@ -12,25 +14,11 @@ module Cassanity
     #
     # Returns Cassanity::Migration instance.
     def self.from_path(path)
-      basename = File.basename(path, '.rb')
-      version, name = basename.split('_', 2)
-      new(version, name)
+      new(path)
     end
 
-    # Public: Converts a hash to migration instance.
-    #
-    # hash - The Hash for that has migration details.
-    #
-    # Examples
-    #
-    #   migration = Cassanity::Migration.from_hash({version: 1234, name: 'foo'})
-    #   puts migration.version # 1234
-    #   puts migration.name # "foo"
-    #
-    # Returns Cassanity::Migration instance.
-    def self.from_hash(hash)
-      new(hash['version'], hash['name'])
-    end
+    # Public: The full path to the migration on disk.
+    attr_reader :path
 
     # Public: The version of the migration.
     attr_reader :version
@@ -38,16 +26,27 @@ module Cassanity
     # Public: The name of the migration.
     attr_reader :name
 
-    def initialize(version, name)
+    # Private: The Cassanity::Keyspace instance.
+    attr_reader :keyspace
+
+    def initialize(path)
+      raise ArgumentError, "path cannot be nil" if path.nil?
+
+      basename = File.basename(path, '.rb')
+      version, name = basename.split('_', 2)
+
       raise ArgumentError, "version cannot be nil" if version.nil?
       raise ArgumentError, "name cannot be nil" if name.nil?
 
+      @path = Pathname(path)
       @version = version.to_i
       @name = name
+      @keyspace = nil
     end
 
-    # Public: Runs a migration operation for a migrator.
+    # Public: Runs a migration operation for a migrator on a keyspace.
     def run(migrator, operation)
+      @keyspace = migrator.keyspace
       case operation
       when :up
         up
@@ -59,6 +58,8 @@ module Cassanity
         raise MigrationOperationNotSupported,
           "#{operation.inspect} is not a supported migration operation"
       end
+    ensure
+      @keyspace = nil
     end
 
     def up
@@ -70,9 +71,7 @@ module Cassanity
     end
 
     def eql?(other)
-      self.class.eql?(other.class) &&
-        version == other.version &&
-        name == other.name
+      self.class.eql?(other.class) && path == other.path
     end
     alias_method :==, :eql?
   end
