@@ -1,4 +1,5 @@
 require 'pathname'
+require 'cassanity/migration_proxy'
 require 'cassanity/migration'
 
 module Cassanity
@@ -79,7 +80,7 @@ module Cassanity
     def migrations
       @migrations ||= begin
         paths = Dir["#{migrations_path}/*.rb"]
-        sort_by_version paths.map { |path| Migration.from_path(path) }
+        sort_by_version paths.map { |path| MigrationProxy.new(path) }
       end
     end
 
@@ -92,7 +93,7 @@ module Cassanity
       rows = column_family.select
       sort_by_version rows.map { |row|
         path = migrations_path.join("#{row['version']}_#{row['name']}.rb")
-        Migration.from_path(path)
+        MigrationProxy.new(path)
       }
     end
 

@@ -49,7 +49,7 @@ describe Cassanity::Migrator do
         end
       end
 
-      xit "executes migrations" do
+      it "executes migrations" do
         keyspace[:users].exists?.should be_true
         keyspace[:apps].exists?.should be_true
       end
@@ -57,9 +57,7 @@ describe Cassanity::Migrator do
 
     context "when some migrations have been run" do
       before do
-        subject.migrated subject.migrations[0]
-        subject.migrated subject.migrations[1]
-
+        subject.migrate_to subject.migrations[1].version
         @result = subject.migrate
       end
 
