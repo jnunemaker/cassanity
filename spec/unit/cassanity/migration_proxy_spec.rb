@@ -3,6 +3,20 @@ require 'cassanity/migration_proxy'
 
 describe Cassanity::MigrationProxy do
   describe "#initialize" do
+    context "with path that is pathname" do
+      it "sets path" do
+        instance = described_class.new(Pathname('/some/path/1_foo.rb'))
+        instance.path.should eq(Pathname('/some/path/1_foo.rb'))
+      end
+    end
+
+    context "with path that is string" do
+      it "sets path to pathname" do
+        instance = described_class.new('/some/path/1_foo.rb')
+        instance.path.should eq(Pathname('/some/path/1_foo.rb'))
+      end
+    end
+
     context "with nil path" do
       it "raises argument error" do
         expect {
@@ -16,20 +30,6 @@ describe Cassanity::MigrationProxy do
         expect {
           described_class.new('/some/1')
         }.to raise_error(ArgumentError, 'name cannot be nil')
-      end
-    end
-
-    context "with path that is string" do
-      it "sets path to pathname" do
-        instance = described_class.new('/some/path/1_foo.rb')
-        instance.path.should eq(Pathname('/some/path/1_foo.rb'))
-      end
-    end
-
-    context "with path that is pathname" do
-      it "sets path" do
-        instance = described_class.new(Pathname('/some/path/1_foo.rb'))
-        instance.path.should eq(Pathname('/some/path/1_foo.rb'))
       end
     end
   end
