@@ -38,23 +38,15 @@ describe Cassanity::Migrator do
         rows = column_family.select
         rows.size.should be(3)
 
-        create_users_row = rows.detect { |row|
-          row['name'] == 'create_users'
+        version_to_name = {
+          '20130224135000' => 'create_users',
+          '20130225135002' => 'create_apps',
+          '20130226135004' => 'add_username_to_users',
         }
-        create_users_row.should_not be_nil
-        create_users_row['version'].should eq('20130224135000')
 
-        create_apps = rows.detect { |row|
-          row['name'] == 'create_apps'
-        }
-        create_apps.should_not be_nil
-        create_apps['version'].should eq('20130225135002')
-
-        add_username_to_users = rows.detect { |row|
-          row['name'] == 'add_username_to_users'
-        }
-        add_username_to_users.should_not be_nil
-        add_username_to_users['version'].should eq('20130226135004')
+        rows.each do |row|
+          version_to_name.fetch(row['version']).should eq(row['name'])
+        end
       end
 
       xit "executes migrations" do
