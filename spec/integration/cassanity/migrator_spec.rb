@@ -11,10 +11,6 @@ describe Cassanity::Migrator do
     Pathname(__FILE__).dirname.join('fixtures', 'migrations')
   }
 
-  let(:migrations) {
-    Cassanity::Migration::Collection.from_path(migrations_path)
-  }
-
   subject {
     described_class.new(keyspace, migrations_path)
   }
