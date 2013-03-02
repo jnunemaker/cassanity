@@ -310,7 +310,7 @@ describe Cassanity::ColumnFamily do
 
   it "can get columns" do
     columns = subject.columns
-    columns.map(&:name).should eq(['name'])
-    columns.map(&:type).should eq(['text'])
+    columns.map(&:name).should eq([:name])
+    columns.map(&:type).should eq([:text])
   end
 end
