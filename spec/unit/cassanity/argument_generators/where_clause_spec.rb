@@ -9,7 +9,7 @@ describe Cassanity::ArgumentGenerators::WhereClause do
           id: '1',
         }
       }).should eq([
-        " WHERE id = ?",
+        ' WHERE "id" = ?',
         '1',
       ])
     end
@@ -34,7 +34,7 @@ describe Cassanity::ArgumentGenerators::WhereClause do
             id: '1',
           }
         }).should eq([
-          " WHERE bucket = ? AND id = ?",
+          ' WHERE "bucket" = ? AND "id" = ?',
           '2012',
           '1',
         ])
