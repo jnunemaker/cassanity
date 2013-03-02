@@ -1,4 +1,5 @@
 require 'cassanity/schema'
+require 'cassanity/column'
 
 module Cassanity
   class ColumnFamily
@@ -291,6 +292,27 @@ module Cassanity
         command: :batch,
         arguments: default_arguments.merge(args),
       })
+    end
+
+    # Public: Get all columns for column family.
+    #
+    # Returns Array of Cassanity::Column instances.
+    def columns
+      rows = @executor.call({
+        command: :columns,
+        arguments: {
+          keyspace_name: @keyspace.name,
+          column_family_name: @name,
+        },
+      })
+
+      rows.map { |row|
+        Column.new({
+          name: row['column'],
+          type: row['validator'],
+          column_family: self,
+        })
+      }
     end
 
     # Internal

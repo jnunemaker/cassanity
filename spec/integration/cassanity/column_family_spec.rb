@@ -307,4 +307,10 @@ describe Cassanity::ColumnFamily do
     result = driver.execute("SELECT * FROM #{column_family_name} WHERE id = '2'")
     result.rows.should eq(1)
   end
+
+  it "can get columns" do
+    columns = subject.columns
+    columns.map(&:name).should eq(['name'])
+    columns.map(&:type).should eq(['text'])
+  end
 end
