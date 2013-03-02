@@ -1,9 +1,9 @@
 class AddUsernameToUsers < Cassanity::Migration
   def up
-    keyspace[:users].alter(add: {username: :text})
+    add_column :users, :username, :text
   end
 
   def down
-    keyspace[:users].alter(drop: :username)
+    drop_column :users, :username
   end
 end
