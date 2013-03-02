@@ -29,7 +29,7 @@ module Cassanity
     attr_reader :column_family
 
     def initialize(args = {})
-      @name = args.fetch(:name)
+      @name = args.fetch(:name).to_sym
       type = args.fetch(:type)
       @type = Types.fetch(type, type)
       @column_family = args.fetch(:column_family)

@@ -41,6 +41,13 @@ describe Cassanity::Column do
     end
   end
 
+  context "initializing with string name" do
+    it "sets name to symbol" do
+      instance = described_class.new(required_arguments.merge(name: 'foo'))
+      instance.name.should be(:foo)
+    end
+  end
+
   context "initializing with long cassandra type" do
     described_class::Types.each do |long, short|
       it "converts #{long} to #{short}" do
