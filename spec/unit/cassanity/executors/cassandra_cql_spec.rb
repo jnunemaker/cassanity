@@ -90,6 +90,7 @@ describe Cassanity::Executors::CassandraCql do
     :index_create,
     :index_drop,
     :batch,
+    :columns,
   ]
 
   KnownCommands.each do |key|
