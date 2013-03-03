@@ -2,7 +2,7 @@ require 'helper'
 require 'cassanity/argument_generators/keyspace_create'
 
 describe Cassanity::ArgumentGenerators::KeyspaceCreate do
-  let(:keyspace_name) { 'analytics' }
+  let(:keyspace_name) { :analytics }
 
   describe "#call" do
     context "only name" do

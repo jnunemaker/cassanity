@@ -2,7 +2,7 @@ require 'helper'
 require 'cassanity/keyspace'
 
 describe Cassanity::Keyspace do
-  let(:keyspace_name) { 'analytics' }
+  let(:keyspace_name) { :analytics }
 
   let(:executor) {
     lambda { |args| ['GOTTA KEEP EM EXECUTED', args] }
@@ -56,6 +56,15 @@ describe Cassanity::Keyspace do
         dc1: 3,
         dc2: 5,
       })
+    end
+  end
+
+  context "with string name" do
+    it "converts name to symbol" do
+      instance = described_class.new(required_arguments.merge({
+        name: 'foo',
+      }))
+      instance.name.should be(:foo)
     end
   end
 
@@ -180,21 +189,36 @@ describe Cassanity::Keyspace do
 
   shared_examples_for "keyspace existence" do |method_name|
     it "returns true if name in existing keyspace names" do
-      executor.should_receive(:call).with(command: :keyspaces).and_return([
-        {'name' => keyspace_name.to_s},
+      executor.should_receive(:call).with({
+        command: :keyspaces,
+        transformer_arguments: {
+          executor: executor,
+        },
+      }).and_return([
+        Cassanity::Keyspace.new({name: keyspace_name, executor: executor}),
       ])
       subject.send(method_name).should be_true
     end
 
     it "returns false if name not in existing keyspace names" do
-      executor.should_receive(:call).with(command: :keyspaces).and_return([
-        {'name' => 'batman'},
+      executor.should_receive(:call).with({
+        command: :keyspaces,
+        transformer_arguments: {
+          executor: executor,
+        },
+      }).and_return([
+        Cassanity::Keyspace.new({name: :batman, executor: executor}),
       ])
       subject.send(method_name).should be_false
     end
 
     it "returns false if no keyspaces" do
-      executor.should_receive(:call).with(command: :keyspaces).and_return([])
+      executor.should_receive(:call).with({
+        command: :keyspaces,
+        transformer_arguments: {
+          executor: executor,
+        },
+      }).and_return([])
       subject.send(method_name).should be_false
     end
   end
@@ -221,10 +245,11 @@ describe Cassanity::Keyspace do
   describe "#recreate" do
     context "for existing keyspace" do
       before do
-        subject.stub(:exist? => true)
+        subject.stub(:exists? => true)
       end
+
       it "performs drop" do
-        subject.should_not_receive(:drop)
+        subject.should_receive(:drop)
         subject.recreate
       end
 
@@ -236,7 +261,7 @@ describe Cassanity::Keyspace do
 
     context "for non-existing keyspace" do
       before do
-        subject.stub(:exist? => false)
+        subject.stub(:exists? => false)
       end
 
       it "does not perform drop" do
@@ -291,7 +316,7 @@ describe Cassanity::Keyspace do
 
   describe "#inspect" do
     it "return representation" do
-      subject.inspect.should eq("#<Cassanity::Keyspace:#{subject.object_id} name=\"analytics\">")
+      subject.inspect.should eq("#<Cassanity::Keyspace:#{subject.object_id} name=:analytics>")
     end
   end
 end
