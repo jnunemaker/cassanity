@@ -2,7 +2,7 @@ require 'helper'
 require 'cassanity/connection'
 
 describe Cassanity::Connection do
-  let(:keyspace_name) { 'analytics' }
+  let(:keyspace_name) { :analytics }
   let(:executor) {
     double('Executor', {
       call: nil,

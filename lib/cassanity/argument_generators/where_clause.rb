@@ -34,7 +34,7 @@ module Cassanity
             wheres << "#{key} #{value.symbol} ?"
             variables << value.value
           else
-            wheres << "#{key} = ?"
+            wheres << "\"#{key}\" = ?"
             variables << value
           end
         end

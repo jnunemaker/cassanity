@@ -46,8 +46,8 @@ describe Cassanity::Connection do
   end
 
   it "knows keyspaces" do
-    driver_create_keyspace(driver, 'something1')
-    driver_create_keyspace(driver, 'something2')
+    driver_create_keyspace(driver, :something1)
+    driver_create_keyspace(driver, :something2)
 
     result = subject.keyspaces
     result.each do |keyspace|
@@ -56,10 +56,10 @@ describe Cassanity::Connection do
     end
 
     names = result.map(&:name)
-    names.should include('something1')
-    names.should include('something2')
+    names.should include(:something1)
+    names.should include(:something2)
 
-    driver_drop_keyspace(driver, 'something1')
-    driver_drop_keyspace(driver, 'something2')
+    driver_drop_keyspace(driver, :something1)
+    driver_drop_keyspace(driver, :something2)
   end
 end

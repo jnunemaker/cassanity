@@ -4,7 +4,7 @@ module Cassanity
 
       # Internal: Returns whatever result is passed to it. This is used as the
       # default result transformer when a command does not have one.
-      def call(result)
+      def call(result, args = nil)
         result
       end
     end

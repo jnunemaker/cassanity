@@ -25,7 +25,7 @@ module Cassanity
     #                            creating keyspace.
     #
     def initialize(args = {})
-      @name = args.fetch(:name)
+      @name = args.fetch(:name).to_sym
       @executor = args.fetch(:executor)
       @strategy_class = args[:strategy_class]
       @strategy_options = args[:strategy_options]
@@ -36,12 +36,12 @@ module Cassanity
     #
     # Returns true if keyspace exists, false if it does not.
     def exists?
-      rows = @executor.call(command: :keyspaces)
-      rows.any? { |row|
-        row['name'].to_s == @name.to_s ||
-          row['keyspace'].to_s == @name.to_s ||
-          row['keyspace_name'].to_s == @name.to_s
-      }
+      @executor.call({
+        command: :keyspaces,
+        transformer_arguments: {
+          executor: @executor,
+        },
+      }).any? { |keyspace| keyspace.name == @name }
     end
 
     alias_method :exist?, :exists?
@@ -129,12 +129,10 @@ module Cassanity
         arguments: {
           keyspace_name: @name,
         },
-      }).map { |row|
-        ColumnFamily.new({
-          name: row['columnfamily'] || row['columnfamily_name'],
+        transformer_arguments: {
           keyspace: self,
-        })
-      }
+        }
+      })
     end
 
     # Public: Get a column family instance
