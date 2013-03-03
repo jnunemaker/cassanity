@@ -3,7 +3,7 @@ module Cassanity
     class ResultToArray
 
       # Internal: Turns result into Array of Hashes.
-      def call(result)
+      def call(result, args = nil)
         rows = []
         result.fetch_hash do |row|
           rows << row

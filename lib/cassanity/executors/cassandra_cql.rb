@@ -18,7 +18,11 @@ require 'cassanity/argument_generators/column_family_alter'
 require 'cassanity/argument_generators/index_create'
 require 'cassanity/argument_generators/index_drop'
 require 'cassanity/argument_generators/batch'
+require 'cassanity/argument_generators/columns'
 require 'cassanity/result_transformers/result_to_array'
+require 'cassanity/result_transformers/keyspaces'
+require 'cassanity/result_transformers/column_families'
+require 'cassanity/result_transformers/columns'
 require 'cassanity/result_transformers/mirror'
 
 module Cassanity
@@ -44,13 +48,15 @@ module Cassanity
         index_create: ArgumentGenerators::IndexCreate.new,
         index_drop: ArgumentGenerators::IndexDrop.new,
         batch: ArgumentGenerators::Batch.new,
+        columns: ArgumentGenerators::Columns.new,
       }
 
       # Private: Hash of commands to related result transformers.
       DefaultResultTransformers = {
-        keyspaces: ResultTransformers::ResultToArray.new,
-        column_families: ResultTransformers::ResultToArray.new,
+        keyspaces: ResultTransformers::Keyspaces.new,
+        column_families: ResultTransformers::ColumnFamilies.new,
         column_family_select: ResultTransformers::ResultToArray.new,
+        columns: ResultTransformers::Columns.new,
       }
 
       # Private: Default result transformer for commands that do not have one.
@@ -145,7 +151,7 @@ module Cassanity
             payload[:cql_variables] = execute_arguments[1..-1]
             result = @driver.execute(*execute_arguments)
             transformer = @result_transformers.fetch(command, Mirror)
-            transformed_result = transformer.call(result)
+            transformed_result = transformer.call(result, args[:transformer_arguments])
             payload[:result] = transformed_result
           rescue StandardError => e
             raise Cassanity::Error

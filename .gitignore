@@ -18,3 +18,4 @@ tmp
 bin
 vendor/gems
 .env
+tags

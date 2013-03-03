@@ -4,7 +4,7 @@ require 'cassanity/argument_generators/batch'
 describe Cassanity::ArgumentGenerators::Batch do
   describe "#call" do
     it "returns array of arguments" do
-      cql = "BEGIN BATCH INSERT INTO users (id) VALUES (?) UPDATE users SET name = ? WHERE id = ? DELETE FROM users WHERE id = ? APPLY BATCH"
+      cql = "BEGIN BATCH INSERT INTO users (id) VALUES (?) UPDATE users SET name = ? WHERE \"id\" = ? DELETE FROM users WHERE \"id\" = ? APPLY BATCH"
       subject.call({
         modifications: [
           [:insert, column_family_name: :users, data: {id: '1'}],
@@ -16,7 +16,7 @@ describe Cassanity::ArgumentGenerators::Batch do
 
     context "with :column_family_name" do
       it "merges column_family_name with each set of modifications" do
-        cql = "BEGIN BATCH INSERT INTO users (id) VALUES (?) UPDATE users SET name = ? WHERE id = ? APPLY BATCH"
+        cql = "BEGIN BATCH INSERT INTO users (id) VALUES (?) UPDATE users SET name = ? WHERE \"id\" = ? APPLY BATCH"
         subject.call({
           column_family_name: :users,
           modifications: [
@@ -27,7 +27,7 @@ describe Cassanity::ArgumentGenerators::Batch do
       end
 
       it "does not override command argument name" do
-        cql = "BEGIN BATCH INSERT INTO users (id) VALUES (?) UPDATE other_column_family SET name = ? WHERE id = ? APPLY BATCH"
+        cql = "BEGIN BATCH INSERT INTO users (id) VALUES (?) UPDATE other_column_family SET name = ? WHERE \"id\" = ? APPLY BATCH"
         subject.call({
           column_family_name: :users,
           modifications: [
@@ -40,7 +40,7 @@ describe Cassanity::ArgumentGenerators::Batch do
 
     context "with :keyspace_name" do
       it "merges column_family_name with each set of modifications" do
-        cql = "BEGIN BATCH INSERT INTO analytics.users (id) VALUES (?) UPDATE analytics.users SET name = ? WHERE id = ? APPLY BATCH"
+        cql = "BEGIN BATCH INSERT INTO analytics.users (id) VALUES (?) UPDATE analytics.users SET name = ? WHERE \"id\" = ? APPLY BATCH"
         subject.call({
           keyspace_name: :analytics,
           modifications: [
@@ -51,7 +51,7 @@ describe Cassanity::ArgumentGenerators::Batch do
       end
 
       it "does not override command argument keyspace_name" do
-        cql = "BEGIN BATCH INSERT INTO other_keyspace_name.users (id) VALUES (?) UPDATE analytics.users SET name = ? WHERE id = ? APPLY BATCH"
+        cql = "BEGIN BATCH INSERT INTO other_keyspace_name.users (id) VALUES (?) UPDATE analytics.users SET name = ? WHERE \"id\" = ? APPLY BATCH"
         subject.call({
           keyspace_name: :analytics,
           modifications: [

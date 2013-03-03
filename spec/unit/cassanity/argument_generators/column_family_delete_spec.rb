@@ -6,7 +6,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyDelete do
 
   describe "#call" do
     it "returns array of arguments" do
-      cql = "DELETE FROM #{column_family_name} WHERE id = ?"
+      cql = "DELETE FROM #{column_family_name} WHERE \"id\" = ?"
       expected = [cql, '1']
       subject.call({
         column_family_name: column_family_name,
@@ -18,7 +18,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyDelete do
 
     context "with :keyspace_name" do
       it "returns array of arguments" do
-        cql = "DELETE FROM foo.#{column_family_name} WHERE id = ?"
+        cql = "DELETE FROM foo.#{column_family_name} WHERE \"id\" = ?"
         expected = [cql, '1']
         subject.call({
           keyspace_name: :foo,
@@ -32,7 +32,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyDelete do
 
     context "with specific columns" do
       it "returns array of arguments only deleting specific columns" do
-        cql = "DELETE foo, bar FROM #{column_family_name} WHERE id = ?"
+        cql = "DELETE foo, bar FROM #{column_family_name} WHERE \"id\" = ?"
         expected = [cql, '1']
         subject.call({
           column_family_name: column_family_name,
@@ -48,13 +48,13 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyDelete do
       subject {
         described_class.new({
           where_clause: lambda { |args|
-            [" WHERE id = ?", args.fetch(:where).fetch(:id)]
+            [" WHERE \"id\" = ?", args.fetch(:where).fetch(:id)]
           }
         })
       }
 
       it "uses where clause to get additional cql and bound variables" do
-        cql = "DELETE FROM #{column_family_name} WHERE id = ?"
+        cql = "DELETE FROM #{column_family_name} WHERE \"id\" = ?"
         expected = [cql, '4']
         subject.call({
           column_family_name: column_family_name,
@@ -75,7 +75,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyDelete do
       }
 
       it "uses using clause to get additional cql and bound variables" do
-        cql = "DELETE FROM #{column_family_name} USING TTL = 500 WHERE id = ?"
+        cql = "DELETE FROM #{column_family_name} USING TTL = 500 WHERE \"id\" = ?"
         expected = [cql, '4']
         subject.call({
           column_family_name: column_family_name,

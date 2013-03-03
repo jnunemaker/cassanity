@@ -2,7 +2,7 @@ require 'helper'
 require 'cassanity/column_family'
 
 describe Cassanity::ColumnFamily do
-  let(:column_family_name) { 'analytics' }
+  let(:column_family_name) { :analytics }
   let(:keyspace_name) { 'foo' }
 
   let(:keyspace) {
@@ -81,6 +81,15 @@ describe Cassanity::ColumnFamily do
     end
   end
 
+  context "with string name" do
+    it "converts name to symbol" do
+      column_family = described_class.new(required_arguments.merge({
+        name: 'foo',
+      }))
+      column_family.name.should be(:foo)
+    end
+  end
+
   describe "#schema" do
     it "returns schema if set" do
       described_class.new(required_arguments.merge({
@@ -100,8 +109,12 @@ describe Cassanity::ColumnFamily do
       executor.should_receive(:call).with({
         command: :column_families,
         arguments: {keyspace_name: keyspace.name},
+        transformer_arguments: {keyspace: keyspace},
       }).and_return([
-        {'columnfamily' => column_family_name},
+        Cassanity::ColumnFamily.new({
+          name: column_family_name,
+          keyspace: keyspace,
+        })
       ])
 
       subject.send(method_name).should be_true
@@ -111,8 +124,12 @@ describe Cassanity::ColumnFamily do
       executor.should_receive(:call).with({
         command: :column_families,
         arguments: {keyspace_name: keyspace.name},
+        transformer_arguments: {keyspace: keyspace},
       }).and_return([
-        {'columnfamily' => 'boo'},
+        Cassanity::ColumnFamily.new({
+          name: 'boo',
+          keyspace: keyspace,
+        })
       ])
 
       subject.send(method_name).should be_false

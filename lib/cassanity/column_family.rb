@@ -24,7 +24,7 @@ module Cassanity
     #        :schema - The schema used to create the column family (optional).
     #
     def initialize(args = {})
-      @name = args.fetch(:name)
+      @name = args.fetch(:name).to_sym
       @keyspace = args.fetch(:keyspace)
       @executor = args.fetch(:executor) { @keyspace.executor }
 
@@ -45,11 +45,11 @@ module Cassanity
         command: :column_families,
         arguments: {
           keyspace_name: @keyspace.name,
+        },
+        transformer_arguments: {
+          keyspace: @keyspace,
         }
-      }).any? { |row|
-        row['columnfamily'].to_s == @name.to_s ||
-          row['columnfamily_name'].to_s == @name.to_s
-      }
+      }).any? { |column_family| column_family.name == @name }
     end
 
     alias_method :exist?, :exists?
@@ -290,6 +290,22 @@ module Cassanity
       @executor.call({
         command: :batch,
         arguments: default_arguments.merge(args),
+      })
+    end
+
+    # Public: Get all columns for column family.
+    #
+    # Returns Array of Cassanity::Column instances.
+    def columns
+      @executor.call({
+        command: :columns,
+        arguments: {
+          keyspace_name: @keyspace.name,
+          column_family_name: @name,
+        },
+        transformer_arguments: {
+          column_family: self,
+        }
       })
     end
 

@@ -3,8 +3,8 @@ require 'cassanity/keyspace'
 
 describe Cassanity::ColumnFamily do
   let(:keyspace_name)               { 'cassanity_test' }
-  let(:column_family_name)          { 'apps' }
-  let(:counters_column_family_name) { 'counters' }
+  let(:column_family_name)          { :apps }
+  let(:counters_column_family_name) { :counters }
 
   let(:client) { Cassanity::Client.new(CassanityServers) }
   let(:driver) { client.driver }
@@ -66,7 +66,8 @@ describe Cassanity::ColumnFamily do
     column_family = described_class.new(arguments.merge(name: 'people'))
     column_family.create
 
-    apps_column_family = driver.schema.column_families.fetch(column_family.name)
+    column_families = driver.schema.column_families
+    apps_column_family = column_families.fetch(column_family.name.to_s)
     apps_column_family.comment.should eq('For storing things')
 
     columns = apps_column_family.columns
@@ -104,26 +105,30 @@ describe Cassanity::ColumnFamily do
   it "can alter" do
     subject.alter(add: {created_at: :timestamp})
 
-    apps_column_family = driver.schema.column_families.fetch(column_family_name)
+    column_families = driver.schema.column_families
+    apps_column_family = column_families.fetch(column_family_name.to_s)
     columns = apps_column_family.columns
     columns.should have_key('created_at')
     columns['created_at'].should eq('org.apache.cassandra.db.marshal.DateType')
 
     subject.alter(alter: {created_at: :timeuuid})
 
-    apps_column_family = driver.schema.column_families.fetch(column_family_name)
+    column_families = driver.schema.column_families
+    apps_column_family = column_families.fetch(column_family_name.to_s)
     columns = apps_column_family.columns
     columns.should have_key('created_at')
     columns['created_at'].should eq('org.apache.cassandra.db.marshal.TimeUUIDType')
 
     subject.alter(drop: :created_at)
 
-    apps_column_family = driver.schema.column_families.fetch(column_family_name)
+    column_families = driver.schema.column_families
+    apps_column_family = column_families.fetch(column_family_name.to_s)
     columns = apps_column_family.columns
     columns.should_not have_key('created_at')
 
     subject.alter(with: {comment: 'Some new comment'})
-    apps_column_family = driver.schema.column_families.fetch(column_family_name)
+    column_families = driver.schema.column_families
+    apps_column_family = column_families.fetch(column_family_name.to_s)
     apps_column_family.comment.should eq('Some new comment')
   end
 
@@ -133,7 +138,7 @@ describe Cassanity::ColumnFamily do
       column_name: :name,
     })
 
-    apps = driver.schema.column_families['apps']
+    apps = driver.schema.column_families.fetch(column_family_name.to_s)
     apps_meta = apps.column_metadata
     index = apps_meta.detect { |c| c.index_name == 'apps_name_index' }
     index.should_not be_nil
@@ -142,7 +147,7 @@ describe Cassanity::ColumnFamily do
       name: :apps_name_index,
     })
 
-    apps = driver.schema.column_families['apps']
+    apps = driver.schema.column_families.fetch(column_family_name.to_s)
     apps_meta = apps.column_metadata
     index = apps_meta.detect { |c| c.index_name == 'apps_name_index' }
     index.should be_nil
@@ -306,5 +311,11 @@ describe Cassanity::ColumnFamily do
     # does not delete other rows
     result = driver.execute("SELECT * FROM #{column_family_name} WHERE id = '2'")
     result.rows.should eq(1)
+  end
+
+  it "can get columns" do
+    columns = subject.columns
+    columns.map(&:name).should eq([:name])
+    columns.map(&:type).should eq([:text])
   end
 end
