@@ -13,13 +13,13 @@ describe Cassanity::Executors::CassandraCql do
 
   let(:argument_generators) {
     {
-      :foo => lambda { |args| ['mapped', args] },
+      :foo => lambda { |*args| ['mapped', *args] },
     }
   }
 
   let(:result_transformers) {
     {
-      :foo => lambda { |args| ['transformed', args] }
+      :foo => lambda { |*args| ['transformed', *args] }
     }
   }
 
@@ -171,7 +171,7 @@ describe Cassanity::Executors::CassandraCql do
             },
           }
 
-          subject.call(args).should eq(['transformed', result])
+          subject.call(args).should eq(['transformed', result, nil])
         end
       end
 

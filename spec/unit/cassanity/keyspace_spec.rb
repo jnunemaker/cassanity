@@ -60,7 +60,7 @@ describe Cassanity::Keyspace do
   end
 
   describe "#column_family" do
-    let(:column_family_name) { 'apps' }
+    let(:column_family_name) { :apps }
 
     context "with only name" do
       before do
@@ -147,7 +147,7 @@ describe Cassanity::Keyspace do
   end
 
   describe "#table" do
-    let(:column_family_name) { 'apps' }
+    let(:column_family_name) { :apps }
 
     before do
       @return_value = subject.table(column_family_name)
@@ -163,7 +163,7 @@ describe Cassanity::Keyspace do
   end
 
   describe "#[]" do
-    let(:column_family_name) { 'apps' }
+    let(:column_family_name) { :apps }
 
     before do
       @return_value = subject[column_family_name]

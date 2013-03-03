@@ -129,12 +129,10 @@ module Cassanity
         arguments: {
           keyspace_name: @name,
         },
-      }).map { |row|
-        ColumnFamily.new({
-          name: row['columnfamily'] || row['columnfamily_name'],
+        transformer_arguments: {
           keyspace: self,
-        })
-      }
+        }
+      })
     end
 
     # Public: Get a column family instance

@@ -1,5 +1,4 @@
 require 'cassanity/schema'
-require 'cassanity/column'
 
 module Cassanity
   class ColumnFamily
@@ -25,7 +24,7 @@ module Cassanity
     #        :schema - The schema used to create the column family (optional).
     #
     def initialize(args = {})
-      @name = args.fetch(:name)
+      @name = args.fetch(:name).to_sym
       @keyspace = args.fetch(:keyspace)
       @executor = args.fetch(:executor) { @keyspace.executor }
 
@@ -46,11 +45,11 @@ module Cassanity
         command: :column_families,
         arguments: {
           keyspace_name: @keyspace.name,
+        },
+        transformer_arguments: {
+          keyspace: @keyspace,
         }
-      }).any? { |row|
-        row['columnfamily'].to_s == @name.to_s ||
-          row['columnfamily_name'].to_s == @name.to_s
-      }
+      }).any? { |column_family| column_family.name == @name }
     end
 
     alias_method :exist?, :exists?
@@ -298,21 +297,16 @@ module Cassanity
     #
     # Returns Array of Cassanity::Column instances.
     def columns
-      rows = @executor.call({
+      @executor.call({
         command: :columns,
         arguments: {
           keyspace_name: @keyspace.name,
           column_family_name: @name,
         },
-      })
-
-      rows.map { |row|
-        Column.new({
-          name: row['column'],
-          type: row['validator'],
+        transformer_arguments: {
           column_family: self,
-        })
-      }
+        }
+      })
     end
 
     # Internal

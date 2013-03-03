@@ -72,8 +72,8 @@ describe Cassanity::Keyspace do
   end
 
   it "knows column families" do
-    driver_create_column_family(driver, 'something1')
-    driver_create_column_family(driver, 'something2')
+    driver_create_column_family(driver, :something1)
+    driver_create_column_family(driver, :something2)
 
     result = subject.column_families
     result.each do |column_family|
@@ -82,10 +82,10 @@ describe Cassanity::Keyspace do
     end
 
     names = result.map(&:name)
-    names.should include('something1')
-    names.should include('something2')
+    names.should include(:something1)
+    names.should include(:something2)
 
-    driver_drop_column_family(driver, 'something1')
-    driver_drop_column_family(driver, 'something2')
+    driver_drop_column_family(driver, :something1)
+    driver_drop_column_family(driver, :something2)
   end
 end
