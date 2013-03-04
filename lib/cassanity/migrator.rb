@@ -22,12 +22,15 @@ module Cassanity
       @logger = options[:logger] || default_logger
     end
 
-    # Public: Migrates all the migrations that have not run in version order.
+    # Public: Runs all pending migrations in order.
     def migrate
       run_migrations pending_migrations, :up
     end
 
     # Public: Migrates to a version using a direction.
+    #
+    # version - The String or Integer version to migrate to.
+    # direction - The String or Symbol direction you would like to migrate.
     def migrate_to(version, direction = :up)
       version = version.to_i
       direction = direction.to_sym
