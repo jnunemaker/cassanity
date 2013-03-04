@@ -2,6 +2,8 @@ require 'pathname'
 
 module Cassanity
   class MigrationProxy
+    include Comparable
+
     # Public: The full path to the migration on disk.
     attr_reader :path
 
@@ -69,5 +71,15 @@ module Cassanity
       self.class.eql?(other.class) && path == other.path
     end
     alias_method :==, :eql?
+
+    def <=>(other)
+      if @version < other.version
+        -1
+      elsif @version > other.version
+        1
+      else
+        @name <=> other.name
+      end
+    end
   end
 end

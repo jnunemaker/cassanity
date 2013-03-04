@@ -58,4 +58,24 @@ describe Cassanity::MigrationProxy do
       instance.hash.should eq(path.hash)
     end
   end
+
+  describe "#<=>" do
+    it "returns -1 when version is less than other" do
+      older = described_class.new(Pathname('/some/path/1_a.rb'))
+      newer = described_class.new(Pathname('/some/path/2_a.rb'))
+      (older <=> newer).should be(-1)
+    end
+
+    it "compares against name when version is equal to other" do
+      older = described_class.new(Pathname('/some/path/1_a.rb'))
+      newer = described_class.new(Pathname('/some/path/2_b.rb'))
+      (older <=> newer).should eq(older.name <=> newer.name)
+    end
+
+    it "returns 1 when version is greater than other" do
+      older = described_class.new(Pathname('/some/path/1_a.rb'))
+      newer = described_class.new(Pathname('/some/path/2_a.rb'))
+      (newer <=> older).should be(1)
+    end
+  end
 end
