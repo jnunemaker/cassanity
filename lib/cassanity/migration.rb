@@ -107,5 +107,19 @@ module Cassanity
     def drop_index(column_family_name, index_name)
       keyspace[column_family_name].drop_index(name: index_name)
     end
+
+    # Public: Spit something to the log with timing.
+    def say_with_time(message)
+      say message
+      start = Time.now
+      result = yield
+      duration = (Time.now - start).round(3)
+      @migrator.log "   -> #{duration}s"
+    end
+
+    # Public: Spit something to the log.
+    def say(message)
+      @migrator.log "-- #{message}"
+    end
   end
 end

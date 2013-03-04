@@ -1,3 +1,4 @@
+require 'logger'
 require 'pathname'
 require 'cassanity/migration_proxy'
 require 'cassanity/migration'
@@ -10,9 +11,13 @@ module Cassanity
     # Public: The path to all the migrations.
     attr_reader :migrations_path
 
-    def initialize(keyspace, migrations_path)
+    # Public: Where to spit all the logging related to migrations.
+    attr_reader :logger
+
+    def initialize(keyspace, migrations_path, options = {})
       @keyspace = keyspace
       @migrations_path = Pathname(migrations_path)
+      @logger = options[:logger] || default_logger
     end
 
     # Public: Migrates all the migrations that have not run in version order.
@@ -87,6 +92,11 @@ module Cassanity
       end
     end
 
+    # Internal: Log a message.
+    def log(message)
+      @logger.info message
+    end
+
     # Private
     def run_migrations(migrations, direction)
       migrations.each { |migration|
@@ -117,6 +127,13 @@ module Cassanity
         column_family.create unless column_family.exists?
         column_family
       end
+    end
+
+    # Private
+    def default_logger
+      logger = Logger.new(STDOUT)
+      logger.formatter = proc { |_, _, _, msg| "#{msg}\n" }
+      logger
     end
   end
 end

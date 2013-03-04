@@ -11,8 +11,12 @@ describe Cassanity::Migrator do
     Pathname(__FILE__).dirname.join('fixtures', 'migrations')
   }
 
+  let(:log_string) { StringIO.new }
+
   subject {
-    described_class.new(keyspace, migrations_path)
+    described_class.new(keyspace, migrations_path, {
+      logger: Logger.new(log_string),
+    })
   }
 
   before do
