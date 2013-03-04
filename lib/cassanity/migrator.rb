@@ -101,9 +101,7 @@ module Cassanity
         sorted_migrations(migrations).reverse
       end
 
-      migrations.each { |migration|
-        migration.run(self, direction)
-      }
+      migrations.each { |migration| migration.run(self, direction) }
 
       {performed: migrations}
     end
