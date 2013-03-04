@@ -17,10 +17,9 @@ module Cassanity
 
     # Public: Migrates all the migrations that have not run in version order.
     def migrate
-      migrations_to_run = pending_migrations
-      run_migrations migrations_to_run, :up
-
-      {performed: migrations_to_run}
+      pending = pending_migrations
+      run_migrations pending, :up
+      {performed: pending}
     end
 
     # Public: Migrates to a version using a direction.
