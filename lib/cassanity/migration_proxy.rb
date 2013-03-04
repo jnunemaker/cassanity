@@ -27,20 +27,25 @@ module Cassanity
       @name = name
     end
 
-    # Public: Runs a migration operation for a migrator on a keyspace.
-    def perform(migrator, operation)
+    def up(migrator)
+      log(migrator) { build_migration(migrator).up }
+    end
+
+    def down(migrator)
+      log(migrator) { build_migration(migrator).down }
+    end
+
+    def log(migrator)
       migrator.log "== #{@name}: migrating ".ljust(80, "=")
       start = Time.now
-      case operation
-      when :up
-        migration_class.new(migrator).up
-        migrator.migrated(self)
-      when :down
-        migration_class.new(migrator).down
-        migrator.unmigrated(self)
-      end
+      result = yield
       duration = (Time.now - start).round(3)
       migrator.log "== #{@name}: migrated (#{duration}s) ".ljust(80, "=")
+      result
+    end
+
+    def build_migration(migrator)
+      migration_class.new(migrator)
     end
 
     def migration_class

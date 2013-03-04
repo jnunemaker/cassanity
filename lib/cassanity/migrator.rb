@@ -97,10 +97,20 @@ module Cassanity
     # Private
     def run_migrations(migrations, direction)
       migrations = migrations.sort
-      migrations = migrations.reverse if direction == :down
-      migrations.each { |migration|
-        migration.perform(self, direction)
-      }
+
+      case direction
+      when :up
+        migrations.each do |migration|
+          migration.up(self)
+          migrated(migration)
+        end
+      when :down
+        migrations = migrations.reverse
+        migrations.each do |migration|
+          migration.down(self)
+          unmigrated(migration)
+        end
+      end
 
       {performed: migrations}
     end
