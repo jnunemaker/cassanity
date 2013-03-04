@@ -131,6 +131,10 @@ gem 'metriks'
 require 'cassanity/instrumentation/metriks'
 ```
 
+## More Reading
+
+* [Migrations](https://github.com/jnunemaker/cassanity/tree/master/doc/Migrations.md)
+
 ## Compatibility
 
 * Ruby 1.9.3
