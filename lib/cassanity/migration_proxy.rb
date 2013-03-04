@@ -57,6 +57,10 @@ module Cassanity
       name.split('_').map { |word| word.capitalize }.join('')
     end
 
+    def hash
+      path.hash
+    end
+
     def eql?(other)
       self.class.eql?(other.class) && path == other.path
     end

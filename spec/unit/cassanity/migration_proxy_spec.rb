@@ -50,4 +50,12 @@ describe Cassanity::MigrationProxy do
       described_class.new('/some/path/1_foo.rb').eql?(other).should be_false
     end
   end
+
+  describe "#hash" do
+    it "delegates to path" do
+      path = '/some/path/1_foo.rb'
+      instance = described_class.new(path)
+      instance.hash.should eq(path.hash)
+    end
+  end
 end
