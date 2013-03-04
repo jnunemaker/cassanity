@@ -31,19 +31,16 @@ module Cassanity
     def run(migrator, operation)
       migrator.log "== #{@name}: migrating ".ljust(80, "=")
       start = Time.now
-      send(operation, migrator)
+      case operation
+      when :up
+        migration_class.new(migrator).up
+        migrator.migrated(self)
+      when :down
+        migration_class.new(migrator).down
+        migrator.unmigrated(self)
+      end
       duration = (Time.now - start).round(3)
       migrator.log "== #{@name}: migrated (#{duration}s) ".ljust(80, "=")
-    end
-
-    def up(migrator)
-      migration_class.new(migrator).up
-      migrator.migrated(self)
-    end
-
-    def down(migrator)
-      migration_class.new(migrator).down
-      migrator.unmigrated(self)
     end
 
     def migration_class
