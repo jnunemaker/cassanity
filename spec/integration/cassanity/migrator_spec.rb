@@ -13,9 +13,15 @@ describe Cassanity::Migrator do
 
   let(:log_string) { StringIO.new }
 
+  let(:logger) {
+    logger = Logger.new(log_string)
+    logger.formatter = proc { |_, _, _, msg| "#{msg}\n" }
+    logger
+  }
+
   subject {
     described_class.new(keyspace, migrations_path, {
-      logger: Logger.new(log_string),
+      logger: logger,
     })
   }
 
