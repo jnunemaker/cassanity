@@ -5,6 +5,8 @@ require 'cassanity/migration'
 
 module Cassanity
   class Migrator
+    SupportedDirections = [:up, :down]
+
     # Public: The keyspace all migrations apply to.
     attr_reader :keyspace
 
@@ -28,12 +30,16 @@ module Cassanity
     # Public: Migrates to a version using a direction.
     def migrate_to(version, direction = :up)
       version = version.to_i
+      direction = direction.to_sym
+      assert_valid_direction(direction)
 
       migrations = case direction
       when :up
         pending_migrations.select { |migration| migration.version <= version }
       when :down
         performed_migrations.select { |migration| migration.version > version }
+      else
+        []
       end
 
       run_migrations migrations, direction
@@ -92,7 +98,9 @@ module Cassanity
     def run_migrations(migrations, direction)
       migrations = migrations.sort
       migrations = migrations.reverse if direction == :down
-      migrations.each { |migration| migration.run(self, direction) }
+      migrations.each { |migration|
+        migration.run(self, direction)
+      }
 
       {performed: migrations}
     end
@@ -122,6 +130,12 @@ module Cassanity
       logger = Logger.new(STDOUT)
       logger.formatter = proc { |_, _, _, msg| "#{msg}\n" }
       logger
+    end
+
+    def assert_valid_direction(direction)
+      unless SupportedDirections.include?(direction)
+        raise ArgumentError, "#{direction.inspect} is not a valid migration direction"
+      end
     end
   end
 end

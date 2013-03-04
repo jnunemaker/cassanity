@@ -105,8 +105,15 @@ describe Cassanity::Migrator do
         subject.migrate_to(subject.migrations[0].version, :down)
         subject.performed_migrations.size.should be(1)
 
-        subject.migrate_to(subject.migrations[0].version - 1, :down)
+        # works with string
+        subject.migrate_to(subject.migrations[0].version - 1, 'down')
         subject.performed_migrations.size.should be(0)
+      end
+
+      it "raises argument error for invalid direction" do
+        expect {
+          subject.migrate_to(0, 'nooope')
+        }.to raise_error(ArgumentError, ':nooope is not a valid migration direction')
       end
 
       it "returns migrations in the order they were performed" do

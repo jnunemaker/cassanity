@@ -29,16 +29,11 @@ module Cassanity
 
     # Public: Runs a migration operation for a migrator on a keyspace.
     def run(migrator, operation)
-      if respond_to?(operation)
-        migrator.log "== #{@name}: migrating ".ljust(80, "=")
-        start = Time.now
-        send(operation, migrator)
-        duration = (Time.now - start).round(3)
-        migrator.log "== #{@name}: migrated (#{duration}s) ".ljust(80, "=")
-      else
-        raise MigrationOperationNotSupported,
-          "#{operation.inspect} is not a supported migration operation"
-      end
+      migrator.log "== #{@name}: migrating ".ljust(80, "=")
+      start = Time.now
+      send(operation, migrator)
+      duration = (Time.now - start).round(3)
+      migrator.log "== #{@name}: migrated (#{duration}s) ".ljust(80, "=")
     end
 
     def up(migrator)
