@@ -65,22 +65,22 @@ module Cassanity
       @migrations ||= begin
         paths = Dir["#{migrations_path}/*.rb"]
         migrations = paths.map { |path| MigrationProxy.new(path) }
-        sorted_migrations migrations
+        migrations.sort
       end
     end
 
     # Public: An array of the migrations that have been performed.
     def performed_migrations
       rows = column_family.select
-      sorted_migrations rows.map { |row|
+      rows.map { |row|
         path = migrations_path.join("#{row['version']}_#{row['name']}.rb")
         MigrationProxy.new(path)
-      }
+      }.sort
     end
 
     # Public: An array of the migrations that have not been performed.
     def pending_migrations
-      sorted_migrations migrations - performed_migrations
+      (migrations - performed_migrations).sort
     end
 
     # Internal: Log a message.
@@ -90,21 +90,11 @@ module Cassanity
 
     # Private
     def run_migrations(migrations, direction)
-      migrations = case direction
-      when :up
-        sorted_migrations(migrations)
-      when :down
-        sorted_migrations(migrations).reverse
-      end
-
+      migrations = migrations.sort
+      migrations = migrations.reverse if direction == :down
       migrations.each { |migration| migration.run(self, direction) }
 
       {performed: migrations}
-    end
-
-    # Private: Returns migrations sorted correctly.
-    def sorted_migrations(migrations)
-      migrations.sort { |a, b| a.version <=> b.version }
     end
 
     # Private: The column family storing all
