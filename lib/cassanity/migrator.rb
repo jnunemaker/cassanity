@@ -20,9 +20,7 @@ module Cassanity
       migrations_to_run = pending_migrations
       run_migrations migrations_to_run, :up
 
-      {
-        ran_migrations: migrations_to_run,
-      }
+      {performed: migrations_to_run}
     end
 
     # Public: Migrates to a version using a direction.
@@ -52,21 +50,42 @@ module Cassanity
       })
     end
 
+    # Public: An array of all migrations.
+    def migrations
+      @migrations ||= begin
+        paths = Dir["#{migrations_path}/*.rb"]
+        sorted_migrations paths.map { |path| MigrationProxy.new(path) }
+      end
+    end
+
+    # Public: An array of the migrations that have been performed.
+    def performed_migrations
+      rows = column_family.select
+      sorted_migrations rows.map { |row|
+        path = migrations_path.join("#{row['version']}_#{row['name']}.rb")
+        MigrationProxy.new(path)
+      }
+    end
+
+    # Public: An array of the migrations that have not been performed.
+    def pending_migrations
+      sorted_migrations migrations - performed_migrations
+    end
+
     # Private
     def migrations_to_run(version, direction)
-      send("#{direction}_migrations_to_run", version)
-    end
-
-    # Private
-    def up_migrations_to_run(version)
       version = version.to_i
-      pending_migrations.select { |migration| migration.version <= version }
-    end
 
-    # Private
-    def down_migrations_to_run(version)
-      version = version.to_i
-      performed_migrations.select { |migration| migration.version > version }
+      case direction
+      when :up
+        sorted_migrations pending_migrations.select { |migration|
+          migration.version <= version
+        }
+      when :down
+        sorted_migrations performed_migrations.select { |migration|
+          migration.version > version
+        }
+      end
     end
 
     # Private
@@ -76,31 +95,9 @@ module Cassanity
       }
     end
 
-    # Private
-    def migrations
-      @migrations ||= begin
-        paths = Dir["#{migrations_path}/*.rb"]
-        sort_by_version paths.map { |path| MigrationProxy.new(path) }
-      end
-    end
-
-    def sort_by_version(migrations)
+    # Private: Returns migrations sorted correctly.
+    def sorted_migrations(migrations)
       migrations.sort { |a, b| a.version <=> b.version }
-    end
-
-    # Private
-    def performed_migrations
-      rows = column_family.select
-      sort_by_version rows.map { |row|
-        path = migrations_path.join("#{row['version']}_#{row['name']}.rb")
-        MigrationProxy.new(path)
-      }
-    end
-
-    # Private
-    def pending_migrations
-      excluded = performed_migrations
-      migrations.reject { |migration| excluded.include?(migration) }
     end
 
     # Private: The column family storing all

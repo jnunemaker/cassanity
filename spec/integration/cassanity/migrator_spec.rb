@@ -27,7 +27,7 @@ describe Cassanity::Migrator do
       end
 
       it "runs all migrations" do
-        @result[:ran_migrations].size.should be(3)
+        @result[:performed].size.should be(3)
       end
 
       it "stores migrations in column family" do
@@ -58,7 +58,7 @@ describe Cassanity::Migrator do
       end
 
       it "runs only migrations that need to be" do
-        versions = @result[:ran_migrations].map(&:version)
+        versions = @result[:performed].map(&:version)
         versions.should eq([subject.migrations[2].version])
       end
     end
@@ -71,7 +71,7 @@ describe Cassanity::Migrator do
       end
 
       it "runs migration that has not been run" do
-        versions = @result[:ran_migrations].map(&:version)
+        versions = @result[:performed].map(&:version)
         versions.should eq([subject.migrations[1].version])
       end
     end
