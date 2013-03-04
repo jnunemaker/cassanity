@@ -99,7 +99,7 @@ module Cassanity
       migrations = migrations.sort
       migrations = migrations.reverse if direction == :down
       migrations.each { |migration|
-        migration.run(self, direction)
+        migration.perform(self, direction)
       }
 
       {performed: migrations}

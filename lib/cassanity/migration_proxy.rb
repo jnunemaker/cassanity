@@ -28,7 +28,7 @@ module Cassanity
     end
 
     # Public: Runs a migration operation for a migrator on a keyspace.
-    def run(migrator, operation)
+    def perform(migrator, operation)
       migrator.log "== #{@name}: migrating ".ljust(80, "=")
       start = Time.now
       case operation
