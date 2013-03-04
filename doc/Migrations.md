@@ -126,3 +126,7 @@ touch db/migrate/20130304160000_create_users.rb
 The version could be year, month, day, hour, minute, second (20130304160000, 4:00pm on March 4, 2013), as in the example I just showed, or you could standardize on year, month, day (20130304, March 4, 2013).
 
 **Note**: Migrations will run in the order they appear on disk. They are sorted by their path, which means if you do not go with timestamped migrations, you should padd migrations with leading zero's, as Rails does (ie: "001" instead of "01" or "1").
+
+## Rake Tasks
+
+What is that? You want some rake tasks to handle migrating? [Here is a gist for that](https://gist.github.com/jnunemaker/5086063). I will try to keep it up to date and I am definitely open to any solutions that would make integrating all of this with your app easier.
