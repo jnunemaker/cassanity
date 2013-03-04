@@ -73,13 +73,7 @@ module Cassanity
     alias_method :==, :eql?
 
     def <=>(other)
-      if @version < other.version
-        -1
-      elsif @version > other.version
-        1
-      else
-        @name <=> other.name
-      end
+      @path <=> other.path
     end
   end
 end
