@@ -17,7 +17,7 @@ module Cassanity
 
     # Public: Migrates all the migrations that have not run in version order.
     def migrate
-      migrations_to_run = not_ran_migrations
+      migrations_to_run = pending_migrations
       run_migrations migrations_to_run, :up
 
       {
@@ -60,13 +60,13 @@ module Cassanity
     # Private
     def up_migrations_to_run(version)
       version = version.to_i
-      not_ran_migrations.select { |migration| migration.version <= version }
+      pending_migrations.select { |migration| migration.version <= version }
     end
 
     # Private
     def down_migrations_to_run(version)
       version = version.to_i
-      ran_migrations.select { |migration| migration.version > version }
+      performed_migrations.select { |migration| migration.version > version }
     end
 
     # Private
@@ -89,7 +89,7 @@ module Cassanity
     end
 
     # Private
-    def ran_migrations
+    def performed_migrations
       rows = column_family.select
       sort_by_version rows.map { |row|
         path = migrations_path.join("#{row['version']}_#{row['name']}.rb")
@@ -98,8 +98,8 @@ module Cassanity
     end
 
     # Private
-    def not_ran_migrations
-      excluded = ran_migrations
+    def pending_migrations
+      excluded = performed_migrations
       migrations.reject { |migration| excluded.include?(migration) }
     end
 

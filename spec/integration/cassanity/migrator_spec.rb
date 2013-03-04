@@ -81,22 +81,22 @@ describe Cassanity::Migrator do
     context "migrating to specific versions" do
       it "works" do
         subject.migrate_to(subject.migrations[0].version)
-        subject.ran_migrations.size.should be(1)
+        subject.performed_migrations.size.should be(1)
 
         subject.migrate_to(subject.migrations[1].version)
-        subject.ran_migrations.size.should be(2)
+        subject.performed_migrations.size.should be(2)
 
         subject.migrate_to(subject.migrations[2].version)
-        subject.ran_migrations.size.should be(3)
+        subject.performed_migrations.size.should be(3)
 
         subject.migrate_to(subject.migrations[1].version, :down)
-        subject.ran_migrations.size.should be(2)
+        subject.performed_migrations.size.should be(2)
 
         subject.migrate_to(subject.migrations[0].version, :down)
-        subject.ran_migrations.size.should be(1)
+        subject.performed_migrations.size.should be(1)
 
         subject.migrate_to(subject.migrations[0].version - 1, :down)
-        subject.ran_migrations.size.should be(0)
+        subject.performed_migrations.size.should be(0)
       end
     end
   end
