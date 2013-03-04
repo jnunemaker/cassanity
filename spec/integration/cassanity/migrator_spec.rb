@@ -120,4 +120,80 @@ describe Cassanity::Migrator do
       end
     end
   end
+
+  describe "#migrated" do
+    it "adds migration to performed migrations" do
+      migration = subject.migrations[0]
+      subject.migrated(migration)
+      names = subject.column_family.select.map { |row| row['name'] }
+      names.should include(migration.name)
+    end
+  end
+
+  describe "#unmigrated" do
+    it "removes migration from performed migrations" do
+      migration = subject.migrations[0]
+      subject.column_family.insert(data: {
+        version: migration.version,
+        name: migration.name,
+        migrated_at: Time.now,
+      })
+      subject.unmigrated(migration)
+      names = subject.column_family.select.map { |row| row['name'] }
+      names.should_not include(migration.name)
+    end
+  end
+
+  describe "#migrations" do
+    it "returns all migrations in order from the migrations path" do
+      names = subject.migrations.map(&:name)
+      names.should eq([
+        'create_users',
+        'create_apps',
+        'add_username_to_users',
+      ])
+    end
+  end
+
+  describe "#performed_migrations" do
+    it "returns all performed migrations in order" do
+      subject.migrations.each do |migration|
+        subject.column_family.insert(data: {
+          name: migration.name,
+          version: migration.version,
+          migrated_at: Time.now,
+        })
+      end
+
+      names = subject.performed_migrations.map(&:name)
+      names.should eq([
+        'create_users',
+        'create_apps',
+        'add_username_to_users',
+      ])
+    end
+  end
+
+  describe "#pending_migrations" do
+    it "returns all pending migrations in order" do
+      migration = subject.migrations[0]
+      subject.column_family.insert(data: {
+        name: migration.name,
+        version: migration.version,
+        migrated_at: Time.now,
+      })
+      names = subject.pending_migrations.map(&:name)
+      names.should eq([
+        'create_apps',
+        'add_username_to_users',
+      ])
+    end
+  end
+
+  describe "#log" do
+    it "sends message to logger" do
+      subject.log('just testing')
+      log_string.string.should match("just testing")
+    end
+  end
 end
