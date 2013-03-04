@@ -46,7 +46,7 @@ module Cassanity
     end
 
     # Public: Marks a migration as migrated.
-    def migrated(migration)
+    def migrated_up(migration)
       column_family.insert({
         data: {
           version: migration.version,
@@ -57,7 +57,7 @@ module Cassanity
     end
 
     # Public: Marks a migration as not run.
-    def unmigrated(migration)
+    def migrated_down(migration)
       column_family.delete({
         where: {
           version: migration.version,
@@ -102,13 +102,13 @@ module Cassanity
       when :up
         migrations.each do |migration|
           migration.up(self)
-          migrated(migration)
+          migrated_up(migration)
         end
       when :down
         migrations = migrations.reverse
         migrations.each do |migration|
           migration.down(self)
-          unmigrated(migration)
+          migrated_down(migration)
         end
       end
 

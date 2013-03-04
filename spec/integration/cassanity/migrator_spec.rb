@@ -75,8 +75,8 @@ describe Cassanity::Migrator do
 
     context "when migration has not been run that is older than migrations that have been run" do
       before do
-        subject.migrated subject.migrations[0]
-        subject.migrated subject.migrations[2]
+        subject.migrated_up subject.migrations[0]
+        subject.migrated_up subject.migrations[2]
         @result = subject.migrate
       end
 
@@ -134,16 +134,16 @@ describe Cassanity::Migrator do
     end
   end
 
-  describe "#migrated" do
+  describe "#migrated_up" do
     it "adds migration to performed migrations" do
       migration = subject.migrations[0]
-      subject.migrated(migration)
+      subject.migrated_up(migration)
       names = subject.column_family.select.map { |row| row['name'] }
       names.should include(migration.name)
     end
   end
 
-  describe "#unmigrated" do
+  describe "#migrated_down" do
     it "removes migration from performed migrations" do
       migration = subject.migrations[0]
       subject.column_family.insert(data: {
@@ -151,7 +151,7 @@ describe Cassanity::Migrator do
         name: migration.name,
         migrated_at: Time.now,
       })
-      subject.unmigrated(migration)
+      subject.migrated_down(migration)
       names = subject.column_family.select.map { |row| row['name'] }
       names.should_not include(migration.name)
     end
