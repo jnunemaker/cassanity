@@ -22,15 +22,25 @@ module Cassanity
 
     # Public: Migrates all the migrations that have not run in version order.
     def migrate
-      pending = pending_migrations
-      run_migrations pending, :up
-      {performed: pending}
+      run_migrations pending_migrations, :up
     end
 
     # Public: Migrates to a version using a direction.
     def migrate_to(version, direction = :up)
-      migrations_to_run = migrations_to_run(version, direction)
-      run_migrations migrations_to_run, direction
+      version = version.to_i
+
+      migrations = case direction
+      when :up
+        pending_migrations.select { |migration|
+          migration.version <= version
+        }
+      when :down
+        performed_migrations.select { |migration|
+          migration.version > version
+        }
+      end
+
+      run_migrations migrations, direction
     end
 
     # Public: Marks a migration as migrated.
@@ -58,7 +68,8 @@ module Cassanity
     def migrations
       @migrations ||= begin
         paths = Dir["#{migrations_path}/*.rb"]
-        sorted_migrations paths.map { |path| MigrationProxy.new(path) }
+        migrations = paths.map { |path| MigrationProxy.new(path) }
+        sorted_migrations migrations
       end
     end
 
@@ -76,22 +87,6 @@ module Cassanity
       sorted_migrations migrations - performed_migrations
     end
 
-    # Private
-    def migrations_to_run(version, direction)
-      version = version.to_i
-
-      case direction
-      when :up
-        sorted_migrations pending_migrations.select { |migration|
-          migration.version <= version
-        }
-      when :down
-        sorted_migrations performed_migrations.select { |migration|
-          migration.version > version
-        }
-      end
-    end
-
     # Internal: Log a message.
     def log(message)
       @logger.info message
@@ -99,9 +94,18 @@ module Cassanity
 
     # Private
     def run_migrations(migrations, direction)
+      migrations = case direction
+      when :up
+        sorted_migrations(migrations)
+      when :down
+        sorted_migrations(migrations).reverse
+      end
+
       migrations.each { |migration|
         migration.run(self, direction)
       }
+
+      {performed: migrations}
     end
 
     # Private: Returns migrations sorted correctly.

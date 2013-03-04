@@ -102,6 +102,22 @@ describe Cassanity::Migrator do
         subject.migrate_to(subject.migrations[0].version - 1, :down)
         subject.performed_migrations.size.should be(0)
       end
+
+      it "returns migrations in the order they were performed" do
+        result = subject.migrate_to(subject.migrations[2].version)
+        result[:performed].map(&:version).should eq([
+          subject.migrations[0].version,
+          subject.migrations[1].version,
+          subject.migrations[2].version,
+        ])
+
+        result = subject.migrate_to(0, :down)
+        result[:performed].map(&:version).should eq([
+          subject.migrations[2].version,
+          subject.migrations[1].version,
+          subject.migrations[0].version,
+        ])
+      end
     end
   end
 end
