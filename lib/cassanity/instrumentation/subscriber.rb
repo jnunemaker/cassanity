@@ -27,21 +27,16 @@ module Cassanity
         update_timer 'cassanity.cql'
 
         if command_name?
-          update_type_timer :command, @command_name
+          update_timer "cassanity.command.#{@command_name}.cql"
         end
 
         if column_family_name?
-          update_type_timer :column_family, @column_family_name
+          update_timer "cassanity.column_family.#{@column_family_name}.cql"
         end
 
         if column_family_name? && command_name?
-          update_type_timer :column_family, "#{@column_family_name}.#{@command_name}"
+          update_timer "cassanity.column_family.#{@column_family_name}.#{@command_name}.cql"
         end
-      end
-
-      # Private
-      def update_type_timer(type, name)
-        update_timer "cassanity.#{type}.#{name}.cql"
       end
 
       # Internal: Override in subclass.
