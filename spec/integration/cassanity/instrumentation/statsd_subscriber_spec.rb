@@ -50,9 +50,9 @@ describe Cassanity::Instrumentation::StatsdSubscriber do
       },
     })
 
-    socket.recv.first.should match(/cassanity\.cql\:\d\.\d+\|ms/)
-    socket.recv.first.should match(/cassanity\.command\.column_family_insert\.cql\:\d\.\d+\|ms/)
-    socket.recv.first.should match(/cassanity\.column_family\.apps\.cql\:\d\.\d+\|ms/)
-    socket.recv.first.should match(/cassanity\.column_family.apps.column_family_insert.cql\:\d\.\d+\|ms/)
+    socket.recv.first.should match(/cassanity\.cql\:\d+\|ms/)
+    socket.recv.first.should match(/cassanity\.command\.column_family_insert\.cql\:\d+\|ms/)
+    socket.recv.first.should match(/cassanity\.column_family\.apps\.cql\:\d+\|ms/)
+    socket.recv.first.should match(/cassanity\.column_family.apps.column_family_insert.cql\:\d+\|ms/)
   end
 end

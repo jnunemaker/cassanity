@@ -14,7 +14,7 @@ module Cassanity
 
       def update_timer(metric)
         if self.class.client
-          self.class.client.timing metric, @duration
+          self.class.client.timing metric, (@duration * 1_000).round
         end
       end
     end
