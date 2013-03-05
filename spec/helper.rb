@@ -1,5 +1,6 @@
 $:.unshift(File.expand_path('../../lib', __FILE__))
 
+require 'pathname'
 require 'rubygems'
 require 'bundler'
 
