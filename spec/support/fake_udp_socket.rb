@@ -1,4 +1,6 @@
 class FakeUDPSocket
+  attr_reader :buffer
+
   def initialize
     @buffer = []
   end
