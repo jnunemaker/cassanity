@@ -90,7 +90,7 @@ describe Cassanity::Client do
       client.driver.should be_instance_of(driver.class)
     end
 
-    it "builds driver, executor, and connection" do
+    it "builds driver, executor and connection" do
       driver = double('Driver')
       executor = double('Executor')
       connection = double('Connection')
