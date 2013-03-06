@@ -6,7 +6,7 @@ describe Cassanity::RetryStrategies::RetryNTimes do
 
   describe "#initialize" do
     it "defaults :retries to none" do
-      described_class.new.retries.should eq(0)
+      subject.retries.should eq(0)
     end
   end
 

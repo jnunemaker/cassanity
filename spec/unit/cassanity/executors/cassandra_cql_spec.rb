@@ -4,7 +4,6 @@ require 'cassanity/instrumenters/memory'
 
 describe Cassanity::Executors::CassandraCql do
   let(:driver) { double('Client', :execute => nil) }
-  let(:retry_strategy) { double('RetryStrategy') }
 
   let(:required_arguments) {
     {

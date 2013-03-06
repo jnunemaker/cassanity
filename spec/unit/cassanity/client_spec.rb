@@ -94,7 +94,6 @@ describe Cassanity::Client do
       driver = double('Driver')
       executor = double('Executor')
       connection = double('Connection')
-      retry_strategy = double('RetryStrategy')
 
       CassandraCQL::Database.should_receive(:new).and_return(driver)
 
