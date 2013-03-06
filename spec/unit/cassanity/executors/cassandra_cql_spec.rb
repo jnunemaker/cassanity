@@ -4,6 +4,7 @@ require 'cassanity/instrumenters/memory'
 
 describe Cassanity::Executors::CassandraCql do
   let(:driver) { double('Client', :execute => nil) }
+  let(:retry_strategy) { double('RetryStrategy') }
 
   let(:required_arguments) {
     {
@@ -35,6 +36,10 @@ describe Cassanity::Executors::CassandraCql do
 
     it "sets driver" do
       subject.driver.should eq(driver)
+    end
+
+    it "sets a default retry strategy when none is passed" do
+      subject.retry_strategy.should be_an_instance_of(Cassanity::RetryStrategies::RetryNTimes)
     end
 
     it "defaults :argument_generators" do

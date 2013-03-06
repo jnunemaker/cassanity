@@ -79,7 +79,7 @@ describe Cassanity::Client do
         and_return(driver)
 
       Cassanity::Executors::CassandraCql.should_receive(:new).
-        with(driver: driver, instrumenter: instrumenter).
+        with(hash_including(driver: driver, instrumenter: instrumenter)).
         and_return(executor)
 
       described_class.new('localhost:1234', instrumenter: instrumenter)
@@ -90,10 +90,11 @@ describe Cassanity::Client do
       client.driver.should be_instance_of(driver.class)
     end
 
-    it "builds driver, executor and connection" do
+    it "builds driver, executor, and connection" do
       driver = double('Driver')
       executor = double('Executor')
       connection = double('Connection')
+      retry_strategy = double('RetryStrategy')
 
       CassandraCQL::Database.should_receive(:new).and_return(driver)
 
