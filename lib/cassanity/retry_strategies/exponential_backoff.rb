@@ -12,6 +12,8 @@ module Cassanity
 
       # Private: sleep a randomized amount of time from the
       # SLEEP_TIMES mostly-exponential distribution.
+      #
+      # count - the index into the distribution to pull the base sleep time from
       def sleep_for_count(count)
         base = SLEEP_TIMES[count] || SLEEP_TIMES.last
 

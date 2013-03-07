@@ -17,6 +17,8 @@ module Cassanity
         @retries = args[:retries] || 0
       end
 
+      # Private: re-raise the exception from the last call if it's been retried
+      # more than the maximum amount of retries.
       def fail(attempts, error)
         if attempts > @retries
           raise error

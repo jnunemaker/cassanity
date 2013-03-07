@@ -13,6 +13,9 @@ module Cassanity
       # by the CassandraCQL driver. Call the retry method (overridden in your
       # subclass) on each failed attempt with a current retry count and
       # the error raised by the block.
+      #
+      # payload  - A Hash from an instrumenter to retry attempts to, or nil if
+      #            retries shouldn't be instrumented.
       def execute(payload = nil)
         return unless block_given?
 
