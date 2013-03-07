@@ -14,8 +14,8 @@ module Cassanity
       # subclass) on each failed attempt with a current retry count and
       # the error raised by the block.
       #
-      # payload  - A Hash from an instrumenter to retry attempts to, or nil if
-      #            retries shouldn't be instrumented.
+      # payload  - A Hash from an instrumenter to store a retry count in, or nil if
+      #            the number of retries shouldn't be tracked.
       def execute(payload = nil)
         return unless block_given?
 
