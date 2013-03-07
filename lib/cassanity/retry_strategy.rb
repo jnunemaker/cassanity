@@ -22,7 +22,7 @@ module Cassanity
           begin
             payload[:attempts] = attempt unless payload.nil?
             return yield
-          rescue CassandraCQL::Error::InvalidRequestException => e
+          rescue CassandraCQL::Error::InvalidRequestException, Thrift::Exception => e
             fail(attempt, e)
           end
         end
