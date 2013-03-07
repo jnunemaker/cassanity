@@ -17,5 +17,11 @@ describe Cassanity::RetryStrategies::RetryStrategy do
 
       lambda { subject.execute { raise 'An error!' } }.should raise_error(RuntimeError, 'An error!')
     end
+
+    it "returns the value the block returns when successful" do
+      subject.should_not_receive(:fail)
+
+      subject.execute { 1 }.should eq(1)
+    end
   end
 end

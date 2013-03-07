@@ -13,16 +13,16 @@ module Cassanity
       # by the CassandraCQL driver. Call the retry method (overridden in your
       # subclass) on each failed attempt with a current retry count and
       # the error raised by the block.
-      def execute
+      def execute(payload = nil)
         return unless block_given?
 
         attempt = 0
+
         while attempt += 1
           begin
+            payload[:attempts] = attempt unless payload.nil?
             return yield
           rescue CassandraCQL::Error::InvalidRequestException => e
-            # TODO: log something for each failure, or increment a metrics counter
-            # so we can see how often calls fail and require a retry.
             fail(attempt, e)
           end
         end

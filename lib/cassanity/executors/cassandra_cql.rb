@@ -159,7 +159,7 @@ module Cassanity
             execute_arguments = generator.call(arguments)
             payload[:cql] = execute_arguments[0]
             payload[:cql_variables] = execute_arguments[1..-1]
-            result = @retry_strategy.execute { @driver.execute(*execute_arguments) }
+            result = @retry_strategy.execute(payload) { @driver.execute(*execute_arguments) }
             transformer = @result_transformers.fetch(command, Mirror)
             transformed_result = transformer.call(result, args[:transformer_arguments])
             payload[:result] = transformed_result
