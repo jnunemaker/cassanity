@@ -60,7 +60,7 @@ module Cassanity
         columns: ResultTransformers::Columns.new,
       }
 
-      DefaultRetryStrategy = RetryStrategies::RetryNTimes
+      DefaultRetryStrategy = RetryStrategies::RetryNTimes.new
 
       # Private: Default result transformer for commands that do not have one.
       Mirror = ResultTransformers::Mirror.new
@@ -97,6 +97,9 @@ module Cassanity
       #                               and each value is the related result
       #                               transformer that responds to `call`
       #                               (optional).
+      #        :retry_strategy      - What retry strategy to use on failed
+      #                               CassandraCQL calls
+      #                               (default: Cassanity::Instrumenters::RetryNTimes)
       #
       # Examples
       #
@@ -108,7 +111,7 @@ module Cassanity
         @instrumenter = args[:instrumenter] || Instrumenters::Noop
         @argument_generators = args.fetch(:argument_generators, DefaultArgumentGenerators)
         @result_transformers = args.fetch(:result_transformers, DefaultResultTransformers)
-        @retry_strategy = args[:retry_strategy] || DefaultRetryStrategy.new
+        @retry_strategy = args[:retry_strategy] || DefaultRetryStrategy
       end
 
       # Internal: Execute a CQL query.
@@ -156,7 +159,7 @@ module Cassanity
             execute_arguments = generator.call(arguments)
             payload[:cql] = execute_arguments[0]
             payload[:cql_variables] = execute_arguments[1..-1]
-            result = @retry_strategy.execute_with_retry(@driver, execute_arguments)
+            result = @retry_strategy.execute { @driver.execute(*execute_arguments) }
             transformer = @result_transformers.fetch(command, Mirror)
             transformed_result = transformer.call(result, args[:transformer_arguments])
             payload[:result] = transformed_result

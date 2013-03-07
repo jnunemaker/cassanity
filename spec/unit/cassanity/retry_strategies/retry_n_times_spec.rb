@@ -10,7 +10,7 @@ describe Cassanity::RetryStrategies::RetryNTimes do
     end
   end
 
-  describe "#execute_with_retry" do
+  describe "#execute" do
     it "retries unsuccessful calls up to :retries times, stopping on success" do
       executor = double('Executor')
 
@@ -21,7 +21,7 @@ describe Cassanity::RetryStrategies::RetryNTimes do
       executor.stub(:execute) {
         i += 1
         if i <= retries
-          raise "An error!"
+          raise cassandra_error('An error!')
         else
           :return
         end
@@ -30,17 +30,18 @@ describe Cassanity::RetryStrategies::RetryNTimes do
       executor.should_receive(:execute).exactly(retries + 1).times.with('arg')
 
       instance = described_class.new(:retries => retries)
-      instance.execute_with_retry(executor, ['arg']).should eq(:return)
+      instance.execute { executor.execute('arg') }.should eq(:return)
     end
 
     it "returns the last error raised when retries are exhausted" do
       executor = double('Executor')
       retries = 5
+      error = cassandra_error('An error!')
 
-      executor.should_receive(:execute).exactly(retries + 1).times.with('arg').and_raise('An error!')
+      executor.should_receive(:execute).exactly(retries + 1).times.with('arg').and_raise error
 
       instance = described_class.new(:retries => retries)
-      lambda { instance.execute_with_retry(executor, ['arg']) }.should raise_error(RuntimeError, 'An error!')
+      lambda { instance.execute { executor.execute('arg') } }.should raise_error(error)
     end
   end
 end

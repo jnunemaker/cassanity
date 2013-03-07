@@ -1,29 +1,25 @@
+require 'cassanity/retry_strategy'
+
 module Cassanity
   module RetryStrategies
-    class RetryNTimes
+    class RetryNTimes < RetryStrategy
+      # Private
       attr_reader :retries
-      attr_reader :tries_so_far
 
+      # Public: initialize the retry strategy.
+      #
+      # args - The Hash of arguments.
+      #        :retries - the number of times to retry an unsuccessful call
+      #                   before failing.
       def initialize(args = {})
         # By default, there's no retry behavior at all - if the call fails, you
         # get the error propagated to you.
         @retries = args[:retries] || 0
       end
 
-      def execute_with_retry(driver, execute_args)
-        @tries_so_far = 0
-
-        while @tries_so_far <= @retries do
-          begin
-            return driver.execute(*execute_args)
-          rescue StandardError => e
-            # TODO: log something for each failure, or increment a metrics counter
-            # so we can see how often calls fail and require a retry.
-            @tries_so_far += 1
-            if @tries_so_far > @retries
-              raise
-            end
-          end
+      def fail(attempts, error)
+        if attempts > @retries
+          raise error
         end
       end
     end
