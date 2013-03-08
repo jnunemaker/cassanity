@@ -24,6 +24,7 @@ require 'cassanity/result_transformers/keyspaces'
 require 'cassanity/result_transformers/column_families'
 require 'cassanity/result_transformers/columns'
 require 'cassanity/result_transformers/mirror'
+require 'cassanity/retry_strategies/retry_n_times'
 
 module Cassanity
   module Executors
@@ -59,6 +60,9 @@ module Cassanity
         columns: ResultTransformers::Columns.new,
       }
 
+      # Private: Default retry strategy to retry N times.
+      DefaultRetryStrategy = RetryStrategies::RetryNTimes.new
+
       # Private: Default result transformer for commands that do not have one.
       Mirror = ResultTransformers::Mirror.new
 
@@ -77,6 +81,9 @@ module Cassanity
       # Private: What should be used to instrument all the things.
       attr_reader :instrumenter
 
+      # Private: What strategy to use when retrying Cassandra commands
+      attr_reader :retry_strategy
+
       # Internal: Initializes a cassandra-cql based CQL executor.
       #
       # args - The Hash of arguments.
@@ -91,6 +98,9 @@ module Cassanity
       #                               and each value is the related result
       #                               transformer that responds to `call`
       #                               (optional).
+      #        :retry_strategy      - What retry strategy to use on failed
+      #                               CassandraCQL calls
+      #                               (default: Cassanity::Instrumenters::RetryNTimes)
       #
       # Examples
       #
@@ -102,6 +112,7 @@ module Cassanity
         @instrumenter = args[:instrumenter] || Instrumenters::Noop
         @argument_generators = args.fetch(:argument_generators, DefaultArgumentGenerators)
         @result_transformers = args.fetch(:result_transformers, DefaultResultTransformers)
+        @retry_strategy = args[:retry_strategy] || DefaultRetryStrategy
       end
 
       # Internal: Execute a CQL query.
@@ -149,7 +160,7 @@ module Cassanity
             execute_arguments = generator.call(arguments)
             payload[:cql] = execute_arguments[0]
             payload[:cql_variables] = execute_arguments[1..-1]
-            result = @driver.execute(*execute_arguments)
+            result = @retry_strategy.execute(payload) { @driver.execute(*execute_arguments) }
             transformer = @result_transformers.fetch(command, Mirror)
             transformed_result = transformer.call(result, args[:transformer_arguments])
             payload[:result] = transformed_result

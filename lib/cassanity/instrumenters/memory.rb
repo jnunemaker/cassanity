@@ -19,7 +19,6 @@ module Cassanity
         end
 
         @events << Event.new(name, payload, result)
-
         result
       end
     end

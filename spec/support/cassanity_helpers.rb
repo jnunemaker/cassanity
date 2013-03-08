@@ -32,4 +32,8 @@ module CassanityHelpers
       driver.execute("DROP COLUMNFAMILY #{name}")
     end
   end
+
+  def cassandra_error(err)
+    CassandraCQL::Error::InvalidRequestException.new(err)
+  end
 end

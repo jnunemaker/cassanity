@@ -37,6 +37,10 @@ describe Cassanity::Executors::CassandraCql do
       subject.driver.should eq(driver)
     end
 
+    it "sets a default retry strategy when none is passed" do
+      subject.retry_strategy.should be_an_instance_of(Cassanity::RetryStrategies::RetryNTimes)
+    end
+
     it "defaults :argument_generators" do
       subject.argument_generators.should eq(described_class::DefaultArgumentGenerators)
     end
@@ -147,7 +151,56 @@ describe Cassanity::Executors::CassandraCql do
             result: nil,
             cql: 'mapped',
             cql_variables: [{something: 'else'}],
+            attempts: 1,
           })
+        end
+
+        context "with retries" do
+          let(:retry_strategy) { Cassanity::RetryStrategies::RetryStrategy.new }
+          let(:driver) { double('Driver') }
+
+          subject {
+            described_class.new(required_arguments.merge({
+              driver: driver,
+              argument_generators: argument_generators,
+              instrumenter: instrumenter,
+              retry_strategy: retry_strategy,
+            }))
+          }
+
+          it "adds retry count to the cql.cassanity payload" do
+            retry_strategy.should_receive(:fail).once
+
+            args = {
+              command: :foo,
+              arguments: {
+                something: 'else',
+              },
+            }
+
+            i = 0
+            driver.stub(:execute) {
+              i += 1
+              if i > 1
+                'ok!'
+              else
+                raise cassandra_error('not ok!')
+              end
+            }
+
+            subject.call(args)
+
+            event = instrumenter.events.last
+            event.should_not be_nil
+            event.name.should eq('cql.cassanity')
+            event.payload.should eq({
+              command: :foo,
+              result: 'ok!',
+              cql: 'mapped',
+              cql_variables: [{something: 'else'}],
+              attempts: 2,
+            })
+          end
         end
       end
 

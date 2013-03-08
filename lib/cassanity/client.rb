@@ -29,12 +29,14 @@ module Cassanity
       @options        = options.merge(cql_version: '3.0.0')
       @thrift_options = thrift_options.dup
       @instrumenter   = @options.delete(:instrumenter)
+      @retry_strategy = @options.delete(:retry_strategy)
 
       @driver = CassandraCQL::Database.new(@servers, @options, @thrift_options)
 
       @executor = Cassanity::Executors::CassandraCql.new({
         driver: @driver,
         instrumenter: @instrumenter,
+        retry_strategy: @retry_strategy,
       })
 
       @connection = Cassanity::Connection.new({
