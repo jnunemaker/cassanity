@@ -60,6 +60,7 @@ module Cassanity
         columns: ResultTransformers::Columns.new,
       }
 
+      # Private: Default retry strategy to retry N times.
       DefaultRetryStrategy = RetryStrategies::RetryNTimes.new
 
       # Private: Default result transformer for commands that do not have one.
