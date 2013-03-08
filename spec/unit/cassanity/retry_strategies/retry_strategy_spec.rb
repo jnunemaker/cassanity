@@ -1,5 +1,5 @@
 require 'helper'
-require 'cassanity/retry_strategy'
+require 'cassanity/retry_strategies/retry_strategy'
 
 describe Cassanity::RetryStrategies::RetryStrategy do
   subject { described_class.new }

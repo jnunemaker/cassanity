@@ -1,4 +1,4 @@
-require 'cassanity/retry_strategy'
+require 'cassanity/retry_strategies/retry_strategy'
 
 module Cassanity
   module RetryStrategies
