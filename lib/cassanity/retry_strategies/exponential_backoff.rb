@@ -14,8 +14,7 @@ module Cassanity
       # Public: Initialize the retry strategy.
       #
       # args   - The Hash of options.
-      #          :retries - the maximum number of times to retry or -1 to try
-      #                     forever.
+      #          :retries - the maximum number of times to retry (default: forever)
       def initialize(args = {})
         # The default behavior is to retry forever.
         @retries = args[:retries] || ForeverSentinel
