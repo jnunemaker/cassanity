@@ -5,7 +5,8 @@ module Cassanity
     class ExponentialBackoff < RetryStrategy
       ForeverSentinel = :forever
 
-      # Taken from https://github.com/twitter/kestrel-client's blocking client.
+      # Private: Taken from https://github.com/twitter/kestrel-client's
+      # blocking client.
       SleepTimes = [[0] * 1, [0.01] * 2, [0.1] * 2, [0.5] * 2, [1.0] * 1].flatten
 
       # Private: the maxmimum number of times to retry or -1 to try forever.
