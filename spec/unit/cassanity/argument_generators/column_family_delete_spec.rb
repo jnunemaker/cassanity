@@ -30,6 +30,20 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyDelete do
       end
     end
 
+    context "with single column" do
+      it "returns array of arguments only deleting specific column" do
+        cql = "DELETE foo FROM #{column_family_name} WHERE \"id\" = ?"
+        expected = [cql, '1']
+        subject.call({
+          column_family_name: column_family_name,
+          columns: :foo,
+          where: {
+            id: '1',
+          }
+        }).should eq(expected)
+      end
+    end
+
     context "with specific columns" do
       it "returns array of arguments only deleting specific columns" do
         cql = "DELETE foo, bar FROM #{column_family_name} WHERE \"id\" = ?"

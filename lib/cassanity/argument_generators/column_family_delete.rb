@@ -15,7 +15,7 @@ module Cassanity
       def call(args = {})
         name    = args.fetch(:column_family_name)
         where   = args.fetch(:where)
-        columns = args.fetch(:columns) { [] }
+        columns = Array(args.fetch(:columns) { [] })
         using   = args[:using]
 
         if (keyspace_name = args[:keyspace_name])
