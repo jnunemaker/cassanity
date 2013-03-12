@@ -25,6 +25,7 @@ require 'cassanity/result_transformers/column_families'
 require 'cassanity/result_transformers/columns'
 require 'cassanity/result_transformers/mirror'
 require 'cassanity/retry_strategies/retry_n_times'
+require 'cassanity/retry_strategies/exponential_backoff'
 
 module Cassanity
   module Executors
