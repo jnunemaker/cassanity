@@ -3,6 +3,8 @@ require 'cassanity/retry_strategies/retry_strategy'
 module Cassanity
   module RetryStrategies
     class ExponentialBackoff < RetryStrategy
+      ForeverSentinel = :forever
+
       # Taken from https://github.com/twitter/kestrel-client's blocking client.
       SLEEP_TIMES = [[0] * 1, [0.01] * 2, [0.1] * 2, [0.5] * 2, [1.0] * 1].flatten
 
@@ -16,11 +18,11 @@ module Cassanity
       #                     forever.
       def initialize(args = {})
         # The default behavior is to retry forever.
-        @retries = args[:retries] || -1
+        @retries = args[:retries] || ForeverSentinel
       end
 
       def fail(attempts, error)
-        if @retries >= 0 && attempts > @retries
+        if @retries != ForeverSentinel && attempts > @retries
           raise error
         end
         sleep_for_count(attempts)
