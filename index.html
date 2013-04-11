@@ -32,6 +32,10 @@
 
 <p>Layer of goodness on top of cassandra-cql so you do not have to write CQL strings all over the place.</p>
 
+<h2>Note about Cassandra 1.2</h2>
+
+<p>At this time, cassandra 1.2 is not supported. Under the hood, cassanity uses <a href="https://github.com/kreynolds/cassandra-cql">cassandra-cql</a>, which does not currently support 1.2. It needs the thrift bindings (<a href="https://github.com/kreynolds/cassandra-cql/pull/39">initial pull request</a>) updated for 1.2 or to wrap the new binary protocol (<a href="https://github.com/kreynolds/cassandra-cql/pull/40">initial pull request</a>). I'm hoping to work on this in February or March, but if you want to take a stab, that would be awesome.</p>
+
 <h2>Installation</h2>
 
 <p>Add this line to your application's Gemfile:</p>
@@ -55,7 +59,7 @@
 
 <span class="c1"># client does the heavy lifting of setting up a cassandra cql database instance,</span>
 <span class="c1"># a cassanity executor for that database, and a cassanity connection</span>
-<span class="n">client</span> <span class="o">=</span> <span class="no">Cassanity</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span>
+<span class="n">client</span> <span class="o">=</span> <span class="ss">Cassanity</span><span class="p">:</span><span class="ss">:Client</span><span class="o">.</span><span class="n">new</span>
 
 <span class="c1"># get keyspace instance</span>
 <span class="n">keyspace</span> <span class="o">=</span> <span class="n">client</span><span class="o">[</span><span class="ss">:my_app</span><span class="o">]</span>
@@ -66,36 +70,36 @@
 <span class="n">keyspace</span><span class="o">.</span><span class="n">use</span>
 
 <span class="c1"># schema for apps column family</span>
-<span class="n">apps_schema</span> <span class="o">=</span> <span class="no">Cassanity</span><span class="o">::</span><span class="no">Schema</span><span class="o">.</span><span class="n">new</span><span class="p">({</span>
+<span class="n">apps_schema</span> <span class="o">=</span> <span class="ss">Cassanity</span><span class="p">:</span><span class="ss">:Schema</span><span class="o">.</span><span class="n">new</span><span class="p">({</span>
   <span class="n">primary_key</span><span class="p">:</span> <span class="ss">:id</span><span class="p">,</span>
-  <span class="n">columns</span><span class="p">:</span> <span class="p">{</span>
+  <span class="ss">columns</span><span class="p">:</span> <span class="p">{</span>
     <span class="nb">id</span><span class="p">:</span> <span class="ss">:text</span><span class="p">,</span>
     <span class="nb">name</span><span class="p">:</span> <span class="ss">:text</span><span class="p">,</span>
     <span class="n">created_at</span><span class="p">:</span> <span class="ss">:timestamp</span><span class="p">,</span>
   <span class="p">},</span>
-  <span class="n">with</span><span class="p">:</span> <span class="p">{</span>
-    <span class="n">comment</span><span class="p">:</span> <span class="s1">'For storing apps'</span><span class="p">,</span>
+  <span class="ss">with</span><span class="p">:</span> <span class="p">{</span>
+    <span class="ss">comment</span><span class="p">:</span> <span class="s1">'For storing apps'</span><span class="p">,</span>
   <span class="p">}</span>
 <span class="p">})</span>
 
 <span class="c1"># get instance of column family with name and schema set</span>
 <span class="n">apps</span> <span class="o">=</span> <span class="n">keyspace</span><span class="o">.</span><span class="n">column_family</span><span class="p">({</span>
   <span class="nb">name</span><span class="p">:</span> <span class="ss">:apps</span><span class="p">,</span>
-  <span class="n">schema</span><span class="p">:</span> <span class="n">apps_schema</span><span class="p">,</span>
+  <span class="ss">schema</span><span class="p">:</span> <span class="n">apps_schema</span><span class="p">,</span>
 <span class="p">})</span>
 
 <span class="c1"># you can also just pass a hash for the schema</span>
 <span class="n">apps</span> <span class="o">=</span> <span class="n">keyspace</span><span class="o">.</span><span class="n">column_family</span><span class="p">({</span>
   <span class="nb">name</span><span class="p">:</span> <span class="ss">:apps</span><span class="p">,</span>
-  <span class="n">schema</span><span class="p">:</span> <span class="p">{</span>
+  <span class="ss">schema</span><span class="p">:</span> <span class="p">{</span>
     <span class="n">primary_key</span><span class="p">:</span> <span class="ss">:id</span><span class="p">,</span>
-    <span class="n">columns</span><span class="p">:</span> <span class="p">{</span>
+    <span class="ss">columns</span><span class="p">:</span> <span class="p">{</span>
       <span class="nb">id</span><span class="p">:</span> <span class="ss">:text</span><span class="p">,</span>
       <span class="nb">name</span><span class="p">:</span> <span class="ss">:text</span><span class="p">,</span>
       <span class="n">created_at</span><span class="p">:</span> <span class="ss">:timestamp</span><span class="p">,</span>
     <span class="p">},</span>
-    <span class="n">with</span><span class="p">:</span> <span class="p">{</span>
-      <span class="n">comment</span><span class="p">:</span> <span class="s1">'For storing apps'</span><span class="p">,</span>
+    <span class="ss">with</span><span class="p">:</span> <span class="p">{</span>
+      <span class="ss">comment</span><span class="p">:</span> <span class="s1">'For storing apps'</span><span class="p">,</span>
     <span class="p">}</span>
   <span class="p">},</span>
 <span class="p">})</span>
@@ -104,17 +108,17 @@
 <span class="n">apps</span><span class="o">.</span><span class="n">create</span>
 
 <span class="c1"># insert row</span>
-<span class="n">apps</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="p">{</span>
+<span class="n">apps</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="ss">data</span><span class="p">:</span> <span class="p">{</span>
   <span class="nb">id</span><span class="p">:</span> <span class="s1">'1'</span><span class="p">,</span>
   <span class="nb">name</span><span class="p">:</span> <span class="s1">'GitHub.com'</span><span class="p">,</span>
   <span class="n">created_at</span><span class="p">:</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="p">,</span>
 <span class="p">})</span>
 
 <span class="c1"># update name for row</span>
-<span class="n">apps</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">set</span><span class="p">:</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="s1">'GitHub'</span><span class="p">},</span> <span class="n">where</span><span class="p">:</span> <span class="p">{</span><span class="nb">id</span><span class="p">:</span> <span class="s1">'1'</span><span class="p">})</span>
+<span class="n">apps</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="ss">set</span><span class="p">:</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="s1">'GitHub'</span><span class="p">},</span> <span class="ss">where</span><span class="p">:</span> <span class="p">{</span><span class="nb">id</span><span class="p">:</span> <span class="s1">'1'</span><span class="p">})</span>
 
 <span class="c1"># delete row</span>
-<span class="n">apps</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">where</span><span class="p">:</span> <span class="p">{</span><span class="nb">id</span><span class="p">:</span> <span class="s1">'1'</span><span class="p">})</span>
+<span class="n">apps</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="ss">where</span><span class="p">:</span> <span class="p">{</span><span class="nb">id</span><span class="p">:</span> <span class="s1">'1'</span><span class="p">})</span>
 
 <span class="c1"># truncate column family (remove all rows, still can add new stuff)</span>
 <span class="n">apps</span><span class="o">.</span><span class="n">truncate</span>
@@ -131,32 +135,17 @@
 <li><a href="https://github.com/jnunemaker/cassanity/tree/master/examples/keyspaces.rb">Keyspaces</a></li>
 <li><a href="https://github.com/jnunemaker/cassanity/tree/master/examples/column_families.rb">Column Families</a></li>
 <li><a href="https://github.com/jnunemaker/cassanity/tree/master/examples/select_range.rb">Select a Range</a></li>
-</ul><h2>Instrumentation</h2>
+</ul><h2>More Reading</h2>
 
-<p>Cassanity comes with a log subscriber and automatic metriks instrumentation. By
-default these work with ActiveSupport::Notifications, but only require the
-pieces of ActiveSupport that are needed and only do so if you actually attempt
-to require the instrumentation files listed below.</p>
-
-<p>If you use any of this instrumentation, you will need to have activesupport in
-your Gemfile.</p>
-
-<p>To use the log subscriber:</p>
-
-<div class="highlight"><pre><span class="nb">require</span> <span class="s1">'cassanity/instrumentation/log_subscriber'</span>
-</pre></div>
-
-<p>To use the metriks instrumentation:</p>
-
-<div class="highlight"><pre><span class="nb">require</span> <span class="s1">'cassanity/instrumentation/metriks'</span>
-</pre></div>
-
-<p>For Rails, I typically drop these lines in an initialize named <code>cassanity.rb</code>.</p>
-
-<h2>Compatibility</h2>
+<ul>
+<li><a href="https://github.com/jnunemaker/cassanity/tree/master/doc/Instrumentation.md">Instrumentation</a></li>
+<li><a href="https://github.com/jnunemaker/cassanity/tree/master/doc/Migrations.md">Migrations</a></li>
+</ul><h2>Compatibility</h2>
 
 <ul>
 <li>Ruby 1.9.3</li>
+<li>Cassandra CQL 3.x</li>
+<li>Any version of cassandra that works with cassandra-cql and supports CQL 3.</li>
 </ul><h2>Contributing</h2>
 
 <ol>
