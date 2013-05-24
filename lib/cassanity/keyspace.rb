@@ -66,11 +66,22 @@ module Cassanity
     #
     # Returns whatever is returned by executor.
     def create(args = {})
+      create_arguments = {}.merge(args)
+
+      if @strategy_class
+        create_arguments[:strategy_class] = @strategy_class
+      end
+
+      if @strategy_options
+        strategy_options = args[:strategy_options] || {}
+        create_arguments[:strategy_options] = strategy_options.merge(@strategy_options)
+      end
+
+      create_arguments[:keyspace_name] = @name
+
       @executor.call({
         command: :keyspace_create,
-        arguments: args.merge({
-          keyspace_name: @name,
-        })
+        arguments: create_arguments,
       })
     end
 

@@ -240,6 +240,44 @@ describe Cassanity::Keyspace do
       })
       subject.create(args)
     end
+
+    it "includes strategy class and options if present" do
+      args = {something: 'else'}
+
+      executor.should_receive(:call).with({
+        command: :keyspace_create,
+        arguments: args.merge({
+          keyspace_name: keyspace_name,
+          strategy_class: 'NetworkTopologyStrategy',
+          strategy_options: {replication_factory: 3},
+        }),
+      })
+
+      instance = described_class.new(required_arguments.merge({
+        strategy_class: 'NetworkTopologyStrategy',
+        strategy_options: {replication_factory: 3},
+      }))
+
+      instance.create(args)
+    end
+
+    it "merges strategy options in args with initialized strategy options" do
+      args = {strategy_options: {dc1: 1}}
+
+      executor.should_receive(:call).with({
+        command: :keyspace_create,
+        arguments: {
+          keyspace_name: keyspace_name,
+          strategy_options: {dc1: 1, dc2: 2},
+        },
+      })
+
+      instance = described_class.new(required_arguments.merge({
+        strategy_options: {dc2: 2},
+      }))
+
+      instance.create(args)
+    end
   end
 
   describe "#recreate" do
