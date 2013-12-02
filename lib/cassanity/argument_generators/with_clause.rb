@@ -17,15 +17,8 @@ module Cassanity
               withs << "COMPACT STORAGE"
             end
           else
-            if value.is_a?(Hash)
-              value.each do |sub_key, sub_value|
-                withs << "#{key}:#{sub_key} = ?"
-                variables << sub_value
-              end
-            else
-              withs << "#{key} = ?"
-              variables << value
-            end
+            withs << "#{key} = ?"
+            variables << value
           end
         end
 

@@ -7,45 +7,41 @@ describe Cassanity::ArgumentGenerators::KeyspaceCreate do
   describe "#call" do
     context "only name" do
       it "returns array of arguments" do
-        cql = "CREATE KEYSPACE #{keyspace_name} WITH strategy_class = ? AND strategy_options:replication_factor = ?"
-        expected = [cql, 'SimpleStrategy', 1]
+        cql = "CREATE KEYSPACE #{keyspace_name} WITH replication = ?"
+        expected = [cql, {class: 'SimpleStrategy', replication_factor: 1}]
         subject.call(keyspace_name: keyspace_name).should eq(expected)
       end
     end
 
-    context "overriding strategy_class" do
+    context "overriding replication class" do
       it "returns array of arguments" do
-        cql = "CREATE KEYSPACE #{keyspace_name} WITH strategy_class = ? AND strategy_options:replication_factor = ?"
-        expected = [cql, 'FooStrategy', 1]
+        cql = "CREATE KEYSPACE #{keyspace_name} WITH replication = ?"
+        expected = [cql, {class: 'FooStrategy', replication_factor: 1}]
         subject.call({
           keyspace_name: keyspace_name,
-          strategy_class: 'FooStrategy',
+          replication: {class: 'FooStrategy'},
         }).should eq(expected)
       end
     end
 
     context "overriding a default strategy_option" do
       it "returns array of arguments" do
-        cql = "CREATE KEYSPACE #{keyspace_name} WITH strategy_class = ? AND strategy_options:replication_factor = ?"
-        expected = [cql, 'SimpleStrategy', 3]
+        cql = "CREATE KEYSPACE #{keyspace_name} WITH replication = ?"
+        expected = [cql, {class: 'SimpleStrategy', replication_factor: 3}]
         subject.call({
           keyspace_name: keyspace_name,
-          strategy_options: {
-            replication_factor: 3,
-          }
+          replication: {replication_factor: 3},
         }).should eq(expected)
       end
     end
 
     context "adding new strategy_option" do
       it "returns array of arguments" do
-        cql = "CREATE KEYSPACE #{keyspace_name} WITH strategy_class = ? AND strategy_options:replication_factor = ? AND strategy_options:batman = ?"
-        expected = [cql, 'SimpleStrategy', 1, 'robin']
+        cql = "CREATE KEYSPACE #{keyspace_name} WITH replication = ?"
+        expected = [cql, {class: 'SimpleStrategy', replication_factor: 1, batman: 'robin'}]
         subject.call({
           keyspace_name: keyspace_name,
-          strategy_options: {
-            batman: 'robin',
-          }
+          replication: {batman: 'robin'},
         }).should eq(expected)
       end
     end

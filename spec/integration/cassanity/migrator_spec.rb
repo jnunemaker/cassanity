@@ -2,7 +2,7 @@ require 'helper'
 require 'cassanity/migrator'
 
 describe Cassanity::Migrator do
-  let(:client) { Cassanity::Client.new(CassanityServers) }
+  let(:client) { Cassanity::Client.new(CassanityHost, CassanityPort) }
   let(:driver) { client.driver }
   let(:keyspace) { client[:cassanity_test] }
   let(:column_family) { subject.column_family }

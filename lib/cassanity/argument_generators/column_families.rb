@@ -8,7 +8,7 @@ module Cassanity
         cql = 'SELECT * FROM system.schema_columnfamilies'
 
         if (keyspace_name = args[:keyspace_name])
-          cql << ' WHERE "keyspace" = ?'
+          cql << ' WHERE "keyspace_name" = ?'
           variables << keyspace_name
         end
 

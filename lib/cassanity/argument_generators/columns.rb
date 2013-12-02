@@ -15,11 +15,11 @@ module Cassanity
         cql = 'SELECT * FROM system.schema_columns'
 
         if (keyspace_name = args[:keyspace_name])
-          where[:keyspace] = keyspace_name
+          where[:keyspace_name] = keyspace_name
         end
 
         if (column_family_name = args[:column_family_name])
-          where[:columnfamily] = column_family_name
+          where[:columnfamily_name] = column_family_name
         end
 
         where_cql, *where_variables = @where_clause.call(where: where)

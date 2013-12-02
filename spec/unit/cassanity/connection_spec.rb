@@ -55,7 +55,7 @@ describe Cassanity::Connection do
     context "with name and args" do
       before do
         @return_value = subject.keyspace(keyspace_name, {
-          strategy_class: 'NetworkTopologyStrategy',
+          replication: {class: 'NetworkTopologyStrategy'},
         })
       end
 
@@ -64,7 +64,7 @@ describe Cassanity::Connection do
       end
 
       it "passes args to initialization" do
-        @return_value.strategy_class.should eq('NetworkTopologyStrategy')
+        @return_value.replication.should eq(class: 'NetworkTopologyStrategy')
       end
 
       it "returns instance of keyspace" do
@@ -76,7 +76,7 @@ describe Cassanity::Connection do
       before do
         @return_value = subject.keyspace({
           name: keyspace_name,
-          strategy_class: 'NetworkTopologyStrategy',
+          replication: {class: 'NetworkTopologyStrategy'},
         })
       end
 
@@ -89,7 +89,7 @@ describe Cassanity::Connection do
       end
 
       it "passes args to initialization" do
-        @return_value.strategy_class.should eq('NetworkTopologyStrategy')
+        @return_value.replication.should eq(class: 'NetworkTopologyStrategy')
       end
     end
 
@@ -98,7 +98,7 @@ describe Cassanity::Connection do
         @return_value = subject.keyspace({
           name: keyspace_name,
         }, {
-          strategy_class: 'NetworkTopologyStrategy',
+          replication: {class: 'NetworkTopologyStrategy'},
         })
       end
 
@@ -111,7 +111,7 @@ describe Cassanity::Connection do
       end
 
       it "passes args to initialization" do
-        @return_value.strategy_class.should eq('NetworkTopologyStrategy')
+        @return_value.replication.should eq(class: 'NetworkTopologyStrategy')
       end
     end
   end

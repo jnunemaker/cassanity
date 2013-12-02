@@ -1,13 +1,15 @@
+require 'pry'
 module CassanityHelpers
   def driver_keyspace?(driver, name)
-    driver.keyspaces.map(&:name).include?(name.to_s)
+    rows = driver.execute("SELECT keyspace_name FROM system.schema_keyspaces WHERE keyspace_name='#{name}' ALLOW FILTERING")
+    rows.to_a.any?
   end
 
   def driver_create_keyspace(driver, name)
     unless driver_keyspace?(driver, name)
-      driver.execute("CREATE KEYSPACE #{name} WITH strategy_class = 'SimpleStrategy' AND strategy_options:replication_factor = 1")
+      driver.execute("CREATE KEYSPACE #{name} WITH REPLICATION = { 'class': 'SimpleStrategy', 'replication_factor': 1 }")
     end
-    driver.execute("USE #{name}")
+    driver.use(name)
   end
 
   def driver_drop_keyspace(driver, name)
@@ -17,7 +19,8 @@ module CassanityHelpers
   end
 
   def driver_column_family?(driver, name)
-    driver.schema.column_family_names.include?(name.to_s)
+    rows = driver.execute("SELECT columnfamily_name FROM system.schema_columnfamilies WHERE keyspace_name='#{driver.keyspace}' AND columnfamily_name='#{name}' ALLOW FILTERING")
+    rows.to_a.any?
   end
 
   def driver_create_column_family(driver, name, columns = nil)
@@ -34,6 +37,6 @@ module CassanityHelpers
   end
 
   def cassandra_error(err)
-    CassandraCQL::Error::InvalidRequestException.new(err)
+    Cql::CqlError.new(err)
   end
 end

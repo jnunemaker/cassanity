@@ -1,6 +1,7 @@
 require 'forwardable'
-require 'cassandra-cql'
+require 'cql'
 require 'cassanity/error'
+require 'cassanity/statement'
 require 'cassanity/instrumenters/noop'
 require 'cassanity/argument_generators/keyspaces'
 require 'cassanity/argument_generators/keyspace_create'
@@ -29,7 +30,7 @@ require 'cassanity/retry_strategies/exponential_backoff'
 
 module Cassanity
   module Executors
-    class CassandraCql
+    class CqlRb
       extend Forwardable
 
       # Private: Hash of commands to related argument generators.
@@ -88,7 +89,7 @@ module Cassanity
       # Internal: Initializes a cassandra-cql based CQL executor.
       #
       # args - The Hash of arguments.
-      #        :driver - The CassandraCQL::Database connection instance.
+      #        :driver - The Cql::Client connection instance.
       #        :instrumenter - What should be used to instrument all the things
       #                        (default: Cassanity::Instrumenters::Noop).
       #        :argument_generators - A Hash where each key is a command name
@@ -100,13 +101,13 @@ module Cassanity
       #                               transformer that responds to `call`
       #                               (optional).
       #        :retry_strategy      - What retry strategy to use on failed
-      #                               CassandraCQL calls
+      #                               Cql::Client calls
       #                               (default: Cassanity::Instrumenters::RetryNTimes)
       #
       # Examples
       #
-      #   driver = CassandraCQL::Database.new('host', cql_version: '3.0.0')
-      #   Cassanity::Executors::CassandraCql.new(driver: driver)
+      #   driver = Cql::Client.connect(hosts: ['cassandra.example.com'])
+      #   Cassanity::Executors::CqlRb.new(driver: driver)
       #
       def initialize(args = {})
         @driver = args.fetch(:driver)
@@ -148,20 +149,27 @@ module Cassanity
           arguments = args[:arguments]
 
           if arguments
-            if (keyspace_name = arguments[:keyspace_name])
-              payload[:keyspace_name] = keyspace_name
+            if command != :keyspace_create && (keyspace_name = arguments[:keyspace_name])
+              @driver.use(keyspace_name)
             end
 
-            if (column_family_name = arguments[:column_family_name])
-              payload[:column_family_name] = column_family_name
+            # TODO: As a temporary measure, we remove this deprecated option
+            # while we have time to update each gem (e.g., adapter-cassanity)
+            # that sets it. Consistency should be specified at the connection
+            # level for now.
+            if arguments[:using]
+              arguments[:using].delete(:consistency)
             end
           end
 
           begin
-            execute_arguments = generator.call(arguments)
-            payload[:cql] = execute_arguments[0]
-            payload[:cql_variables] = execute_arguments[1..-1]
-            result = @retry_strategy.execute(payload) { @driver.execute(*execute_arguments) }
+            cql, *variables = generator.call(arguments)
+            payload[:cql] = cql
+            payload[:cql_variables] = variables
+
+            statement = Cassanity::Statement.new(cql)
+            result = @retry_strategy.execute(payload) { @driver.execute(statement.interpolate(variables)) }
+
             transformer = @result_transformers.fetch(command, Mirror)
             transformed_result = transformer.call(result, args[:transformer_arguments])
             payload[:result] = transformed_result

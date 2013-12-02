@@ -9,26 +9,20 @@ module Cassanity
     attr_reader :executor
 
     # Internal
-    attr_reader :strategy_class
-
-    # Internal
-    attr_reader :strategy_options
+    attr_reader :replication
 
     # Public: Initializes a Keyspace.
     #
     # args - The Hash of arguments (default: {}).
     #        :name - The String name of the keyspace.
     #        :executor - What will execute the queries. Must respond to `call`.
-    #        :strategy_class - The String strategy class name to use when
-    #                          creating keyspace.
-    #        :strategy_options - The Hash of strategy options to use when
-    #                            creating keyspace.
+    #        :replication - Hash of replication options (e.g., :class,
+    #                       :replication_factor)
     #
     def initialize(args = {})
       @name = args.fetch(:name).to_sym
       @executor = args.fetch(:executor)
-      @strategy_class = args[:strategy_class]
-      @strategy_options = args[:strategy_options]
+      @replication = args.fetch(:replication, {})
     end
 
     # Public: Returns true or false depending on if keyspace exists in the
@@ -57,8 +51,8 @@ module Cassanity
     #
     #   # override options from initialization
     #   create({
-    #     strategy_class: 'NetworkTopologyStrategy',
-    #     strategy_options: {
+    #     replication: {
+    #       class: 'NetworkTopologyStrategy',
     #       dc1: 1,
     #       dc2: 3,
     #     }
@@ -67,16 +61,7 @@ module Cassanity
     # Returns whatever is returned by executor.
     def create(args = {})
       create_arguments = {}.merge(args)
-
-      if @strategy_class
-        create_arguments[:strategy_class] = @strategy_class
-      end
-
-      if @strategy_options
-        strategy_options = args[:strategy_options] || {}
-        create_arguments[:strategy_options] = strategy_options.merge(@strategy_options)
-      end
-
+      create_arguments[:replication] = @replication.merge(create_arguments[:replication] || {})
       create_arguments[:keyspace_name] = @name
 
       @executor.call({

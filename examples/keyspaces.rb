@@ -15,8 +15,8 @@ pp keyspace
 
 # you can also provide options
 keyspace = client.keyspace('cassanity_examples', {
-  strategy_class: 'SimpleStrategy',
-  strategy_options: {
+  replication: {
+    class: 'SimpleStrategy',
     replication_factor: 1,
   },
 })

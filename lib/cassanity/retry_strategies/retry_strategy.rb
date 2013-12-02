@@ -10,7 +10,7 @@ module Cassanity
       end
 
       # Public: execute the given block, and handle errors raised
-      # by the CassandraCQL driver. Call the retry method (overridden in your
+      # by the Cql::Client driver. Call the retry method (overridden in your
       # subclass) on each failed attempt with a current retry count and
       # the error raised by the block.
       #
@@ -25,7 +25,7 @@ module Cassanity
           begin
             payload[:attempts] = attempt unless payload.nil?
             return yield
-          rescue CassandraCQL::Error::InvalidRequestException, Thrift::Exception => e
+          rescue Cql::CqlError => e
             fail(attempt, e)
           end
         end

@@ -20,7 +20,7 @@ RSpec.configure do |config|
   config.alias_example_to :fit, :focused => true
   config.alias_example_to :xit, :pending => true
   config.run_all_when_everything_filtered = true
-  config.fail_fast = true
+#  config.fail_fast = true
 
   config.backtrace_clean_patterns = [
     /lib\/rspec\/(core|expectations|matchers|mocks)/,
@@ -29,7 +29,5 @@ RSpec.configure do |config|
   config.include CassanityHelpers
 end
 
-host = ENV.fetch('CASSANITY_HOST', '127.0.0.1')
-port = ENV.fetch('CASSANITY_PORT', '9160')
-
-CassanityServers = "#{host}:#{port}"
+CassanityHost = Array(ENV.fetch('CASSANITY_HOST', '127.0.0.1'))
+CassanityPort = ENV.fetch('CASSANITY_PORT', '9042').to_i
