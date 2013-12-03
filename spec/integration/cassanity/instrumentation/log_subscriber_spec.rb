@@ -1,9 +1,12 @@
 require 'helper'
+require 'logger'
+require 'stringio'
+require 'simple_uuid'
 require 'cassanity/instrumentation/log_subscriber'
 
 describe Cassanity::Instrumentation::LogSubscriber do
   let(:client) {
-    Cassanity::Client.new(CassanityServers, {
+    Cassanity::Client.new(CassanityHost, CassanityPort, {
       instrumenter: ActiveSupport::Notifications,
     })
   }

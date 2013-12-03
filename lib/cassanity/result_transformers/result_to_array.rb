@@ -4,11 +4,7 @@ module Cassanity
 
       # Internal: Turns result into Array of Hashes.
       def call(result, args = nil)
-        rows = []
-        result.fetch_hash do |row|
-          rows << row
-        end
-        rows
+        result.map { |row| row }
       end
     end
   end

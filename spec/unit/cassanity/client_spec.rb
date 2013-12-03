@@ -6,63 +6,29 @@ describe Cassanity::Client do
 
   before do
     # Ensure that we never hit cassandra for real here.
-    CassandraCQL::Database.stub(:new => driver)
+    Cql::Client.stub(:connect => driver)
   end
 
   describe "#initialize" do
     it "passes arguments to cassandra cql database instance" do
-      CassandraCQL::Database.should_receive(:new).
-        with(
-          'localhost:1234',
-          hash_including(some: 'option'),
-          instance_of(Hash)
-        )
+      Cql::Client.should_receive(:connect).
+        with(hash_including(hosts: ['localhost'], port: 1234, some: 'option'))
 
-      described_class.new('localhost:1234', some: 'option')
+      described_class.new(['localhost'], 1234, some: 'option')
     end
 
     it "defaults servers if not present" do
-      CassandraCQL::Database.should_receive(:new).
-        with(
-          '127.0.0.1:9160',
-          instance_of(Hash),
-          instance_of(Hash)
-        )
+      Cql::Client.should_receive(:connect).
+        with(hash_including(hosts: ['127.0.0.1'], port: 9042))
 
       described_class.new
     end
 
     it "defaults servers if nil" do
-      CassandraCQL::Database.should_receive(:new).
-        with(
-          '127.0.0.1:9160',
-          instance_of(Hash),
-          instance_of(Hash)
-        )
+      Cql::Client.should_receive(:connect).
+        with(hash_including(hosts: ['127.0.0.1'], port: 9042))
 
       described_class.new(nil)
-    end
-
-    it "defaults cql version in options to 3" do
-      CassandraCQL::Database.should_receive(:new).
-        with(
-          anything,
-          hash_including(cql_version: '3.0.0'),
-          instance_of(Hash)
-        )
-
-      described_class.new
-    end
-
-    it "does not override cql version option if other options are provided" do
-      CassandraCQL::Database.should_receive(:new).
-        with(
-          anything,
-          hash_including(cql_version: '3.0.0', some: 'thing'),
-          instance_of(Hash)
-        )
-
-      described_class.new('localhost:1234', some: 'thing')
     end
 
     it "allows passing instrumenter to executor, but does not pass it to driver instance" do
@@ -70,19 +36,15 @@ describe Cassanity::Client do
       driver = double('Driver')
       executor = double('Executor')
 
-      CassandraCQL::Database.should_receive(:new).
-        with(
-          anything,
-          hash_not_including(instrumenter: instrumenter),
-          instance_of(Hash)
-        ).
+      Cql::Client.should_receive(:connect).
+        with(hash_not_including(instrumenter: instrumenter)).
         and_return(driver)
 
-      Cassanity::Executors::CassandraCql.should_receive(:new).
+      Cassanity::Executors::CqlRb.should_receive(:new).
         with(hash_including(driver: driver, instrumenter: instrumenter)).
         and_return(executor)
 
-      described_class.new('localhost:1234', instrumenter: instrumenter)
+      described_class.new(['localhost'], 1234, instrumenter: instrumenter)
     end
 
     it "sets cassandra cql database instance as driver" do
@@ -95,9 +57,9 @@ describe Cassanity::Client do
       executor = double('Executor')
       connection = double('Connection')
 
-      CassandraCQL::Database.should_receive(:new).and_return(driver)
+      Cql::Client.should_receive(:connect).and_return(driver)
 
-      Cassanity::Executors::CassandraCql.should_receive(:new).
+      Cassanity::Executors::CqlRb.should_receive(:new).
         with(hash_including(driver: driver)).
         and_return(executor)
 

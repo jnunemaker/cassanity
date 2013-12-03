@@ -12,14 +12,6 @@ Add this line to your application's Gemfile:
 
     gem 'cassanity'
 
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install cassanity
-
 ## Usage
 
 ```ruby
@@ -110,9 +102,8 @@ You can also do a lot more. Here are a few more [examples](https://github.com/jn
 
 ## Compatibility
 
-* Ruby 1.9.3
-* Cassandra CQL 3.x
-* Any version of cassandra that works with cassandra-cql and supports CQL 3.
+* Ruby >= 1.9.3
+* Cassandra >= 1.2 with CQL >= 3.1.0
 
 ## Contributing
 

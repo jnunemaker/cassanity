@@ -7,7 +7,7 @@ module Cassanity
       # Internal: Turns result into Array of keyspaces.
       def call(result, args = {})
         keyspaces = []
-        result.fetch_hash do |row|
+        result.each do |row|
           name = row['name'] || row['keyspace'] || row['keyspace_name']
           keyspaces << Keyspace.new({
             name: name,

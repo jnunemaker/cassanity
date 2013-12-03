@@ -13,7 +13,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilies do
 
     context "with :keyspace_name" do
       it "returns array of arguments for selecting all column families for keyspace" do
-        cql = 'SELECT * FROM system.schema_columnfamilies WHERE "keyspace" = ?'
+        cql = 'SELECT * FROM system.schema_columnfamilies WHERE "keyspace_name" = ?'
         variables = ['foo']
         expected = [cql, 'foo']
         subject.call(keyspace_name: 'foo').should eq(expected)

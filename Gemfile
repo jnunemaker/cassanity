@@ -4,7 +4,7 @@ gemspec
 gem 'dotenv'
 gem 'rake'
 gem 'rspec', '~> 2.8'
-gem 'activesupport', :require => false
+gem 'activesupport', '~>3.2', :require => false
 gem 'metriks', :require => false
 gem 'statsd-ruby', :require => false
 
