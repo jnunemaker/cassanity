@@ -34,12 +34,7 @@ describe Cassanity::Connection do
     })
 
     result = driver.execute("SELECT * FROM apps")
-    result.rows.should be(1)
-
-    rows = []
-    result.fetch_hash { |row| rows << row }
-
-    rows.should eq([
+    result.to_a.should eq([
       {'id' => '1', 'name' => 'github.com'},
     ])
   end

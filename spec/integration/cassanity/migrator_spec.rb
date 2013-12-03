@@ -147,7 +147,7 @@ describe Cassanity::Migrator do
     it "removes migration from performed migrations" do
       migration = subject.migrations[0]
       subject.column_family.insert(data: {
-        version: migration.version,
+        version: migration.version.to_s,
         name: migration.name,
         migrated_at: Time.now,
       })
@@ -173,7 +173,7 @@ describe Cassanity::Migrator do
       subject.migrations.each do |migration|
         subject.column_family.insert(data: {
           name: migration.name,
-          version: migration.version,
+          version: migration.version.to_s,
           migrated_at: Time.now,
         })
       end
@@ -192,7 +192,7 @@ describe Cassanity::Migrator do
       migration = subject.migrations[0]
       subject.column_family.insert(data: {
         name: migration.name,
-        version: migration.version,
+        version: migration.version.to_s,
         migrated_at: Time.now,
       })
       names = subject.pending_migrations.map(&:name)

@@ -1,4 +1,7 @@
 require 'helper'
+require 'logger'
+require 'stringio'
+require 'simple_uuid'
 require 'cassanity/instrumentation/log_subscriber'
 
 describe Cassanity::Instrumentation::LogSubscriber do

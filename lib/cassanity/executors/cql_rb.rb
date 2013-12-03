@@ -149,16 +149,25 @@ module Cassanity
           arguments = args[:arguments]
 
           if arguments
-            if command != :keyspace_create && (keyspace_name = arguments[:keyspace_name])
-              @driver.use(keyspace_name)
-            end
-
             # TODO: As a temporary measure, we remove this deprecated option
             # while we have time to update each gem (e.g., adapter-cassanity)
             # that sets it. Consistency should be specified at the connection
             # level for now.
             if arguments[:using]
               arguments[:using].delete(:consistency)
+            end
+
+            # Instrumentation parameters
+            if (keyspace_name = arguments[:keyspace_name])
+              payload[:keyspace_name] = keyspace_name
+            end
+            if (column_family_name = arguments[:column_family_name])
+              payload[:column_family_name] = column_family_name
+            end
+
+            # Select keyspace before query runs
+            if command != :keyspace_create && (keyspace_name = arguments[:keyspace_name])
+              @driver.use(keyspace_name)
             end
           end
 

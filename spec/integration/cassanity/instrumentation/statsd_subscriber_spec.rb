@@ -1,4 +1,5 @@
 require 'helper'
+require 'simple_uuid'
 require 'cassanity/instrumentation/statsd'
 
 describe Cassanity::Instrumentation::StatsdSubscriber do
