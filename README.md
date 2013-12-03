@@ -1,4 +1,4 @@
-# Cassanity
+# Cassanity [![Build Status](https://secure.travis-ci.org/jnunemaker/cassanity.png?branch=master)](http://travis-ci.org/jnunemaker/cassanity)
 
 Layer of goodness on top of cassandra-cql so you do not have to write CQL strings all over the place.
 
