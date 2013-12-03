@@ -1,3 +1,3 @@
 module Cassanity
-  VERSION = "0.5.1"
+  VERSION = "0.6.0.beta1"
 end
