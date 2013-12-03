@@ -2,7 +2,7 @@ require 'helper'
 require 'cassanity/migrator'
 
 describe Cassanity::Migration do
-  let(:client) { Cassanity::Client.new(CassanityServers) }
+  let(:client) { Cassanity::Client.new(CassanityHost, CassanityPort) }
   let(:driver) { client.driver }
   let(:keyspace) { client[:cassanity_test] }
   let(:migrator) { Cassanity::Migrator.new(keyspace, '/fake') }
@@ -127,8 +127,8 @@ describe Cassanity::Migration do
     end
 
     it "adds index" do
-      meta = driver.schema.column_families['users'].column_metadata
-      index = meta.detect { |c| c.index_name == 'users_email_index' }
+      columns = driver.execute("SELECT * from system.schema_columns WHERE keyspace_name='#{driver.keyspace}' AND columnfamily_name='users' ALLOW FILTERING")
+      index = columns.detect { |c| c['index_name'] == 'users_email_index' }
       index.should_not be_nil
     end
   end
@@ -149,8 +149,8 @@ describe Cassanity::Migration do
     end
 
     it "drops index" do
-      meta = driver.schema.column_families['users'].column_metadata
-      index = meta.detect { |c| c.index_name == 'users_email_index' }
+      columns = driver.execute("SELECT * from system.schema_columns WHERE keyspace_name='#{driver.keyspace}' AND columnfamily_name='users' ALLOW FILTERING")
+      index = columns.detect { |c| c['index_name'] == 'users_email_index' }
       index.should be_nil
     end
   end

@@ -6,23 +6,10 @@ describe Cassanity::ResultTransformers::ResultToArray do
     [{one: 1}, {two: 2}, {three: 3}]
   }
 
-  let(:result) {
-    Class.new do
-      def initialize(array)
-        @array = array
-      end
-
-      def fetch_hash
-        @array.each do |row|
-          yield row
-        end
-      end
-    end.new(result_array)
-  }
-
   describe "#call" do
-    it "it iterates fetch_hash and returns array" do
-      subject.call(result).should eq(result_array)
+    it "returns a copy of the array" do
+      subject.call(result_array).should eq(result_array)
+      subject.call(result_array).should_not equal(result_array)
     end
   end
 end

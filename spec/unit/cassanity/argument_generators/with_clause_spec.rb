@@ -61,15 +61,14 @@ describe Cassanity::ArgumentGenerators::WithClause do
       it "returns array of arguments" do
         subject.call({
           with: {
-            compaction_strategy_options: {
-              min_compaction_threshold: 6,
-              max_compaction_threshold: 40,
+            replication: {
+              class: 'SimpleStrategy',
+              replication_factor: 3,
             },
           }
         }).should eq([
-          " WITH compaction_strategy_options:min_compaction_threshold = ? AND compaction_strategy_options:max_compaction_threshold = ?",
-          6,
-          40,
+          " WITH replication = ?",
+          { class: 'SimpleStrategy', replication_factor: 3 },
         ])
       end
     end

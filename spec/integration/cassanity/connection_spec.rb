@@ -1,12 +1,11 @@
 require 'helper'
 require 'cassanity/connection'
-require 'cassanity/executors/cassandra_cql'
 
 describe Cassanity::Connection do
   let(:keyspace_name)      { 'cassanity_test' }
   let(:column_family_name) { 'apps' }
 
-  let(:client) { Cassanity::Client.new(CassanityServers) }
+  let(:client) { Cassanity::Client.new(CassanityHost, CassanityPort) }
   let(:driver) { client.driver }
 
   subject { client.connection }
@@ -35,12 +34,7 @@ describe Cassanity::Connection do
     })
 
     result = driver.execute("SELECT * FROM apps")
-    result.rows.should be(1)
-
-    rows = []
-    result.fetch_hash { |row| rows << row }
-
-    rows.should eq([
+    result.to_a.should eq([
       {'id' => '1', 'name' => 'github.com'},
     ])
   end

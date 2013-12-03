@@ -29,7 +29,5 @@ RSpec.configure do |config|
   config.include CassanityHelpers
 end
 
-host = ENV.fetch('CASSANITY_HOST', '127.0.0.1')
-port = ENV.fetch('CASSANITY_PORT', '9160')
-
-CassanityServers = "#{host}:#{port}"
+CassanityHost = Array(ENV.fetch('CASSANITY_HOST', '127.0.0.1'))
+CassanityPort = ENV.fetch('CASSANITY_PORT', '9042').to_i

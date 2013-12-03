@@ -14,22 +14,9 @@ module Cassanity
         name = args.fetch(:keyspace_name)
         cql = "CREATE KEYSPACE #{name}"
 
-        with = {
-          strategy_class: default_strategy_class,
-          strategy_options: default_strategy_options,
-        }
+        replication = default_replication_options.merge(args[:replication] || {})
 
-        if args[:strategy_class]
-          with[:strategy_class] = args[:strategy_class]
-        end
-
-        if args[:strategy_options]
-          args[:strategy_options].each do |key, value|
-            with[:strategy_options][key] = value
-          end
-        end
-
-        with_cql, *with_variables = @with_clause.call(with: with)
+        with_cql, *with_variables = @with_clause.call(with: { replication: replication })
         cql << with_cql
         variables.concat(with_variables)
 
@@ -37,13 +24,9 @@ module Cassanity
       end
 
       # Private
-      def default_strategy_class
-        'SimpleStrategy'
-      end
-
-      # Private
-      def default_strategy_options
+      def default_replication_options
         {
+          class: 'SimpleStrategy',
           replication_factor: 1,
         }
       end

@@ -52,7 +52,7 @@ module Cassanity
     def migrated_up(migration)
       column_family.insert({
         data: {
-          version: migration.version,
+          version: migration.version.to_s,
           name: migration.name,
           migrated_at: Time.now.utc,
         },
@@ -63,7 +63,7 @@ module Cassanity
     def migrated_down(migration)
       column_family.delete({
         where: {
-          version: migration.version,
+          version: migration.version.to_s,
           name: migration.name,
         },
       })
