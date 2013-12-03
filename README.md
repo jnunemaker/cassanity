@@ -2,10 +2,6 @@
 
 Layer of goodness on top of cassandra-cql so you do not have to write CQL strings all over the place.
 
-## Note about Cassandra 1.2
-
-At this time, cassandra 1.2 is not supported. Under the hood, cassanity uses [cassandra-cql](https://github.com/kreynolds/cassandra-cql), which does not currently support 1.2. It needs the thrift bindings ([initial pull request](https://github.com/kreynolds/cassandra-cql/pull/39)) updated for 1.2 or to wrap the new binary protocol ([initial pull request](https://github.com/kreynolds/cassandra-cql/pull/40)). I'm hoping to work on this in February or March, but if you want to take a stab, that would be awesome.
-
 ## Installation
 
 Add this line to your application's Gemfile:
