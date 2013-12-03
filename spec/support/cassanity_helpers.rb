@@ -1,4 +1,3 @@
-require 'pry'
 module CassanityHelpers
   def driver_keyspace?(driver, name)
     rows = driver.execute("SELECT keyspace_name FROM system.schema_keyspaces WHERE keyspace_name='#{name}' ALLOW FILTERING")
