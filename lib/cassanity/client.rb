@@ -35,16 +35,27 @@ module Cassanity
       @instrumenter   = @options.delete(:instrumenter)
       @retry_strategy = @options.delete(:retry_strategy)
 
+      connect
+    end
+
+    # Connect or reconnect to cassandra
+    def connect
+      disconnect
+
       @driver = Cql::Client.connect(@options)
       @executor = Cassanity::Executors::CqlRb.new({
         driver: @driver,
         instrumenter: @instrumenter,
         retry_strategy: @retry_strategy,
       })
-
       @connection = Cassanity::Connection.new({
         executor: @executor,
       })
+    end
+
+    # Disconnect from cassandra.
+    def disconnect
+      @driver.close if @driver
     end
 
     # Methods on client that should be delegated to connection.

@@ -116,6 +116,15 @@ describe Cassanity::Client do
     end
   end
 
+  describe "#disconnect" do
+    it "allows the connection to be terminated" do
+      driver.should_receive(:close)
+
+      client = described_class.new
+      client.disconnect
+    end
+  end
+
   describe "#inspect" do
     it "return representation" do
       result = subject.inspect
