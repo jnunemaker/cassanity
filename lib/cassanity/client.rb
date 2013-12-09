@@ -1,5 +1,6 @@
 require 'forwardable'
 require 'cql'
+require 'cassanity/cql/reconnectable_driver'
 require 'cassanity/executors/cql_rb'
 require 'cassanity/connection'
 
@@ -35,14 +36,7 @@ module Cassanity
       @instrumenter   = @options.delete(:instrumenter)
       @retry_strategy = @options.delete(:retry_strategy)
 
-      connect
-    end
-
-    # Connect or reconnect to cassandra
-    def connect
-      disconnect
-
-      @driver = Cql::Client.connect(@options)
+      @driver = Cassanity::Cql::ReconnectableDriver.connect(@options)
       @executor = Cassanity::Executors::CqlRb.new({
         driver: @driver,
         instrumenter: @instrumenter,
@@ -53,9 +47,14 @@ module Cassanity
       })
     end
 
+    # Reconnect to cassandra.
+    def connect
+      @driver.connect
+    end
+
     # Disconnect from cassandra.
     def disconnect
-      @driver.close if @driver
+      @driver.disconnect
     end
 
     # Methods on client that should be delegated to connection.

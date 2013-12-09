@@ -6,26 +6,26 @@ describe Cassanity::Client do
 
   before do
     # Ensure that we never hit cassandra for real here.
-    Cql::Client.stub(:connect => driver)
+    Cassanity::Cql::ReconnectableDriver.stub(:connect => driver)
   end
 
   describe "#initialize" do
     it "passes arguments to cassandra cql database instance" do
-      Cql::Client.should_receive(:connect).
+      Cassanity::Cql::ReconnectableDriver.should_receive(:connect).
         with(hash_including(hosts: ['localhost'], port: 1234, some: 'option'))
 
       described_class.new(['localhost'], 1234, some: 'option')
     end
 
     it "defaults servers if not present" do
-      Cql::Client.should_receive(:connect).
+      Cassanity::Cql::ReconnectableDriver.should_receive(:connect).
         with(hash_including(hosts: ['127.0.0.1'], port: 9042))
 
       described_class.new
     end
 
     it "defaults servers if nil" do
-      Cql::Client.should_receive(:connect).
+      Cassanity::Cql::ReconnectableDriver.should_receive(:connect).
         with(hash_including(hosts: ['127.0.0.1'], port: 9042))
 
       described_class.new(nil)
@@ -36,7 +36,7 @@ describe Cassanity::Client do
       driver = double('Driver')
       executor = double('Executor')
 
-      Cql::Client.should_receive(:connect).
+      Cassanity::Cql::ReconnectableDriver.should_receive(:connect).
         with(hash_not_including(instrumenter: instrumenter)).
         and_return(driver)
 
@@ -57,7 +57,7 @@ describe Cassanity::Client do
       executor = double('Executor')
       connection = double('Connection')
 
-      Cql::Client.should_receive(:connect).and_return(driver)
+      Cassanity::Cql::ReconnectableDriver.should_receive(:connect).and_return(driver)
 
       Cassanity::Executors::CqlRb.should_receive(:new).
         with(hash_including(driver: driver)).
@@ -118,7 +118,7 @@ describe Cassanity::Client do
 
   describe "#disconnect" do
     it "allows the connection to be terminated" do
-      driver.should_receive(:close)
+      driver.should_receive(:disconnect)
 
       client = described_class.new
       client.disconnect
