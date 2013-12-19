@@ -10,7 +10,7 @@ module Cassanity
     # disconnected to be reconnected.
     class ReconnectableDriver
       extend Forwardable
-      def_delegators :@driver, :use, :execute, :keyspace
+      def_delegators :@driver, :use, :execute, :keyspace, :connected?
 
       def self.connect(cql_options = {})
         new(cql_options).tap(&:connect)
