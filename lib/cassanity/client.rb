@@ -57,6 +57,10 @@ module Cassanity
       @driver.disconnect
     end
 
+    def connected?
+      @driver.connected?
+    end
+
     # Methods on client that should be delegated to connection.
     DelegateToConnectionMethods = [
       :keyspaces,

@@ -39,4 +39,14 @@ describe Cassanity::Cql::ReconnectableDriver do
       driver.execute("query")
     end
   end
+
+  describe '#connected?' do
+    it 'forwards the message to the underlying driver' do
+      Cql::Client.stub(:connect => client)
+      driver = described_class.connect(:foo => "bar")
+
+      client.should_receive(:connected?).and_return(true)
+      driver.connected?.should be_true
+    end
+  end
 end
