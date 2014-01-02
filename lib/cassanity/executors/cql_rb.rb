@@ -148,6 +148,7 @@ module Cassanity
 
           arguments = args[:arguments]
 
+          send_use_command = false
           if arguments
             # TODO: As a temporary measure, we remove this deprecated option
             # while we have time to update each gem (e.g., adapter-cassanity)
@@ -165,9 +166,9 @@ module Cassanity
               payload[:column_family_name] = column_family_name
             end
 
-            # Select keyspace before query runs
+            # Select the correct keyspace before executing the CQL query
             if command != :keyspace_create && (keyspace_name = arguments[:keyspace_name])
-              @driver.use(keyspace_name)
+              send_use_command = true
             end
           end
 
@@ -177,7 +178,10 @@ module Cassanity
             payload[:cql_variables] = variables
 
             statement = Cassanity::Statement.new(cql)
-            result = @retry_strategy.execute(payload) { @driver.execute(statement.interpolate(variables)) }
+            result = @retry_strategy.execute(payload) do
+              @driver.use(keyspace_name) if send_use_command
+              @driver.execute(statement.interpolate(variables))
+            end
 
             transformer = @result_transformers.fetch(command, Mirror)
             transformed_result = transformer.call(result, args[:transformer_arguments])
