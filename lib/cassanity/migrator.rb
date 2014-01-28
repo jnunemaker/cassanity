@@ -38,9 +38,9 @@ module Cassanity
 
       migrations = case direction
       when :up
-        pending_migrations.select { |migration| migration.version <= version }
+        pending_migrations.select { |migration| migration.version.to_i <= version }
       when :down
-        performed_migrations.select { |migration| migration.version > version }
+        performed_migrations.select { |migration| migration.version.to_i > version }
       else
         []
       end
