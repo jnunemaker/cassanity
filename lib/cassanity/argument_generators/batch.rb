@@ -19,11 +19,15 @@ module Cassanity
 
       # Internal
       def call(args = {})
+        type = args[:type].to_s.upcase
+        type = 'LOGGED' if type.empty?
+        raise ArgumentError.new("invalid batch type") unless ['COUNTER','LOGGED','UNLOGGED'].include?(type)
+
         using = args[:using]
         modifications_argument = args.fetch(:modifications) { [] }
 
         variables = []
-        cql = "BEGIN BATCH"
+        cql = type == 'LOGGED' ? "BEGIN BATCH" : "BEGIN #{type} BATCH"
 
         using_cql, *using_variables = @using_clause.call(using: using)
         cql << using_cql
