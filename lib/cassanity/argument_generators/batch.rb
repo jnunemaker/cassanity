@@ -4,6 +4,9 @@ module Cassanity
   module ArgumentGenerators
     class Batch
 
+      # Private: List of supported batch types
+      BatchTypes = ['COUNTER','LOGGED','UNLOGGED']
+
       # Private: Map of command to argument generator
       Commands = {
         insert: ColumnFamilyInsert.new,
@@ -21,7 +24,7 @@ module Cassanity
       def call(args = {})
         type = args[:type].to_s.upcase
         type = 'LOGGED' if type.empty?
-        raise ArgumentError.new("invalid batch type") unless ['COUNTER','LOGGED','UNLOGGED'].include?(type)
+        raise ArgumentError.new("invalid batch type") unless BatchTypes.include?(type)
 
         using = args[:using]
         modifications_argument = args.fetch(:modifications) { [] }
