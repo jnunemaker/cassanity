@@ -80,5 +80,50 @@ describe Cassanity::ArgumentGenerators::Batch do
         }).should eq([cql])
       end
     end
+
+    context "with :type key" do
+      it "supports counter batch" do
+        cql = "BEGIN COUNTER BATCH APPLY BATCH"
+        subject.call({
+          type: 'counter',
+        }).should eq([cql])
+      end
+
+      it "supports unlogged batch" do
+        cql = "BEGIN UNLOGGED BATCH APPLY BATCH"
+        subject.call({
+          type: 'unlogged',
+        }).should eq([cql])
+      end
+
+      it "supports default logged batch" do
+        cql = "BEGIN BATCH APPLY BATCH"
+        subject.call({
+          type: 'logged',
+        }).should eq([cql])
+      end
+
+      it "defaults to logged when type is nil" do
+        cql = "BEGIN BATCH APPLY BATCH"
+        subject.call({
+          type: nil,
+        }).should eq([cql])
+      end
+
+      it "defaults to logged when type an empty string" do
+        cql = "BEGIN BATCH APPLY BATCH"
+        subject.call({
+          type: '',
+        }).should eq([cql])
+      end
+
+      it "raises error when type is invalid" do
+        expect {
+          subject.call({
+            type: 'anothertype',
+          })
+        }.to raise_error(ArgumentError, "invalid batch type")
+      end
+    end
   end
 end
