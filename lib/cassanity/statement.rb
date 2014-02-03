@@ -1,5 +1,6 @@
 require 'bigdecimal'
 require 'date'
+require 'set'
 require 'time'
 
 module Cassanity
