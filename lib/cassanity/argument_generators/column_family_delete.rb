@@ -15,7 +15,7 @@ module Cassanity
       def call(args = {})
         name    = args.fetch(:column_family_name)
         where   = args.fetch(:where)
-        columns = Array(args.fetch(:columns) { [] })
+        columns = args.fetch(:columns) { [] }
         using   = args[:using]
 
         if (keyspace_name = args[:keyspace_name])
@@ -23,10 +23,17 @@ module Cassanity
         end
 
         column_clause, variables = '', []
+        columns ||= []
 
-        unless columns.empty?
-          column_clause = " #{columns.join(', ')}"
+        cols = []
+        [columns].flatten.each do |c|
+          if Hash === c
+            Array(c.values.first).each { |key| cols << "#{c.keys.first}[#{key}]" }
+          else
+            cols << c
+          end
         end
+        column_clause = " #{cols.join(', ')}".rstrip
 
         cql = "DELETE#{column_clause} FROM #{name}"
 
