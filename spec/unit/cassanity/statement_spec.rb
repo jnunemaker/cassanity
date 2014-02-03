@@ -58,8 +58,15 @@ describe Cassanity::Statement do
 
     it 'interpolates arrays, recursively escaping each value' do
       stmt = Cassanity::Statement.new('INSERT INTO foo VALUES (?)')
-      expect(stmt.interpolate([["str", 123]])).to eq(
-        "INSERT INTO foo VALUES ('str',123)"
+      expect(stmt.interpolate([["abc", "def"]])).to eq(
+        "INSERT INTO foo VALUES (['abc','def'])"
+      )
+    end
+
+    it 'interpolates sets, recursively escaping each value' do
+      stmt = Cassanity::Statement.new('INSERT INTO foo VALUES (?)')
+      expect(stmt.interpolate([Set.new(["abc","def"])])).to eq(
+        "INSERT INTO foo VALUES ({'abc','def'})"
       )
     end
 
