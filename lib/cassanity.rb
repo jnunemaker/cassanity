@@ -6,6 +6,7 @@ require 'cassanity/operators/lte'
 require 'cassanity/increment'
 require 'cassanity/decrement'
 require 'cassanity/range'
+require 'cassanity/collection_item'
 
 module Cassanity
   # Public: Shortcut for returning an equality operator.

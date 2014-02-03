@@ -15,6 +15,9 @@ module Cassanity
           when Cassanity::Increment, Cassanity::Decrement
             sets << "#{key} = #{key} #{value.symbol} ?"
             variables << value.value
+          when Cassanity::CollectionItem
+            sets << "#{key}[?] = ?"
+            variables << value.key << value.value
           else
             sets << "#{key} = ?"
             variables << value

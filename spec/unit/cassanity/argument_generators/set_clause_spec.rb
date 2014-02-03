@@ -44,5 +44,12 @@ describe Cassanity::ArgumentGenerators::SetClause do
           should eq([" SET views = views - ?", 3])
       end
     end
+
+    context "with hash" do
+      it "returns array of arguments with SET including counter decrement" do
+        subject.call(set: {tags: Cassanity::CollectionItem.new(3,'ruby')}).
+          should eq([" SET tags[?] = ?", 3, 'ruby'])
+      end
+    end
   end
 end
