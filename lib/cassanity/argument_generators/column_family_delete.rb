@@ -28,7 +28,12 @@ module Cassanity
         cols = []
         [columns].flatten.each do |c|
           if Hash === c
-            Array(c.values.first).each { |key| cols << "#{c.keys.first}[#{key}]" }
+            column_name = c.keys.first
+            keys = c.values.first
+            [keys].flatten.each do |k| 
+              cols << "#{column_name}[?]"
+              variables << k
+            end
           else
             cols << c
           end
