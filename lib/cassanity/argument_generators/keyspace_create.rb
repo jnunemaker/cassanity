@@ -14,7 +14,11 @@ module Cassanity
         name = args.fetch(:keyspace_name)
         cql = "CREATE KEYSPACE #{name}"
 
-        replication = default_replication_options.merge(args[:replication] || {})
+        replication = args.fetch(:replication, {})
+
+        if replication.empty? || replication[:class] !~ /NetworkTopologyStrategy/
+          replication = default_replication_options.merge(replication)
+        end
 
         with_cql, *with_variables = @with_clause.call(with: { replication: replication })
         cql << with_cql

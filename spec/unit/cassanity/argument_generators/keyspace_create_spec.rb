@@ -24,6 +24,17 @@ describe Cassanity::ArgumentGenerators::KeyspaceCreate do
       end
     end
 
+    context "overriding replication class with NetworkTopologyStrategy" do
+      it "doesn't merge in replication_factor" do
+        cql = "CREATE KEYSPACE #{keyspace_name} WITH replication = ?"
+        expected = [cql, {class: 'NetworkTopologyStrategy', datacenter1: 1}]
+        subject.call({
+          keyspace_name: keyspace_name,
+          replication: {class: 'NetworkTopologyStrategy', datacenter1: 1},
+        }).should eq(expected)
+      end
+    end
+
     context "overriding a default strategy_option" do
       it "returns array of arguments" do
         cql = "CREATE KEYSPACE #{keyspace_name} WITH replication = ?"
