@@ -23,8 +23,21 @@ describe Cassanity::Schema do
     }
   }
 
+  let(:composite_partition_required_arguments) {
+    {
+      primary_key: [[:bucket, :version], :id],
+      columns: {
+        bucket: :text,
+        version: :text,
+        id: :text,
+        name: :text,
+      }
+    }
+  }
+
   let(:schema) { described_class.new(required_arguments) }
   let(:composite_schema) { described_class.new(composite_required_arguments) }
+  let(:composite_partition_schema) { described_class.new(composite_partition_required_arguments) }
 
   subject { schema }
 
@@ -78,6 +91,14 @@ describe Cassanity::Schema do
         subject.primary_keys.should eq([:bucket, :id])
       end
     end
+
+    context "with composite partition key" do
+      subject { composite_partition_schema }
+
+      it "returns array of primary keys with array of partition" do
+        subject.primary_keys.should eq([[:bucket, :version], :id])
+      end
+    end
   end
 
   describe "#primary_key" do
@@ -96,6 +117,14 @@ describe Cassanity::Schema do
         subject.primary_key.should eq([:bucket, :id])
       end
     end
+
+    context "with composite partition key" do
+      subject { composite_partition_schema }
+
+      it "returns array of primary keys with array of partition" do
+        subject.primary_keys.should eq([[:bucket, :version], :id])
+      end
+    end
   end
 
   describe "#composite_primary_key?" do
@@ -109,6 +138,14 @@ describe Cassanity::Schema do
 
     context "with composite primary key" do
       subject { composite_schema }
+
+      it "returns true" do
+        subject.composite_primary_key?.should be_true
+      end
+    end
+
+    context "with composite partition key" do
+      subject { composite_partition_schema }
 
       it "returns true" do
         subject.composite_primary_key?.should be_true
