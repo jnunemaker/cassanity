@@ -73,6 +73,26 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyCreate do
       end
     end
 
+    context "when using composite partition key" do
+      it "returns array of arguments" do
+        schema = Cassanity::Schema.new({
+          primary_key: [[:segment, :line], :track_id],
+          columns: {
+            segment: :text,
+            line: :int,
+            track_id: :timeuuid,
+            page: :text,
+          },
+        })
+        cql = "CREATE COLUMNFAMILY #{column_family_name} (segment text, line int, track_id timeuuid, page text, PRIMARY KEY ((segment, line), track_id))"
+        expected = [cql]
+        subject.call({
+          column_family_name: column_family_name,
+          schema: schema,
+        }).should eq(expected)
+      end
+    end
+
     context "when using WITH options" do
       let(:with_clause) {
         lambda { |args| [" WITH comment = ?", 'Testing']}

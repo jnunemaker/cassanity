@@ -27,7 +27,7 @@ module Cassanity
           definitions << "#{name} #{type}"
         end
 
-        definitions << "PRIMARY KEY (#{primary_keys.join(', ')})"
+        definitions << "PRIMARY KEY (#{compose_primary_key(primary_keys).join(', ')})"
 
         cql_definition = definitions.join(', ')
 
@@ -38,6 +38,16 @@ module Cassanity
         variables.concat(with_variables)
 
         [cql, *variables]
+      end
+
+      def compose_primary_key(primary_keys)
+        primary_keys.map do |key|
+          if key.is_a? Array
+            "(#{key.join(', ')})"
+          else
+            key
+          end
+        end
       end
     end
   end

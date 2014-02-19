@@ -57,8 +57,8 @@ module Cassanity
 
     # Private
     def primary_keys_are_defined_as_columns?
-      shared_columns = column_names & @primary_keys
-      shared_columns == @primary_keys
+      shared_columns = column_names & @primary_keys.flatten
+      shared_columns == @primary_keys.flatten
     end
 
     # Public
