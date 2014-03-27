@@ -64,7 +64,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyDelete do
         expected = [cql, 0, '1']
         subject.call({
           column_family_name: column_family_name,
-          columns: Hash[:foo, 0],
+          columns: Cassanity.item(0, :foo),
           where: {
             id: '1',
           }
@@ -74,11 +74,11 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyDelete do
 
     context "with multiple collection items" do
       it "returns array of arguments only deleting the collection items" do
-        cql = "DELETE foo[?], foo[?], foo[?], foo[?] FROM #{column_family_name} WHERE \"id\" = ?"
-        expected = [cql, 0, 3, 4, 7, '1']
+        cql = "DELETE foo[?], foo[?] FROM #{column_family_name} WHERE \"id\" = ?"
+        expected = [cql, 0, 3, '1']
         subject.call({
           column_family_name: column_family_name,
-          columns: Hash[:foo, [0,3,4,7]],
+          columns: [Cassanity.item(0, :foo), Cassanity.item(3, :foo)],
           where: {
             id: '1',
           }
@@ -92,7 +92,7 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyDelete do
         expected = [cql, 0, '1']
         subject.call({
           column_family_name: column_family_name,
-          columns: [:bar, Hash[:foo, 0]],
+          columns: [:bar, Cassanity.item(0, :foo)],
           where: {
             id: '1',
           }

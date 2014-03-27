@@ -45,8 +45,36 @@ describe Cassanity::ArgumentGenerators::SetClause do
       end
     end
 
-    context "with hash" do
-      it "returns array of arguments with SET including counter decrement" do
+    context "with addition" do
+      it "returns array of arguments with SET including list value" do
+        subject.call(set: {places: Cassanity::Addition.new('mordor')}).
+          should eq([" SET places = places + ?", ['mordor']])
+      end
+    end
+
+    context "with removal" do
+      it "returns array of arguments with SET including list value" do
+        subject.call(set: {places: Cassanity::Removal.new('mordor')}).
+          should eq([" SET places = places - ?", ['mordor']])
+      end
+    end
+
+    context "with set_addition" do
+      it "returns array of arguments with SET including set value" do
+        subject.call(set: {places: Cassanity::SetAddition.new('mordor')}).
+          should eq([" SET places = places + ?", Set['mordor']])
+      end
+    end
+
+    context "with set_removal" do
+      it "returns array of arguments with SET including set value" do
+        subject.call(set: {places: Cassanity::SetRemoval.new('mordor')}).
+          should eq([" SET places = places - ?", Set['mordor']])
+      end
+    end
+
+    context "with collection_item" do
+      it "returns array of arguments with SET including collection item" do
         subject.call(set: {tags: Cassanity::CollectionItem.new(3,'ruby')}).
           should eq([" SET tags[?] = ?", 3, 'ruby'])
       end

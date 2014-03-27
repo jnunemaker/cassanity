@@ -34,6 +34,9 @@ module Cassanity
               cols << "#{column_name}[?]"
               variables << k
             end
+          elsif Cassanity::CollectionItem === c
+            cols << "#{c.value}[?]"
+            variables << c.key
           else
             cols << c
           end
