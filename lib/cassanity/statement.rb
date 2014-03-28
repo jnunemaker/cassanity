@@ -1,5 +1,6 @@
 require 'bigdecimal'
 require 'date'
+require 'set'
 require 'time'
 
 module Cassanity
@@ -19,7 +20,9 @@ module Cassanity
     private
     def quote(var)
       if Array === var
-        var.map { |v| quote(v) }.join(',')
+        %([#{var.map { |v| "#{quote(v)}" }.join(',')}])
+      elsif Set === var
+        %({#{var.map { |v| "#{quote(v)}" }.join(',')}})
       elsif Hash === var
         %({#{var.map { |k, v| "#{quote(k)}:#{quote(v)}" }.join(',')}})
       elsif String === var

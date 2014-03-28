@@ -12,9 +12,12 @@ module Cassanity
 
         set.each do |key, value|
           case value
-          when Cassanity::Increment, Cassanity::Decrement
+          when Cassanity::Increment, Cassanity::Decrement, Cassanity::Addition, Cassanity::Removal, Cassanity::SetAddition, Cassanity::SetRemoval
             sets << "#{key} = #{key} #{value.symbol} ?"
             variables << value.value
+          when Cassanity::CollectionItem
+            sets << "#{key}[?] = ?"
+            variables << value.key << value.value
           else
             sets << "#{key} = ?"
             variables << value

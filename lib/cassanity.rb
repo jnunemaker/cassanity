@@ -6,6 +6,11 @@ require 'cassanity/operators/lte'
 require 'cassanity/increment'
 require 'cassanity/decrement'
 require 'cassanity/range'
+require 'cassanity/addition'
+require 'cassanity/removal'
+require 'cassanity/set_addition'
+require 'cassanity/set_removal'
+require 'cassanity/collection_item'
 
 module Cassanity
   # Public: Shortcut for returning an equality operator.
@@ -83,6 +88,52 @@ module Cassanity
     Cassanity::Range.new(start, finish, exclusive)
   end
 
+  # Public: Shortcut for returning an addition value for a list collection.
+  #
+  # values - The values to add to the list.
+  #
+  # Returns an Cassanity::Addition instance.
+  def self.add(*values)
+    Addition.new(*values)
+  end
+
+  # Public: Shortcut for returning a removal value for a list collection.
+  #
+  # values - The values to remove from the list.
+  #
+  # Returns an Cassanity::Removal instance.
+  def self.remove(*values)
+    Removal.new(*values)
+  end
+
+  # Public: Shortcut for returning an addition value for a set collection.
+  #
+  # value - The values to add to the set.
+  #
+  # Returns an Cassanity::SetAddition instance.
+  def self.set_add(*values)
+    SetAddition.new(*values)
+  end
+
+  # Public: Shortcut for returning a removal value for a set collection.
+  #
+  # values - The values to remove from the set.
+  #
+  # Returns an Cassanity::SetRemoval instance.
+  def self.set_remove(*values)
+    SetRemoval.new(*values)
+  end
+
+  # Public: Shortcut for returning a collection item.
+  #
+  # key - The item key in the list/map collection
+  # value - The item value.
+  #
+  # Returns a Cassanity::CollectionItem instance.
+  def self.item(key, value)
+    CollectionItem.new(key, value)
+  end
+
   class << self
     alias_method :equal, :eq
 
@@ -97,6 +148,9 @@ module Cassanity
 
     alias_method :decr, :dec
     alias_method :decrement, :dec
+
+    alias_method :sadd, :set_add
+    alias_method :sremove, :set_remove
   end
 end
 

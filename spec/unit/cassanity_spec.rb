@@ -126,4 +126,46 @@ describe Cassanity do
       Cassanity.range(1, 5).should eq(Cassanity::Range.new(1, 5))
     end
   end
+
+  describe ".add" do
+    it "returns addition instance" do
+      Cassanity.add("value").should eq(Cassanity::Addition.new("value"))
+    end
+  end
+
+  describe ".remove" do
+    it "returns removal instance" do
+      Cassanity.remove("value").should eq(Cassanity::Removal.new("value"))
+    end
+  end
+
+  describe ".set_add" do
+    it "returns set_addition instance" do
+      Cassanity.set_add("value").should eq(Cassanity::SetAddition.new("value"))
+    end
+  end
+
+  describe ".set_remove" do
+    it "returns set_removal instance" do
+      Cassanity.set_remove("value").should eq(Cassanity::SetRemoval.new("value"))
+    end
+  end
+
+  describe ".sadd" do
+    it "returns set_addition instance" do
+      Cassanity.sadd("value").should eq(Cassanity::SetAddition.new("value"))
+    end
+  end
+
+  describe ".sremove" do
+    it "returns set_removal instance" do
+      Cassanity.sremove("value").should eq(Cassanity::SetRemoval.new("value"))
+    end
+  end
+
+  describe ".item" do
+    it "returns collection item instance" do
+      Cassanity.item(1,"value").should eq(Cassanity::CollectionItem.new(1,"value"))
+    end
+  end
 end
