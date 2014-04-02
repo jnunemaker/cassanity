@@ -66,5 +66,20 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyInsert do
         }).should eq(expected)
       end
     end
+
+    context "with :upsert key" do
+      it "returns array of arguments with upsert disabled" do
+        cql = "INSERT INTO #{column_family_name} (id, name) VALUES (?, ?) IF NOT EXISTS"
+        expected = [cql, '1', 'GitHub']
+        subject.call({
+          column_family_name: column_family_name,
+          data: {
+            id: '1',
+            name: 'GitHub',
+          },
+          upsert: false
+        }).should eq(expected)
+      end
+    end
   end
 end
