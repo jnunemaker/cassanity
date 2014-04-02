@@ -1,7 +1,7 @@
 require_relative '_shared'
 require 'cassanity'
 
-client = Cassanity::Client.new('127.0.0.1:9160', {
+client = Cassanity::Client.new(['127.0.0.1'], 9042, {
   instrumenter: ActiveSupport::Notifications,
 })
 
