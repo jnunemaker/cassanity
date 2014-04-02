@@ -17,7 +17,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-  gem.add_dependency 'cql-rb', '~>1.1', '>=1.1.1'
+  gem.add_dependency 'cql-rb', '~>2.0.0.pre1'
 
   gem.add_development_dependency 'simple_uuid', '~>0.4'
 end
