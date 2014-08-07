@@ -61,6 +61,18 @@ describe Cassanity::Schema do
         described_class.new(args)
       }.to raise_error(ArgumentError, "Not all primary keys ([:foo, :bar]) were defined as columns ([:id])")
     end
+
+    it "works regardless colums definition order" do
+      args = composite_required_arguments.merge({
+        columns: {
+          id: :text,
+          bucket: :text,
+          name: :text,
+        }
+      })
+
+      described_class.new(args).should be_a described_class
+    end
   end
 
   describe "#column_names" do

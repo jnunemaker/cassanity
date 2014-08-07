@@ -1,3 +1,5 @@
+require 'set'
+
 module Cassanity
   class Schema
     # Internal
@@ -59,7 +61,7 @@ module Cassanity
     def primary_keys_are_defined_as_columns?
       flattened_primary_keys = @primary_keys.flatten
       shared_columns = column_names & flattened_primary_keys
-      shared_columns == flattened_primary_keys
+      shared_columns.to_set == flattened_primary_keys.to_set
     end
 
     # Public
