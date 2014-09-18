@@ -57,10 +57,12 @@ describe Cassanity::MigrationProxy do
   end
 
   describe "#hash" do
-    it "delegates to path" do
-      path = '/some/path/1_foo.rb'
+    it "hashes the version and name concatenated" do
+      version = 1
+      name = 'foo'
+      path = "/some/path/00#{version}_#{name}.rb"
       instance = described_class.new(path)
-      instance.hash.should eq(path.hash)
+      instance.hash.should eq("#{version}_#{name}".hash)
     end
   end
 

@@ -61,7 +61,7 @@ module Cassanity
     end
 
     def hash
-      path.hash
+      "#{version}_#{name}".hash
     end
 
     def eql?(other)
