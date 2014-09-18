@@ -77,5 +77,11 @@ describe Cassanity::MigrationProxy do
       newer = described_class.new(Pathname('/some/path/2_a.rb'))
       (newer <=> older).should be(1)
     end
+
+    it "works successfully with alphanummerical ordering" do
+      older = described_class.new(Pathname('/some/path/1_a.rb'))
+      newer = described_class.new(Pathname('/some/path/10_a.rb'))
+      (newer <=> older).should be(1)
+    end
   end
 end

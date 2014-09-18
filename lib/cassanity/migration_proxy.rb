@@ -70,7 +70,7 @@ module Cassanity
     alias_method :==, :eql?
 
     def <=>(other)
-      @path <=> other.path
+      @version <=> other.version
     end
   end
 end
