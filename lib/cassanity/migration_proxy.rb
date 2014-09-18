@@ -65,7 +65,7 @@ module Cassanity
     end
 
     def eql?(other)
-      self.class.eql?(other.class) && path == other.path
+      self.class.eql?(other.class) && version == other.version
     end
     alias_method :==, :eql?
 

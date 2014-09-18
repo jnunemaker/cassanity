@@ -40,6 +40,11 @@ describe Cassanity::MigrationProxy do
       described_class.new('/some/path/1_foo.rb').eql?(other).should be_true
     end
 
+    it "returns true for same version value" do
+      other = described_class.new('/some/path/1_foo.rb')
+      described_class.new('/some/path/001_foo.rb').eql?(other).should be_true
+    end
+
     it "returns false for different path" do
       other = described_class.new('/some/path/1_foo.rb')
       described_class.new('/some/path/2_foo.rb').eql?(other).should be_false
