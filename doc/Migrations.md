@@ -18,8 +18,10 @@ mkdir -p db/migrate
 Second, create a file for the create users migration:
 
 ```bash
-touch db/migrate/001_create_users.rb
+touch db/migrate/`date +%s`_create_users.rb
 ```
+
+This will create a file with the current timestamp as the prefix. This is the recommended naming convention.
 
 Now, open the file up in your favorite editor and paste in the following:
 
@@ -112,20 +114,7 @@ migrator.migrate_to(0, :down)
 migrator.migrate_to(1, :up)
 ```
 
-## Migration Version Numbers
-
-In the example above, I used a migration with a version of 001. The only requirement cassanity enforces on migration version numbers is that they be an integer. This means that you can you timestamped migrations if you prefer. For example, the following are all completely valid migration names.
-
-```
-touch db/migrate/001_create_users.rb
-touch db/migrate/201303_create_users.rb
-touch db/migrate/20130304_create_users.rb
-touch db/migrate/20130304160000_create_users.rb
-```
-
-The version could be year, month, day, hour, minute, second (20130304160000, 4:00pm on March 4, 2013), as in the example I just showed, or you could standardize on year, month, day (20130304, March 4, 2013).
-
-**Note**: Migrations will run in the order they appear on disk. They are sorted by their path, which means if you do not go with timestamped migrations, you should padd migrations with leading zero's, as Rails does (ie: "001" instead of "01" or "1").
+**Note**: Migrations will run in the order they appear on disk (alphanumerically sorted), that's why we encourage you to use timestamped migrations.
 
 ## Rake Tasks
 
