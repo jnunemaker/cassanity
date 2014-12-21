@@ -328,6 +328,27 @@ describe Cassanity::ColumnFamily do
         }).should be_a Cql::Client::PreparedStatement
       end
 
+      it "doesn't executes the statement" do
+        expect { subject.prepare_insert({
+          data: {
+            id: nil,
+            name: nil
+          }
+        }) }.to_not change { driver.execute("SELECT * FROM #{column_family_name}").to_a.length }.from 0
+      end
+
+      it 'successfully uses prepared statements' do
+        stmt = subject.prepare_insert({
+          data: {
+            id: nil,
+            name: nil
+          }
+        })
+
+        expect {
+          stmt.execute '1', 'GitHub'
+        }.to change { driver.execute("SELECT * FROM #{column_family_name}").to_a.length }.from(0).to 1
+      end
     end
   end
 end
