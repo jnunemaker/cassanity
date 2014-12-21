@@ -230,6 +230,16 @@ module Cassanity
       })
     end
 
+    def prepare_insert(args = {})
+      @executor.call({
+        command: :column_family_prepare_insert,
+        arguments: args.merge({
+          column_family_name: @name,
+          keyspace_name: @keyspace.name,
+        })
+      })
+    end
+
     # Public: Makes it possible to update data in the column family.
     #
     # args - The Hash of arguments to pass to the argument generator

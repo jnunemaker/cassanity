@@ -14,3 +14,7 @@ group(:guard) do
   gem 'guard-bundler'
   gem 'rb-fsevent'
 end
+
+group(:development) do
+  gem 'pry-byebug'
+end

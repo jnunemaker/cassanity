@@ -316,4 +316,18 @@ describe Cassanity::ColumnFamily do
     columns.map(&:name).should eq([:id, :name])
     columns.map(&:type).should eq([:text, :text])
   end
+
+  describe 'prepared statements' do
+    describe 'preparing insert' do
+      it 'successfully prepares the statement' do
+        subject.prepare_insert({
+          data: {
+            id: nil,
+            name: nil
+          }
+        }).should be_a Cql::Client::PreparedStatement
+      end
+
+    end
+  end
 end

@@ -45,6 +45,7 @@ module Cassanity
         column_family_truncate: ArgumentGenerators::ColumnFamilyTruncate.new,
         column_family_select: ArgumentGenerators::ColumnFamilySelect.new,
         column_family_insert: ArgumentGenerators::ColumnFamilyInsert.new,
+        column_family_prepare_insert: ArgumentGenerators::ColumnFamilyInsert.new,
         column_family_update: ArgumentGenerators::ColumnFamilyUpdate.new,
         column_family_delete: ArgumentGenerators::ColumnFamilyDelete.new,
         column_family_alter: ArgumentGenerators::ColumnFamilyAlter.new,
@@ -180,7 +181,12 @@ module Cassanity
             statement = Cassanity::Statement.new(cql)
             result = @retry_strategy.execute(payload) do
               @driver.use(keyspace_name) if send_use_command
-              @driver.execute(statement.interpolate(variables))
+
+              if command.to_s['prepare']
+                @driver.prepare(statement.cql)
+              else
+                @driver.execute(statement.interpolate(variables))
+              end
             end
 
             transformer = @result_transformers.fetch(command, Mirror)

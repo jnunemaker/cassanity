@@ -286,6 +286,20 @@ describe Cassanity::ColumnFamily do
     end
   end
 
+  describe "#prepare insert" do
+    it "sends command and arguments, including :column_family_name, to executor" do
+      args = {data: [:id, :name]}
+      executor.should_receive(:call).with({
+        command: :column_family_prepare_insert,
+        arguments: args.merge({
+          column_family_name: column_family_name,
+          keyspace_name: keyspace_name,
+        }),
+      })
+      subject.prepare_insert(args)
+    end
+  end
+
   describe "#update" do
     it "sends command and arguments, including :column_family_name, to executor" do
       args = {set: {name: 'GitHub'}, where: {id: '1'}}
