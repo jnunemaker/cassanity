@@ -26,6 +26,7 @@ require 'cassanity/result_transformers/keyspaces'
 require 'cassanity/result_transformers/column_families'
 require 'cassanity/result_transformers/columns'
 require 'cassanity/result_transformers/mirror'
+require 'cassanity/result_transformers/prepared_statement'
 require 'cassanity/retry_strategies/retry_n_times'
 require 'cassanity/retry_strategies/exponential_backoff'
 
@@ -62,6 +63,7 @@ module Cassanity
         column_families: ResultTransformers::ColumnFamilies.new,
         column_family_select: ResultTransformers::ResultToArray.new,
         columns: ResultTransformers::Columns.new,
+        column_family_prepare_insert: ResultTransformers::PreparedStatement.new
       }
 
       # Private: Default retry strategy to retry N times.
@@ -184,6 +186,7 @@ module Cassanity
               @driver.use(keyspace_name) if send_use_command
 
               if command.to_s['prepare']
+                args[:transformer_arguments] = (args[:transformer_arguments] || {}).merge(fields: generator.fields)
                 @driver.prepare(statement.cql)
               else
                 @driver.execute(statement.interpolate(variables))

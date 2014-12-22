@@ -322,7 +322,7 @@ describe Cassanity::ColumnFamily do
       it 'successfully prepares the statement' do
         subject.prepare_insert({
           fields: [:id, :name]
-        }).should be_a Cql::Client::PreparedStatement
+        }).should be_a Cassanity::PreparedStatement
       end
 
       it "doesn't executes the statement" do
@@ -337,7 +337,7 @@ describe Cassanity::ColumnFamily do
         })
 
         expect {
-          stmt.execute '1', 'GitHub'
+          stmt.execute id: '1', name: 'GitHub'
         }.to change { driver.execute("SELECT * FROM #{column_family_name}").to_a.length }.from(0).to 1
       end
     end
