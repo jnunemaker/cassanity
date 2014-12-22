@@ -3,7 +3,6 @@ $:.unshift(File.expand_path('../../lib', __FILE__))
 require 'pathname'
 require 'rubygems'
 require 'bundler'
-require 'pry'
 
 Bundler.require :default
 Dotenv.load
