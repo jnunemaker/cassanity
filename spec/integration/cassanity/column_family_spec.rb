@@ -151,7 +151,7 @@ describe Cassanity::ColumnFamily do
     index.should be_nil
   end
 
-  it "can select data" do
+  it "can select driver_create_keyspace" do
     driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('1', 'github')")
     driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('2', 'gist')")
     result = subject.select({
@@ -321,28 +321,19 @@ describe Cassanity::ColumnFamily do
     describe 'preparing insert' do
       it 'successfully prepares the statement' do
         subject.prepare_insert({
-          data: {
-            id: nil,
-            name: nil
-          }
+          fields: [:id, :name]
         }).should be_a Cql::Client::PreparedStatement
       end
 
       it "doesn't executes the statement" do
         expect { subject.prepare_insert({
-          data: {
-            id: nil,
-            name: nil
-          }
+          fields: [:id, :name]
         }) }.to_not change { driver.execute("SELECT * FROM #{column_family_name}").to_a.length }.from 0
       end
 
       it 'successfully uses prepared statements' do
         stmt = subject.prepare_insert({
-          data: {
-            id: nil,
-            name: nil
-          }
+          fields: [:id, :name]
         })
 
         expect {
