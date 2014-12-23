@@ -6,8 +6,6 @@ require 'time'
 module Cassanity
   class Statement
 
-    attr_reader :cql
-
     def initialize(cql, options = {})
       @cql = cql
       @options = options

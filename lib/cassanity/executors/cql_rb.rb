@@ -187,7 +187,7 @@ module Cassanity
 
               if command.to_s['prepare']
                 args[:transformer_arguments] = (args[:transformer_arguments] || {}).merge(fields: generator.fields)
-                @driver.prepare(statement.cql)
+                @driver.prepare(cql)
               else
                 @driver.execute(statement.interpolate(variables))
               end
