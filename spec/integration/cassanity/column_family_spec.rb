@@ -338,7 +338,9 @@ describe Cassanity::ColumnFamily do
 
         expect {
           stmt.execute id: '1', name: 'GitHub'
-        }.to change { driver.execute("SELECT * FROM #{column_family_name}").to_a.length }.from(0).to 1
+          stmt.execute id: '2', name: 'GitHub'
+          stmt.execute id: '3', name: 'GitHub'
+        }.to change { driver.execute("SELECT * FROM #{column_family_name}").to_a.length }.from(0).to 3
       end
     end
   end
