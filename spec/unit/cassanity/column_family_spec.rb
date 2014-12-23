@@ -288,7 +288,7 @@ describe Cassanity::ColumnFamily do
 
   describe "#prepare insert" do
     it "sends command and arguments, including :column_family_name, to executor" do
-      args = {data: [:id, :name]}
+      args = {fields: [:id, :name]}
       executor.should_receive(:call).with({
         command: :column_family_prepare_insert,
         arguments: args.merge({

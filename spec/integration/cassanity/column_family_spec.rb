@@ -151,7 +151,7 @@ describe Cassanity::ColumnFamily do
     index.should be_nil
   end
 
-  it "can select driver_create_keyspace" do
+  it "can select data" do
     driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('1', 'github')")
     driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('2', 'gist')")
     result = subject.select({
