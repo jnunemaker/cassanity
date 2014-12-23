@@ -4,10 +4,10 @@ module Cassanity
   module ResultTransformers
     class PreparedStatement
 
-      # Internal: Returns whatever result is passed to it. This is used as the
-      # default result transformer when a command does not have one.
-      def call(result, args = nil)
-        ::Cassanity::PreparedStatement.new result, args.fetch(:fields)
+      # Internal: Returns the given result as a Cassanity::PreparedStatement
+      # object. Meant to wrap a Cql::Client::PreparedStatement
+      def call(result, args)
+        ::Cassanity::PreparedStatement.new result
       end
     end
   end

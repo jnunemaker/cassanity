@@ -1,7 +1,6 @@
 require 'forwardable'
 require 'cql'
 require 'cassanity/error'
-require 'cassanity/statement'
 require 'cassanity/instrumenters/noop'
 require 'cassanity/argument_generators/keyspaces'
 require 'cassanity/argument_generators/keyspace_create'
@@ -29,6 +28,8 @@ require 'cassanity/result_transformers/mirror'
 require 'cassanity/result_transformers/prepared_statement'
 require 'cassanity/retry_strategies/retry_n_times'
 require 'cassanity/retry_strategies/exponential_backoff'
+require 'cassanity/command_runners/execute_command_runner'
+require 'cassanity/command_runners/prepare_command_runner'
 
 module Cassanity
   module Executors
@@ -72,6 +73,14 @@ module Cassanity
       # Private: Default result transformer for commands that do not have one.
       Mirror = ResultTransformers::Mirror.new
 
+      # Private: Hash of command runners for commands.
+      DefaultCommandRunners = {
+        column_family_prepare_insert: CommandRunners::PrepareCommandRunner
+      }
+
+      # Private: Default command runner.
+      DefaultCommandRunner = CommandRunners::ExecuteCommandRunner
+
       # Private: Forward #instrument to instrumenter.
       def_delegator :@instrumenter, :instrument
 
@@ -107,6 +116,9 @@ module Cassanity
       #        :retry_strategy      - What retry strategy to use on failed
       #                               Cql::Client calls
       #                               (default: Cassanity::Instrumenters::RetryNTimes)
+      #        :command_runners     - A Hash where each key is a command name
+      #                               and each value is the related command
+      #                               runner that responds to `run` (optional).
       #
       # Examples
       #
@@ -119,6 +131,7 @@ module Cassanity
         @argument_generators = args.fetch(:argument_generators, DefaultArgumentGenerators)
         @result_transformers = args.fetch(:result_transformers, DefaultResultTransformers)
         @retry_strategy = args[:retry_strategy] || DefaultRetryStrategy
+        @command_runners = args.fetch(:command_runners, DefaultCommandRunners)
       end
 
       # Internal: Execute a CQL query.
@@ -146,6 +159,7 @@ module Cassanity
             command = args.fetch(:command)
             payload[:command] = command
             generator = @argument_generators.fetch(command)
+            runner = @command_runners.fetch(command, DefaultCommandRunner).new @driver
           rescue KeyError => e
             raise Cassanity::UnknownCommand
           end
@@ -181,16 +195,9 @@ module Cassanity
             payload[:cql] = cql
             payload[:cql_variables] = variables
 
-            statement = Cassanity::Statement.new(cql)
             result = @retry_strategy.execute(payload) do
-              @driver.use(keyspace_name) if send_use_command
-
-              if command.to_s['prepare']
-                args[:transformer_arguments] = (args[:transformer_arguments] || {}).merge(fields: generator.fields)
-                @driver.prepare(cql)
-              else
-                @driver.execute(statement.interpolate(variables))
-              end
+              runner.use(keyspace_name) if send_use_command
+              runner.run(cql, variables)
             end
 
             transformer = @result_transformers.fetch(command, Mirror)
