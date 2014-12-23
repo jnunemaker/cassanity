@@ -6,7 +6,7 @@ module Cassanity
 
       # Internal: Returns the given result as a Cassanity::PreparedStatement
       # object. Meant to wrap a Cql::Client::PreparedStatement
-      def call(result, args)
+      def call(result, args = nil)
         ::Cassanity::PreparedStatement.new result
       end
     end
