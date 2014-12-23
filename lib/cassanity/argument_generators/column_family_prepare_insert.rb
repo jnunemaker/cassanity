@@ -1,6 +1,6 @@
 module Cassanity
   module ArgumentGenerators
-    class PrepareColumnFamilyInsert
+    class ColumnFamilyPrepareInsert
 
       attr_reader :fields
 

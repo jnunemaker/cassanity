@@ -1,7 +1,7 @@
 require 'helper'
-require 'cassanity/argument_generators/prepare_column_family_insert'
+require 'cassanity/argument_generators/column_family_prepare_insert'
 
-describe Cassanity::ArgumentGenerators::PrepareColumnFamilyInsert do
+describe Cassanity::ArgumentGenerators::ColumnFamilyPrepareInsert do
   let(:column_family_name) { 'apps' }
 
   describe "#call" do
