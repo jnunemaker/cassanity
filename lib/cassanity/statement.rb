@@ -5,7 +5,6 @@ require 'time'
 
 module Cassanity
   class Statement
-
     def initialize(cql, options = {})
       @cql = cql
       @options = options
