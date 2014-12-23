@@ -1,23 +1,16 @@
-
 require 'cassanity/statement'
 
 module Cassanity
   module CommandRunners
     class ExecuteCommandRunner
-
-      def initialize(driver)
-        @driver = driver
+      def use(driver, keyspace)
+        driver.use(keyspace)
       end
 
-      def use(keyspace)
-        @driver.use(keyspace)
-      end
-
-      def run(cql, variables)
+      def run(driver, cql, variables)
         statement = Cassanity::Statement.new(cql)
-        @driver.execute(statement.interpolate(variables))
+        driver.execute(statement.interpolate(variables))
       end
-
     end
   end
 end

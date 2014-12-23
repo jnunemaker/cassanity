@@ -75,11 +75,11 @@ module Cassanity
 
       # Private: Hash of command runners for commands.
       DefaultCommandRunners = {
-        column_family_prepare_insert: CommandRunners::PrepareCommandRunner
+        column_family_prepare_insert: CommandRunners::PrepareCommandRunner.new
       }
 
       # Private: Default command runner.
-      DefaultCommandRunner = CommandRunners::ExecuteCommandRunner
+      DefaultCommandRunner = CommandRunners::ExecuteCommandRunner.new
 
       # Private: Forward #instrument to instrumenter.
       def_delegator :@instrumenter, :instrument
@@ -159,7 +159,7 @@ module Cassanity
             command = args.fetch(:command)
             payload[:command] = command
             generator = @argument_generators.fetch(command)
-            runner = @command_runners.fetch(command, DefaultCommandRunner).new @driver
+            runner = @command_runners.fetch(command, DefaultCommandRunner)
           rescue KeyError => e
             raise Cassanity::UnknownCommand
           end
@@ -196,8 +196,8 @@ module Cassanity
             payload[:cql_variables] = variables
 
             result = @retry_strategy.execute(payload) do
-              runner.use(keyspace_name) if send_use_command
-              runner.run(cql, variables)
+              runner.use(@driver, keyspace_name) if send_use_command
+              runner.run(@driver, cql, variables)
             end
 
             transformer = @result_transformers.fetch(command, Mirror)
