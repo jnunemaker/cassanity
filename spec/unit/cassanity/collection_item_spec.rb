@@ -42,7 +42,7 @@ describe Cassanity::CollectionItem do
     end
   end
 
-  shared_examples_for "operator equality" do |method_name|
+  shared_examples_for "collection item equality" do |method_name|
     it "returns true for same class, key and value" do
       instance = described_class.new(0, 'ruby')
       other = described_class.new(0, 'ruby')
@@ -69,11 +69,11 @@ describe Cassanity::CollectionItem do
   end
 
   describe "#eql?" do
-    include_examples "operator equality", :eql?
+    include_examples "collection item equality", :eql?
   end
 
   describe "#==" do
-    include_examples "operator equality", :==
+    include_examples "collection item equality", :==
   end
 
   describe "#inspect" do
