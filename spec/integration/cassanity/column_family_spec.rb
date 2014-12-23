@@ -316,4 +316,30 @@ describe Cassanity::ColumnFamily do
     columns.map(&:name).should eq([:id, :name])
     columns.map(&:type).should eq([:text, :text])
   end
+
+  describe 'prepared statements' do
+    describe 'preparing insert' do
+      it 'successfully prepares the statement' do
+        subject.prepare_insert({
+          fields: [:id, :name]
+        }).should be_a Cassanity::PreparedStatement
+      end
+
+      it "doesn't executes the statement" do
+        expect { subject.prepare_insert({
+          fields: [:id, :name]
+        }) }.to_not change { driver.execute("SELECT * FROM #{column_family_name}").to_a.length }.from 0
+      end
+
+      it 'successfully uses prepared statements' do
+        stmt = subject.prepare_insert({
+          fields: [:id, :name]
+        })
+
+        expect {
+          stmt.execute id: '1', name: 'GitHub'
+        }.to change { driver.execute("SELECT * FROM #{column_family_name}").to_a.length }.from(0).to 1
+      end
+    end
+  end
 end
