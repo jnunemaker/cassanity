@@ -91,6 +91,7 @@ You can also do a lot more. Here are a few more [examples](https://github.com/jn
 * [Column Families](https://github.com/jnunemaker/cassanity/tree/master/examples/column_families.rb)
 * [Select a Range](https://github.com/jnunemaker/cassanity/tree/master/examples/select_range.rb)
 * [Collections](https://github.com/jnunemaker/cassanity/tree/master/examples/collections.rb)
+* [Prepared Statements](https://github.com/jnunemaker/cassanity/tree/master/examples/prepared_statements.rb)
 
 ## More Reading
 
