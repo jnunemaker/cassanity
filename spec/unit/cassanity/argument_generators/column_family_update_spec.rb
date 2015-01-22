@@ -60,6 +60,33 @@ describe Cassanity::ArgumentGenerators::ColumnFamilyUpdate do
       end
     end
 
+    context "with :if key" do
+      subject {
+        described_class.new({
+          if_clause: lambda { |args|
+            [" IF \"reset_token\" = ?", args.fetch(:if).fetch(:reset_token)]
+          }
+        })
+      }
+
+      it "uses if clause to get additional cql and bound variables" do
+        cql = "UPDATE #{column_family_name} SET reset_token = ? WHERE \"id\" = ? IF \"reset_token\" = ?"
+        expected = [cql, nil, '4', 'randomtoken']
+        subject.call({
+          column_family_name: column_family_name,
+          set: {
+            reset_token: nil,
+          },
+          where: {
+            id: '4',
+          },
+          if: {
+            reset_token: 'randomtoken',
+          }
+        }).should eq(expected)
+      end
+    end
+
     context "with :set key" do
       subject {
         described_class.new({

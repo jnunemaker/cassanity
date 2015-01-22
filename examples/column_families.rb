@@ -1,7 +1,7 @@
 require_relative '_shared'
 require 'cassanity'
 
-client = Cassanity::Client.new('127.0.0.1:9160', {
+client = Cassanity::Client.new(['127.0.0.1'], 9042, {
   instrumenter: ActiveSupport::Notifications,
 })
 
@@ -25,6 +25,9 @@ apps.create
 # insert a row
 apps.insert(data: {id: '1', name: 'GitHub'})
 
+# insert a row only if the row key not exists
+apps.insert(data: {id: '1', name: 'NewGitHub'}, upsert: false)
+
 # insert another row
 apps.insert(data: {id: '2', name: 'Gist'})
 
@@ -33,6 +36,9 @@ pp apps.select
 
 # update a row based on id
 apps.update(set: {name: 'GitHub.com'}, where: {id: '1'})
+
+# update a row if given conditions are met
+apps.update(set: {name: 'GitHub_Modified'}, where: {id: '1'}, if: {name: 'GitHub'})
 
 # print out the rows again, note that GitHub is updated
 pp apps.select

@@ -7,6 +7,7 @@ module Cassanity
         name    = args.fetch(:column_family_name)
         data    = args.fetch(:data)
         using   = args[:using] || {}
+        upsert  = args.fetch(:upsert, true)
         keys    = data.keys
         binders = ['?'] * keys.size
 
@@ -15,6 +16,7 @@ module Cassanity
         end
 
         cql = "INSERT INTO #{name} (#{keys.join(', ')}) VALUES (#{binders.join(', ')})"
+        cql << " IF NOT EXISTS" unless !!upsert
 
         unless using.empty?
           statements = []
