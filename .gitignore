@@ -18,3 +18,4 @@ bin
 vendor/gems
 .env
 tags
+.DS_Store
