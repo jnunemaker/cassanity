@@ -14,6 +14,7 @@ describe Cassanity::Config do
   end
 
   it 'successfully reads port config' do
+    ENV.delete 'CASSANDRA_PORT'
     config.port.should eq 9042
   end
 
