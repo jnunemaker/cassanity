@@ -4,7 +4,7 @@ require 'cassanity/config'
 describe Cassanity::Config do
 
   before do
-    stub_const 'Cassanity::Config::CONFIG_FILE', 'spec/support/cassanity.yml'
+    stub_const 'Cassanity::Config::CONFIG_FILE', 'spec/support/cassanity.erb.yml'
   end
 
   let(:config) { Class.new(Cassanity::Config).instance }
@@ -15,6 +15,11 @@ describe Cassanity::Config do
 
   it 'successfully reads port config' do
     config.port.should eq 9042
+  end
+
+  it 'successfully parses erb port config' do
+    ENV['CASSANDRA_PORT'] = '1111'
+    config.port.should eq 1111
   end
 
   { development: '_dev', test: '_test', production: '' }.each do |env, suffix|

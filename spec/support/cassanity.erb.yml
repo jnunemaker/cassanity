@@ -1,6 +1,6 @@
 default: &default
   :hosts: [127.0.0.1]
-  :port: 9042
+  :port: <%= ENV['CASSANDRA_PORT'] || 9042 %>
   :migrations_path: 'lib/db/migrations'
 
 development:
