@@ -1,6 +1,7 @@
 
 require 'ostruct'
 require 'yaml'
+require 'singleton'
 
 module Cassanity
   class Config < OpenStruct
