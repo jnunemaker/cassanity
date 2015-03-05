@@ -1,0 +1,16 @@
+default: &default
+  :hosts: [127.0.0.1]
+  :port: 9042
+  :migrations_path: 'lib/db/migrations'
+
+development:
+  <<: *default
+  :keyspace: cassanity_dev
+
+test:
+  <<: *default
+  :keyspace: cassanity_test
+
+production:
+  <<: *default
+  :keyspace: cassanity
