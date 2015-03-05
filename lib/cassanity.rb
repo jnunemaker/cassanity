@@ -154,4 +154,5 @@ module Cassanity
   end
 end
 
+require 'cassanity/config'
 require 'cassanity/client'
