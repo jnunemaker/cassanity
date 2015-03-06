@@ -2,30 +2,30 @@ require 'helper'
 require 'cassanity/client'
 
 describe Cassanity::Client do
-  let(:driver) { double('Driver') }
+  let(:driver) { double Cassanity::Drivers::CassandraDriver }
 
   before do
     # Ensure that we never hit cassandra for real here.
-    Cassanity::Cql::ReconnectableDriver.stub(:connect => driver)
+    Cassanity::Drivers::CassandraDriver.stub connect: driver
   end
 
   describe "#initialize" do
     it "passes arguments to cassandra cql database instance" do
-      Cassanity::Cql::ReconnectableDriver.should_receive(:connect).
+      Cassanity::Drivers::CassandraDriver.should_receive(:connect).
         with(hash_including(hosts: ['localhost'], port: 1234, some: 'option'))
 
       described_class.new(['localhost'], 1234, some: 'option')
     end
 
     it "defaults servers if not present" do
-      Cassanity::Cql::ReconnectableDriver.should_receive(:connect).
+      Cassanity::Drivers::CassandraDriver.should_receive(:connect).
         with(hash_including(hosts: ['127.0.0.1'], port: 9042))
 
       described_class.new
     end
 
     it "defaults servers if nil" do
-      Cassanity::Cql::ReconnectableDriver.should_receive(:connect).
+      Cassanity::Drivers::CassandraDriver.should_receive(:connect).
         with(hash_including(hosts: ['127.0.0.1'], port: 9042))
 
       described_class.new(nil)
@@ -36,7 +36,7 @@ describe Cassanity::Client do
       driver = double('Driver')
       executor = double('Executor')
 
-      Cassanity::Cql::ReconnectableDriver.should_receive(:connect).
+      Cassanity::Drivers::CassandraDriver.should_receive(:connect).
         with(hash_not_including(instrumenter: instrumenter)).
         and_return(driver)
 
@@ -57,7 +57,7 @@ describe Cassanity::Client do
       executor = double('Executor')
       connection = double('Connection')
 
-      Cassanity::Cql::ReconnectableDriver.should_receive(:connect).and_return(driver)
+      Cassanity::Drivers::CassandraDriver.should_receive(:connect).and_return(driver)
 
       Cassanity::Executors::CqlRb.should_receive(:new).
         with(hash_including(driver: driver)).

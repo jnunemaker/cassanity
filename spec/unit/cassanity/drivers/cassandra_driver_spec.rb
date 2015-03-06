@@ -5,8 +5,8 @@ describe Cassanity::Drivers::CassandraDriver do
 
   describe '.connect' do
     it 'constructs a Cassandra::Cluster using the provided options' do
-      Cassandra.should_receive(:cluster).with(foo: 'bar')
-      driver = described_class.connect(:foo => "bar")
+      Cassandra.should_receive(:cluster).with foo: 'bar'
+      described_class.connect foo: 'bar'
     end
   end
 
