@@ -22,7 +22,7 @@ module Cassanity
       end
 
       def use(keyspace)
-        @session = @driver.connect keyspace.to_s
+        execute "USE #{keyspace}"
       end
 
       def session

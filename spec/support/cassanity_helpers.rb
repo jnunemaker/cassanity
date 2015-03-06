@@ -13,6 +13,7 @@ module CassanityHelpers
 
   def driver_drop_keyspace(driver, name)
     if driver_keyspace?(driver, name)
+      driver.use 'system'
       driver.execute("DROP KEYSPACE #{name}")
     end
   end

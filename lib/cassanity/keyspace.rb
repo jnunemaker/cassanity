@@ -108,6 +108,7 @@ module Cassanity
     #
     # Returns whatever is returned by executor.
     def drop(args = {})
+      @executor.driver.use 'system'
       @executor.call({
         command: :keyspace_drop,
         arguments: args.merge({

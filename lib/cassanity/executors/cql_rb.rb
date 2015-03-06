@@ -184,7 +184,7 @@ module Cassanity
             end
 
             # Select the correct keyspace before executing the CQL query
-            if command != :keyspace_create && (keyspace_name = arguments[:keyspace_name])
+            if !command.to_s['keyspace'] && (keyspace_name = arguments[:keyspace_name])
               send_use_command = true
             end
           end
