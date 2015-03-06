@@ -1,16 +1,12 @@
 require 'delegate'
 
 module Cassanity
-  module Cql
-    # Internal: An intermediate driver for cql-rb that supports reconnecting
-    # by recycling the underlying Cql::Client instance.
-    #
-    # Reconnecting is important when using a forking web server like unicorn,
-    # but cql-rb does not allow a Cql::Client instances that has been
-    # disconnected to be reconnected.
-    class ReconnectableDriver
+  module Drivers
+    # Internal: An intermediate driver for cassandra-ruby that merges the
+    # behavior of the cluster and the session in one single object
+    class CassandraDriver
       extend Forwardable
-      def_delegators :session, :execute, :keyspace, :connected?, :prepare
+      def_delegators :session, :execute, :keyspace, :prepare
 
       def self.connect(cql_options = {})
         new(cql_options).tap(&:connect)
@@ -22,12 +18,7 @@ module Cassanity
       end
 
       def connect
-        disconnect
         @driver = Cassandra.cluster @cql_options
-      end
-
-      def disconnect
-        @driver.close if @driver
       end
 
       def use(keyspace)
@@ -37,6 +28,7 @@ module Cassanity
       def session
         @session ||= @driver.connect
       end
+
     end
   end
 end

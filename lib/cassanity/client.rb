@@ -1,6 +1,6 @@
 require 'forwardable'
 require 'cassandra'
-require 'cassanity/cql/reconnectable_driver'
+require 'cassanity/drivers/cassandra_driver'
 require 'cassanity/executors/cql_rb'
 require 'cassanity/connection'
 
@@ -36,7 +36,7 @@ module Cassanity
       @instrumenter   = @options.delete(:instrumenter)
       @retry_strategy = @options.delete(:retry_strategy)
 
-      @driver = Cassanity::Cql::ReconnectableDriver.connect(@options)
+      @driver = Cassanity::Drivers::CassandraDriver.connect(@options)
       @executor = Cassanity::Executors::CqlRb.new({
         driver: @driver,
         instrumenter: @instrumenter,
