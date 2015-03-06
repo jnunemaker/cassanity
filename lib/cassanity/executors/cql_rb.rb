@@ -1,5 +1,4 @@
 require 'forwardable'
-require 'cql'
 require 'cassanity/error'
 require 'cassanity/instrumenters/noop'
 require 'cassanity/argument_generators/keyspaces'
@@ -201,7 +200,7 @@ module Cassanity
             end
 
             transformer = @result_transformers.fetch(command, Mirror)
-            transformed_result = transformer.call(result, args[:transformer_arguments])
+            transformed_result = transformer.call(@driver, result, args[:transformer_arguments])
             payload[:result] = transformed_result
           rescue StandardError => e
             raise Cassanity::Error
