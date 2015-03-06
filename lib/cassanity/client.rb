@@ -1,5 +1,5 @@
 require 'forwardable'
-require 'cql'
+require 'cassandra'
 require 'cassanity/cql/reconnectable_driver'
 require 'cassanity/executors/cql_rb'
 require 'cassanity/connection'

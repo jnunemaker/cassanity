@@ -10,7 +10,7 @@ module Cassanity
     # disconnected to be reconnected.
     class ReconnectableDriver
       extend Forwardable
-      def_delegators :@driver, :use, :execute, :keyspace, :connected?, :prepare
+      def_delegators :session, :execute, :keyspace, :connected?, :prepare
 
       def self.connect(cql_options = {})
         new(cql_options).tap(&:connect)
@@ -23,11 +23,19 @@ module Cassanity
 
       def connect
         disconnect
-        @driver = ::Cql::Client.connect(@cql_options)
+        @driver = Cassandra.cluster @cql_options
       end
 
       def disconnect
         @driver.close if @driver
+      end
+
+      def use(keyspace)
+        @session = @driver.connect keyspace.to_s
+      end
+
+      def session
+        @session ||= @driver.connect
       end
     end
   end

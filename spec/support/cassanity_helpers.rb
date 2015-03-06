@@ -36,6 +36,6 @@ module CassanityHelpers
   end
 
   def cassandra_error(err)
-    ::Cql::CqlError.new(err)
+    Cassandra::Errors::ClientError.new(err)
   end
 end

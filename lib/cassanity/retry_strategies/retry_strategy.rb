@@ -25,7 +25,7 @@ module Cassanity
           begin
             payload[:attempts] = attempt unless payload.nil?
             return yield
-          rescue ::Cql::CqlError => e
+          rescue Cassandra::Error => e
             fail(attempt, e)
           end
         end
