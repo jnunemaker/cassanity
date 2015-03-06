@@ -15,17 +15,15 @@ describe Cassanity::Drivers::CassandraDriver do
     let(:driver) { described_class.connect }
     let(:session) { double Cassandra::Session }
 
-    before { Cassandra.stub cluster: client }
+    before do
+      Cassandra.stub cluster: client
+      client.stub connect: session
+    end
 
     describe '#use' do
       it 'forwards the message to the underlying driver' do
-        client.should_receive(:connect).with 'keyspace'
+        session.should_receive(:execute).with 'USE keyspace'
         driver.use 'keyspace'
-      end
-
-      it 'returns the newly created session' do
-        client.stub connect: session
-        driver.use('keyspace').should eq session
       end
     end
 
