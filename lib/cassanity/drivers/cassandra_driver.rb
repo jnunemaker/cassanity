@@ -29,6 +29,10 @@ module Cassanity
         @session ||= @driver.connect
       end
 
+      def disconnect
+        @driver.close if @driver
+      end
+
     end
   end
 end

@@ -42,11 +42,16 @@ describe Cassanity::Drivers::CassandraDriver do
 
     describe '#execute' do
 
-      before { client.stub connect: session }
-
       it 'forwards the message to the underlying driver' do
         session.should_receive(:execute).with 'query'
         driver.execute 'query'
+      end
+    end
+
+    describe '#disconnect' do
+      it 'closes the underlying driver' do
+        client.should_receive :close
+        driver.disconnect
       end
     end
   end
