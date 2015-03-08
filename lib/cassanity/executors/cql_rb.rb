@@ -80,6 +80,14 @@ module Cassanity
       # Private: Default command runner.
       DefaultCommandRunner = CommandRunners::ExecuteCommandRunner.new
 
+      # Private: List of keyspace related commands
+      KeyspaceCommands = [
+        :keyspaces,
+        :keyspace_create,
+        :keyspace_use,
+        :keyspace_drop
+      ]
+
       # Private: Forward #instrument to instrumenter.
       def_delegator :@instrumenter, :instrument
 
@@ -184,7 +192,7 @@ module Cassanity
             end
 
             # Select the correct keyspace before executing the CQL query
-            if !command.to_s['keyspace'] && (keyspace_name = arguments[:keyspace_name])
+            if !KeyspaceCommands.include?(command) && (keyspace_name = arguments[:keyspace_name])
               send_use_command = true
             end
           end
