@@ -5,7 +5,7 @@ module Cassanity
     class Keyspaces
 
       # Internal: Turns result into Array of keyspaces.
-      def call(driver, result, args = {})
+      def call(result, args = {})
         keyspaces = []
         result.each do |row|
           name = row['name'] || row['keyspace'] || row['keyspace_name']

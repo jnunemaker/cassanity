@@ -13,7 +13,7 @@ describe Cassanity::ColumnFamily do
   }
 
   let(:executor) {
-    lambda { |args| ['GOTTA KEEP EM EXECUTED', args] }
+    double(Cassanity::Executors::CqlRb, driver: double(Cassanity::Drivers::CassandraDriver))
   }
 
   let(:schema) { double('Schema') }
@@ -293,8 +293,11 @@ describe Cassanity::ColumnFamily do
         command: :column_family_prepare_insert,
         arguments: args.merge({
           column_family_name: column_family_name,
-          keyspace_name: keyspace_name,
+          keyspace_name: keyspace_name
         }),
+        transformer_arguments: {
+          driver: executor.driver
+        }
       })
       subject.prepare_insert(args)
     end

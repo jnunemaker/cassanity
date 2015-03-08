@@ -6,8 +6,8 @@ module Cassanity
 
       # Internal: Returns the given result as a Cassanity::PreparedStatement
       # object. Meant to wrap a Cql::Client::PreparedStatement
-      def call(driver, result, args = nil)
-        ::Cassanity::PreparedStatement.new driver, result
+      def call(result, args)
+        ::Cassanity::PreparedStatement.new args[:driver], result
       end
     end
   end

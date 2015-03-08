@@ -200,7 +200,7 @@ module Cassanity
             end
 
             transformer = @result_transformers.fetch(command, Mirror)
-            transformed_result = transformer.call(@driver, result, args[:transformer_arguments])
+            transformed_result = transformer.call(result, args[:transformer_arguments])
             payload[:result] = transformed_result
           rescue StandardError => e
             raise Cassanity::Error

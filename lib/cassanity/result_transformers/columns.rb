@@ -5,7 +5,7 @@ module Cassanity
     class Columns
 
       # Internal: Turns result into Array of column families.
-      def call(driver, result, args = {})
+      def call(result, args = {})
         columns = []
         result.each do |row|
           columns << Column.new({
