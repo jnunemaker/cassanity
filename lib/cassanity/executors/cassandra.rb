@@ -106,10 +106,10 @@ module Cassanity
       # Private: What strategy to use when retrying Cassandra commands
       attr_reader :retry_strategy
 
-      # Internal: Initializes a cassandra-cql based CQL executor.
+      # Internal: Initializes a Cassandra based CQL executor.
       #
       # args - The Hash of arguments.
-      #        :driver - The Cql::Client connection instance.
+      #        :driver - The Cassanity::Drivers::CassandraDriver connection instance.
       #        :instrumenter - What should be used to instrument all the things
       #                        (default: Cassanity::Instrumenters::Noop).
       #        :argument_generators - A Hash where each key is a command name
@@ -121,16 +121,15 @@ module Cassanity
       #                               transformer that responds to `call`
       #                               (optional).
       #        :retry_strategy      - What retry strategy to use on failed
-      #                               Cql::Client calls
+      #                               Cassanity::Drivers::CassandraDriver calls
       #                               (default: Cassanity::Instrumenters::RetryNTimes)
       #        :command_runners     - A Hash where each key is a command name
       #                               and each value is the related command
       #                               runner that responds to `run` (optional).
       #
       # Examples
-      #
-      #   driver = Cql::Client.connect(hosts: ['cassandra.example.com'])
-      #   Cassanity::Executors::CqlRb.new(driver: driver)
+      #   driver = Cassanity::Drivers::CassandraDriver.connect(hosts: ['cassandra.example.com'])
+      #   Cassanity::Executors::Cassandra.new(driver: driver)
       #
       def initialize(args = {})
         @driver = args.fetch(:driver)

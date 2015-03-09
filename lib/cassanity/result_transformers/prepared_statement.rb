@@ -5,7 +5,7 @@ module Cassanity
     class PreparedStatement
 
       # Internal: Returns the given result as a Cassanity::PreparedStatement
-      # object. Meant to wrap a Cql::Client::PreparedStatement
+      # object. Meant to wrap a Cassandra::Statements::Prepared
       def call(result, args)
         ::Cassanity::PreparedStatement.new args[:driver], result
       end

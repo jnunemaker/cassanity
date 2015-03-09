@@ -10,9 +10,9 @@ module Cassanity
       end
 
       # Public: execute the given block, and handle errors raised
-      # by the Cql::Client driver. Call the retry method (overridden in your
-      # subclass) on each failed attempt with a current retry count and
-      # the error raised by the block.
+      # by the Cassanity::Drivers::CassandraDriver driver. Call the retry method
+      # (overridden in your subclass) on each failed attempt with a current
+      # retry count and the error raised by the block.
       #
       # payload  - A Hash from an instrumenter to store a retry count in, or nil if
       #            the number of retries shouldn't be tracked.

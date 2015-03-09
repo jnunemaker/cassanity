@@ -8,10 +8,10 @@ module Cassanity
   class Client
     extend Forwardable
 
-    # Public: The instance of the Cql::Client being used.
+    # Public: The instance of the Cassanity::Drivers::CassandraDriver being used.
     attr_reader :driver
 
-    # Public: The instance of the Cassanity::Executors::CqlRb that will
+    # Public: The instance of the Cassanity::Executors::Cassandra that will
     # execute all queries.
     attr_reader :executor
 
@@ -25,7 +25,7 @@ module Cassanity
     #           connect to.
     # port - The Integer representing the port to connect to Cassandra with.
     #        This must be the same for all hosts.
-    # options - The Hash of Cql::Client options.
+    # options - The Hash of Cassanity::Drivers::CassandraDriver options.
     #   :default_consistency - default consistency for the connection
     #   (if not specified, set to :quorum)
     def initialize(servers = nil, port = nil, options = {})
@@ -55,10 +55,6 @@ module Cassanity
     # Disconnect from cassandra.
     def disconnect
       @driver.disconnect
-    end
-
-    def connected?
-      @driver.connected?
     end
 
     # Methods on client that should be delegated to connection.

@@ -12,7 +12,7 @@ module Cassanity
         new(cql_options).tap(&:connect)
       end
 
-      # cql_options: Options for constructing a Cql::Client
+      # cql_options: Options for constructing a Cassandra::Cluster
       def initialize(cql_options = {})
         @cql_options = cql_options
       end
