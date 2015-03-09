@@ -125,15 +125,6 @@ describe Cassanity::Client do
     end
   end
 
-  describe "#connected?" do
-    it "returns connected? value for driver" do
-      driver.should_receive(:connected?).and_return(true)
-
-      client = described_class.new
-      client.connected?.should be_true
-    end
-  end
-
   describe "#inspect" do
     it "return representation" do
       result = subject.inspect
