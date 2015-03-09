@@ -13,7 +13,7 @@ describe Cassanity::ColumnFamily do
   }
 
   let(:executor) {
-    double(Cassanity::Executors::CqlRb, driver: double(Cassanity::Drivers::CassandraDriver))
+    double(Cassanity::Executors::Cassandra, driver: double(Cassanity::Drivers::CassandraDriver))
   }
 
   let(:schema) { double('Schema') }

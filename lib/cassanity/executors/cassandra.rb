@@ -32,7 +32,7 @@ require 'cassanity/command_runners/prepare_command_runner'
 
 module Cassanity
   module Executors
-    class CqlRb
+    class Cassandra
       extend Forwardable
 
       # Private: Hash of commands to related argument generators.

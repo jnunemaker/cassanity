@@ -1,7 +1,7 @@
 require 'forwardable'
 require 'cassandra'
 require 'cassanity/drivers/cassandra_driver'
-require 'cassanity/executors/cql_rb'
+require 'cassanity/executors/cassandra'
 require 'cassanity/connection'
 
 module Cassanity
@@ -37,7 +37,7 @@ module Cassanity
       @retry_strategy = @options.delete(:retry_strategy)
 
       @driver = Cassanity::Drivers::CassandraDriver.connect(@options)
-      @executor = Cassanity::Executors::CqlRb.new({
+      @executor = Cassanity::Executors::Cassandra.new({
         driver: @driver,
         instrumenter: @instrumenter,
         retry_strategy: @retry_strategy,

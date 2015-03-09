@@ -40,7 +40,7 @@ describe Cassanity::Client do
         with(hash_not_including(instrumenter: instrumenter)).
         and_return(driver)
 
-      Cassanity::Executors::CqlRb.should_receive(:new).
+      Cassanity::Executors::Cassandra.should_receive(:new).
         with(hash_including(driver: driver, instrumenter: instrumenter)).
         and_return(executor)
 
@@ -59,7 +59,7 @@ describe Cassanity::Client do
 
       Cassanity::Drivers::CassandraDriver.should_receive(:connect).and_return(driver)
 
-      Cassanity::Executors::CqlRb.should_receive(:new).
+      Cassanity::Executors::Cassandra.should_receive(:new).
         with(hash_including(driver: driver)).
         and_return(executor)
 
