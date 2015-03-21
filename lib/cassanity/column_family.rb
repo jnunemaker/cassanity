@@ -242,8 +242,11 @@ module Cassanity
         command: :column_family_prepare_insert,
         arguments: args.merge({
           column_family_name: @name,
-          keyspace_name: @keyspace.name,
-        })
+          keyspace_name: @keyspace.name
+        }),
+        transformer_arguments: {
+          driver: @executor.driver
+        }
       })
     end
 

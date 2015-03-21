@@ -5,7 +5,7 @@ describe Cassanity::Keyspace do
   let(:keyspace_name) { :analytics }
 
   let(:executor) {
-    lambda { |args| ['GOTTA KEEP EM EXECUTED', args] }
+    double call: true, driver: double(use: true)
   }
 
   let(:required_arguments) {

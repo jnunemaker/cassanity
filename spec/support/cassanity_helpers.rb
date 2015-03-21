@@ -13,6 +13,7 @@ module CassanityHelpers
 
   def driver_drop_keyspace(driver, name)
     if driver_keyspace?(driver, name)
+      driver.use 'system'
       driver.execute("DROP KEYSPACE #{name}")
     end
   end
@@ -36,6 +37,6 @@ module CassanityHelpers
   end
 
   def cassandra_error(err)
-    ::Cql::CqlError.new(err)
+    Cassandra::Errors::ClientError.new(err)
   end
 end
