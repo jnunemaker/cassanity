@@ -6,7 +6,7 @@ module Cassanity
     # behavior of the cluster and the session in one single object
     class CassandraDriver
       extend Forwardable
-      def_delegators :session, :execute, :keyspace, :prepare
+      def_delegators :session, :execute, :keyspace, :prepare, :execute_async
 
       def self.connect(cql_options = {})
         new(cql_options).tap(&:connect)
