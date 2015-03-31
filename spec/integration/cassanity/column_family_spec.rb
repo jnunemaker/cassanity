@@ -210,19 +210,38 @@ describe Cassanity::ColumnFamily do
     end
   end
 
-  it "can insert data" do
-    subject.insert({
-      data: {
+  describe 'data insert' do
+    let(:attributes) {
+      {
         id: '1',
-        name: 'GitHub',
-      },
-    })
+        name: 'GitHub'
+      }
+    }
 
-    result = driver.execute("SELECT * FROM #{column_family_name}")
-    result.to_a.length.should eq(1)
-    row = result.first
-    row['id'].should eq('1')
-    row['name'].should eq('GitHub')
+    it "can insert synchronously data" do
+      subject.insert data: attributes
+
+      result = driver.execute("SELECT * FROM #{column_family_name}")
+      result.to_a.length.should eq(1)
+      row = result.first
+      row['id'].should eq('1')
+      row['name'].should eq('GitHub')
+    end
+
+    it "can asynchronously insert data" do
+      driver.should_receive(:execute_async).once.and_call_original
+
+      expect do
+        future = subject.insert_async data: attributes
+        future.get
+      end.to change { column_family_count driver, column_family_name }.from(0).to 1
+
+      result = driver.execute("SELECT * FROM #{column_family_name}")
+      result.to_a.length.should eq(1)
+      row = result.first
+      row['id'].should eq('1')
+      row['name'].should eq('GitHub')
+    end
   end
 
   it "can update data" do

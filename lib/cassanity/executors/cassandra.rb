@@ -29,6 +29,7 @@ require 'cassanity/retry_strategies/retry_n_times'
 require 'cassanity/retry_strategies/exponential_backoff'
 require 'cassanity/command_runners/execute_command_runner'
 require 'cassanity/command_runners/prepare_command_runner'
+require 'cassanity/command_runners/execute_async_command_runner'
 
 module Cassanity
   module Executors
@@ -47,6 +48,7 @@ module Cassanity
         column_family_truncate: ArgumentGenerators::ColumnFamilyTruncate.new,
         column_family_select: ArgumentGenerators::ColumnFamilySelect.new,
         column_family_insert: ArgumentGenerators::ColumnFamilyInsert.new,
+        column_family_insert_async: ArgumentGenerators::ColumnFamilyInsert.new,
         column_family_prepare_insert: ArgumentGenerators::ColumnFamilyPrepareInsert.new,
         column_family_update: ArgumentGenerators::ColumnFamilyUpdate.new,
         column_family_delete: ArgumentGenerators::ColumnFamilyDelete.new,
@@ -74,7 +76,8 @@ module Cassanity
 
       # Private: Hash of command runners for commands.
       DefaultCommandRunners = {
-        column_family_prepare_insert: CommandRunners::PrepareCommandRunner.new
+        column_family_prepare_insert: CommandRunners::PrepareCommandRunner.new,
+        column_family_insert_async: CommandRunners::ExecuteAsyncCommandRunner.new
       }
 
       # Private: Default command runner.
