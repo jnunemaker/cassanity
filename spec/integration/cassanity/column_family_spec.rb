@@ -233,7 +233,7 @@ describe Cassanity::ColumnFamily do
 
       expect do
         future = subject.insert_async data: attributes
-        future.get
+        future.wait
       end.to change { column_family_count driver, column_family_name }.from(0).to 1
 
       result = driver.execute("SELECT * FROM #{column_family_name}")
@@ -359,6 +359,20 @@ describe Cassanity::ColumnFamily do
           stmt.execute id: '1', name: 'GitHub'
           stmt.execute id: '2', name: 'GitHub'
           stmt.execute id: '3', name: 'GitHub'
+        }.to change { driver.execute("SELECT * FROM #{column_family_name}").to_a.length }.from(0).to 3
+      end
+
+      it 'successfully uses prepared statements asynchronously if required' do
+        stmt = subject.prepare_insert({
+          fields: [:id, :name]
+        })
+
+        expect {
+          futures = (1..3).map do |i|
+            stmt.execute_async id: i.to_s, name: 'GitHub'
+          end
+
+          Cassanity::Future.wait_all futures
         }.to change { driver.execute("SELECT * FROM #{column_family_name}").to_a.length }.from(0).to 3
       end
     end

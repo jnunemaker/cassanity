@@ -15,10 +15,21 @@ module Cassanity
     #
     # variables - The Hash of variables to use to execute.
     def execute(variables)
-      @session.execute @prepared_statement, arguments: fields.map { |field| variables.fetch field }
+      @session.execute @prepared_statement, arguments: args_from(variables)
+    end
+
+    # Public: Asynchronously executes the prepared statement for the given values.
+    #
+    # variables - The Hash of variables to use to execute
+    def execute_async(variables)
+      ::Cassanity::Future.new @session.execute_async @prepared_statement, arguments: args_from(variables)
     end
 
     private
+
+    def args_from(variables)
+      fields.map { |field| variables.fetch field }
+    end
 
     def fields
       @fields ||= extract_fields
