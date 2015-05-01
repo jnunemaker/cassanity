@@ -13,12 +13,14 @@ module Cassanity
     #
     # futures - Array of all the futures to wait for.
     def self.wait_all(futures)
-      results = Cassandra::Future.all(futures.map(&:internal_future)).get if futures.any?
-      futures.zip(results).map do |future, result|
-        if future.result_transformer
-          future.result_transformer.call result
-        else
-          result
+      if futures.any?
+        results = Cassandra::Future.all(futures.map(&:internal_future)).get
+        futures.zip(results).map do |future, result|
+          if future.result_transformer
+            future.result_transformer.call result
+          else
+            result
+          end
         end
       end
     end
