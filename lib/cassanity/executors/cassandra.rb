@@ -25,6 +25,7 @@ require 'cassanity/result_transformers/column_families'
 require 'cassanity/result_transformers/columns'
 require 'cassanity/result_transformers/mirror'
 require 'cassanity/result_transformers/prepared_statement'
+require 'cassanity/result_transformers/future_result_to_array'
 require 'cassanity/retry_strategies/retry_n_times'
 require 'cassanity/retry_strategies/exponential_backoff'
 require 'cassanity/command_runners/execute_command_runner'
@@ -47,6 +48,7 @@ module Cassanity
         column_family_drop: ArgumentGenerators::ColumnFamilyDrop.new,
         column_family_truncate: ArgumentGenerators::ColumnFamilyTruncate.new,
         column_family_select: ArgumentGenerators::ColumnFamilySelect.new,
+        column_family_select_async: ArgumentGenerators::ColumnFamilySelect.new,
         column_family_insert: ArgumentGenerators::ColumnFamilyInsert.new,
         column_family_insert_async: ArgumentGenerators::ColumnFamilyInsert.new,
         column_family_prepare_insert: ArgumentGenerators::ColumnFamilyPrepareInsert.new,
@@ -64,6 +66,7 @@ module Cassanity
         keyspaces: ResultTransformers::Keyspaces.new,
         column_families: ResultTransformers::ColumnFamilies.new,
         column_family_select: ResultTransformers::ResultToArray.new,
+        column_family_select_async: ResultTransformers::FutureResultToArray.new,
         columns: ResultTransformers::Columns.new,
         column_family_prepare_insert: ResultTransformers::PreparedStatement.new
       }
@@ -77,7 +80,8 @@ module Cassanity
       # Private: Hash of command runners for commands.
       DefaultCommandRunners = {
         column_family_prepare_insert: CommandRunners::PrepareCommandRunner.new,
-        column_family_insert_async: CommandRunners::ExecuteAsyncCommandRunner.new
+        column_family_insert_async: CommandRunners::ExecuteAsyncCommandRunner.new,
+        column_family_select_async: CommandRunners::ExecuteAsyncCommandRunner.new
       }
 
       # Private: Default command runner.

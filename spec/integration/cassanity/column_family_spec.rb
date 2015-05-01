@@ -165,6 +165,41 @@ describe Cassanity::ColumnFamily do
     ])
   end
 
+  it "can select data asynchronously" do
+    driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('1', 'github')")
+    driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('2', 'gist')")
+    future = subject.select_async({
+      select: :name,
+      where: {
+        id: '2',
+      },
+    })
+    future.wait.should eq([
+      {'name' => 'gist'}
+    ])
+  end
+
+  it "can run several selects asynchronously" do
+    driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('1', 'github')")
+    driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('2', 'gist')")
+    futures = (0..5).map do |i|
+      subject.select_async({
+        select: :name,
+        where: {
+          id: i.to_s,
+        },
+      })
+    end
+    expect(Cassanity::Future.wait_all(futures)).to eq [
+      [],
+      [{'name' => 'github'}],
+      [{'name' => 'gist'}],
+      [],
+      [],
+      []
+    ]
+  end
+
   context "selecting a range of data" do
     let(:name) { 'rollups_minute' }
 
