@@ -16,6 +16,8 @@ module Cassanity
             if value
               withs << "COMPACT STORAGE"
             end
+          elsif key == :clustering_order
+            withs << "CLUSTERING ORDER BY (#{value[:field]} #{value[:order].upcase})"
           else
             withs << "#{key} = ?"
             variables << value
