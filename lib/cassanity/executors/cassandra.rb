@@ -10,6 +10,7 @@ require 'cassanity/argument_generators/column_family_create'
 require 'cassanity/argument_generators/column_family_drop'
 require 'cassanity/argument_generators/column_family_truncate'
 require 'cassanity/argument_generators/column_family_select'
+require 'cassanity/argument_generators/column_family_prepare_select'
 require 'cassanity/argument_generators/column_family_insert'
 require 'cassanity/argument_generators/column_family_prepare_insert'
 require 'cassanity/argument_generators/column_family_update'
@@ -25,6 +26,7 @@ require 'cassanity/result_transformers/column_families'
 require 'cassanity/result_transformers/columns'
 require 'cassanity/result_transformers/mirror'
 require 'cassanity/result_transformers/prepared_statement'
+require 'cassanity/result_transformers/select_prepared_statement'
 require 'cassanity/result_transformers/future_result_to_array'
 require 'cassanity/retry_strategies/retry_n_times'
 require 'cassanity/retry_strategies/exponential_backoff'
@@ -49,6 +51,7 @@ module Cassanity
         column_family_truncate: ArgumentGenerators::ColumnFamilyTruncate.new,
         column_family_select: ArgumentGenerators::ColumnFamilySelect.new,
         column_family_select_async: ArgumentGenerators::ColumnFamilySelect.new,
+        column_family_prepare_select: ArgumentGenerators::ColumnFamilySelect.new,
         column_family_insert: ArgumentGenerators::ColumnFamilyInsert.new,
         column_family_insert_async: ArgumentGenerators::ColumnFamilyInsert.new,
         column_family_prepare_insert: ArgumentGenerators::ColumnFamilyPrepareInsert.new,
@@ -68,7 +71,8 @@ module Cassanity
         column_family_select: ResultTransformers::ResultToArray.new,
         column_family_select_async: ResultTransformers::FutureResultToArray.new,
         columns: ResultTransformers::Columns.new,
-        column_family_prepare_insert: ResultTransformers::PreparedStatement.new
+        column_family_prepare_insert: ResultTransformers::PreparedStatement.new,
+        column_family_prepare_select: ResultTransformers::SelectPreparedStatement.new
       }
 
       # Private: Default retry strategy to retry N times.
@@ -80,6 +84,7 @@ module Cassanity
       # Private: Hash of command runners for commands.
       DefaultCommandRunners = {
         column_family_prepare_insert: CommandRunners::PrepareCommandRunner.new,
+        column_family_prepare_select: CommandRunners::PrepareCommandRunner.new,
         column_family_insert_async: CommandRunners::ExecuteAsyncCommandRunner.new,
         column_family_select_async: CommandRunners::ExecuteAsyncCommandRunner.new
       }

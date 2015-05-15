@@ -372,6 +372,27 @@ describe Cassanity::ColumnFamily do
   end
 
   describe 'prepared statements' do
+    describe 'preparing select' do
+      it 'successfully prepares the statement' do
+        subject.prepare_select({
+          fields: [:id]
+        }).should be_a Cassanity::PreparedStatement
+      end
+
+      it 'successfully uses prepared statements' do
+        driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('1', 'github')")
+        driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('2', 'gist')")
+
+        stmt = subject.prepare_select({
+          select: :name,
+          where: [:id]
+        })
+
+        expect(stmt.execute id: '2').to eq [{'name' => 'gist'}]
+      end
+    end
+
+
     describe 'preparing insert' do
       it 'successfully prepares the statement' do
         subject.prepare_insert({

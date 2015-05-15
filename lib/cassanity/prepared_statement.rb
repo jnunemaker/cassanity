@@ -6,16 +6,19 @@ module Cassanity
     #
     # driver - The Cassandra::Cluster against which the prepared statement will be run
     # prepared_statement - The Cassandra::Statements::Prepared received from the prepare request.
-    def initialize(driver, prepared_statement)
+    # result_transformer - The Cassanity::ResultTrasnsformer instance to apply on the result
+    def initialize(driver, prepared_statement, result_transformer = ResultTransformers::Mirror.new, result_transformer_args = {})
       @session = driver.session
       @prepared_statement = prepared_statement
+      @result_transformer = result_transformer
+      @result_transformer_args = result_transformer_args
     end
 
     # Public: Executes the prepared statement for a given values.
     #
     # variables - The Hash of variables to use to execute.
     def execute(variables)
-      @session.execute @prepared_statement, arguments: args_from(variables)
+      @result_transformer.call @session.execute(@prepared_statement, arguments: args_from(variables)), @result_transformer_args
     end
 
     # Public: Asynchronously executes the prepared statement for the given values.

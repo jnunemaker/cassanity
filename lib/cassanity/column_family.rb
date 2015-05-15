@@ -230,6 +230,26 @@ module Cassanity
       })
     end
 
+    # Public: Makes it possible to prepare select statements.
+    #
+    # args - The Hash of arguments to pass to the argument generator
+    #        (default: {}). :column_family_name and :keyspace_name are
+    #        always included.
+    #
+    # Returns whatever is returned by executor.
+    def prepare_select(args = {})
+      @executor.call({
+        command: :column_family_prepare_select,
+        arguments: args.merge({
+          column_family_name: @name,
+          keyspace_name: @keyspace.name
+        }),
+        transformer_arguments: {
+          driver: @executor.driver
+        }
+      })
+    end
+
     # Public: Makes it possible to insert data into the column family.
     #
     # args - The Hash of arguments to pass to the argument generator
