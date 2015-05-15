@@ -25,7 +25,9 @@ module Cassanity
     #
     # variables - The Hash of variables to use to execute
     def execute_async(variables)
-      ::Cassanity::Future.new @session.execute_async @prepared_statement, arguments: args_from(variables)
+      future = ::Cassanity::Future.new @session.execute_async @prepared_statement, arguments: args_from(variables)
+      future.result_transformer = @result_transformer
+      future
     end
 
     private

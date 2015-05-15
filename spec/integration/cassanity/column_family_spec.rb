@@ -390,6 +390,22 @@ describe Cassanity::ColumnFamily do
 
         expect(stmt.execute id: '2').to eq [{'name' => 'gist'}]
       end
+
+      it 'successfully uses prepared statements asynchronously if required' do
+        driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('1', 'github')")
+        driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('2', 'gist')")
+
+        stmt = subject.prepare_select({
+          select: :name,
+          where: [:id]
+        })
+
+        futures = [1, 2].map do |i|
+          stmt.execute_async id: i.to_s
+        end
+
+        expect(Cassanity::Future.wait_all(futures).flatten).to eq [{'name' => 'github'}, {'name' => 'gist'}]
+      end
     end
 
 
