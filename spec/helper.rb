@@ -26,6 +26,10 @@ RSpec.configure do |config|
   ]
 
   config.include CassanityHelpers
+
+  config.after(:all) do
+    Cassanity::ClientPool.disconnect
+  end
 end
 
 CassanityHost = Array(ENV.fetch('CASSANITY_HOST', '127.0.0.1'))
