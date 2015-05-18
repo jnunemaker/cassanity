@@ -8,16 +8,18 @@ require 'cassanity/range'
 
 module Cassanity
 
-  class Placeholder
+  class RangePlaceholder ; end
 
-    def self.===(other)
-      self == other || super(other)
+  class SingleFieldPlaceholder
+
+    attr_reader :symbol
+
+    def initialize(symbol = '=')
+      @symbol = symbol
     end
-
   end
-  class RangePlaceholder < Placeholder ; end
-  class VarcharPlaceholder < Placeholder ; end
-  class ArrayPlaceholder < Placeholder
+
+  class ArrayPlaceholder
 
     attr_reader :length
 
@@ -45,8 +47,8 @@ module Cassanity
           when RangePlaceholder
             wheres << "#{key} >= ?"
             wheres << "#{key} < ?"
-          else
-            wheres << "\"#{key}\" = ?"
+          when SingleFieldPlaceholder
+            wheres << "\"#{key}\" #{value.symbol} ?"
           end
         end
 

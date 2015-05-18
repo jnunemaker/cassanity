@@ -386,32 +386,11 @@ describe Cassanity::ColumnFamily do
         stmt = subject.prepare_select({
           select: :name,
           where: {
-            id: Cassanity::VarcharPlaceholder
+            id: Cassanity::SingleFieldPlaceholder.new
           }
         })
 
         expect(stmt.execute id: '2').to eq [{'name' => 'gist'}]
-      end
-
-      it 'works with ranges' do
-        events_cf_name = 'events'
-        start_time = Time.now.round
-        driver_create_column_family(driver, events_cf_name, "app_id text, event text, time timestamp, PRIMARY KEY(app_id, time)")
-        10.times do |i|
-          driver.execute("INSERT INTO #{events_cf_name} (app_id, event, time) VALUES ('1', 'event#{i}', '#{(start_time + i).to_s}')")
-        end
-
-        cf = keyspace.column_family events_cf_name
-
-        stmt = cf.prepare_select({
-          select: :event,
-          where: {
-            app_id: Cassanity::VarcharPlaceholder,
-            time: Cassanity::RangePlaceholder
-          }
-        })
-
-        expect(stmt.execute app_id: '1', time: (start_time..(start_time+2))).to eq [{'event' => 'event0'}, {'event' => 'event1'}]
       end
 
       it 'works with arrays' do
@@ -429,13 +408,57 @@ describe Cassanity::ColumnFamily do
         expect(stmt.execute id: %w(2 5 8)).to eq [{'name' => 'name2'}, {'name' => 'name5'}, {'name' => 'name8'}]
       end
 
+      describe 'nummeric based clauses' do
+        let(:events_cf_name) { 'events' }
+        let(:start_time) { Time.now.round }
+        let(:column_family) { keyspace.column_family events_cf_name }
+
+        before do
+          driver_create_column_family(driver, events_cf_name, "app_id text, event text, time timestamp, PRIMARY KEY(app_id, time)")
+
+          10.times do |i|
+            driver.execute("INSERT INTO #{events_cf_name} (app_id, event, time) VALUES ('1', 'event#{i}', '#{(start_time + i).to_s}')")
+          end
+        end
+
+        describe 'ranges' do
+          it 'works with ranges' do
+            stmt = column_family.prepare_select({
+              select: :event,
+              where: {
+                app_id: Cassanity::SingleFieldPlaceholder.new,
+                time: Cassanity::RangePlaceholder.new
+              }
+            })
+
+            expect(stmt.execute app_id: '1', time: (start_time..(start_time+2))).to eq [{'event' => 'event0'}, {'event' => 'event1'}]
+          end
+
+          it 'allows edges inclusion/exclusion configuration'
+        end
+
+        it 'works with non equals operators' do
+          stmt = column_family.prepare_select({
+            select: :event,
+            where: {
+              app_id: Cassanity::SingleFieldPlaceholder.new,
+              time: Cassanity::SingleFieldPlaceholder.new('>')
+            }
+          })
+
+          expect(stmt.execute app_id: '1', time: start_time+7).to eq [{'event' => 'event8'}, {'event' => 'event9'}]
+        end
+      end
+
       it 'successfully uses prepared statements asynchronously if required' do
         driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('1', 'github')")
         driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('2', 'gist')")
 
         stmt = subject.prepare_select({
           select: :name,
-          where: [:id]
+          where: {
+            id: Cassanity::SingleFieldPlaceholder.new
+          }
         })
 
         futures = [1, 2].map do |i|
