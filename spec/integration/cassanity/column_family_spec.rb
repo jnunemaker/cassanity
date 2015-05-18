@@ -414,6 +414,21 @@ describe Cassanity::ColumnFamily do
         expect(stmt.execute app_id: '1', time: (start_time..(start_time+2))).to eq [{'event' => 'event0'}, {'event' => 'event1'}]
       end
 
+      it 'works with arrays' do
+        10.times do |i|
+          driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('#{i}', 'name#{i}')")
+        end
+
+        stmt = subject.prepare_select({
+          select: :name,
+          where: {
+            id: Cassanity::ArrayPlaceholder.new(3)
+          }
+        })
+
+        expect(stmt.execute id: %w(2 5 8)).to eq [{'name' => 'name2'}, {'name' => 'name5'}, {'name' => 'name8'}]
+      end
+
       it 'successfully uses prepared statements asynchronously if required' do
         driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('1', 'github')")
         driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('2', 'gist')")

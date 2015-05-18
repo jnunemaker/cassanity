@@ -17,6 +17,14 @@ module Cassanity
   end
   class RangePlaceholder < Placeholder ; end
   class VarcharPlaceholder < Placeholder ; end
+  class ArrayPlaceholder < Placeholder
+
+    attr_reader :length
+
+    def initialize(length)
+      @length = length
+    end
+  end
 
   module ArgumentGenerators
     class PreparedWhereClause
@@ -31,6 +39,9 @@ module Cassanity
 
         where.each do |key, value|
           case value
+          when ArrayPlaceholder
+            binds = (['?'] * value.length).join ','
+            wheres << "#{key} IN (#{binds})"
           when RangePlaceholder
             wheres << "#{key} >= ?"
             wheres << "#{key} < ?"
