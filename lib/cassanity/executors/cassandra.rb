@@ -10,7 +10,6 @@ require 'cassanity/argument_generators/column_family_create'
 require 'cassanity/argument_generators/column_family_drop'
 require 'cassanity/argument_generators/column_family_truncate'
 require 'cassanity/argument_generators/column_family_select'
-require 'cassanity/argument_generators/column_family_prepare_select'
 require 'cassanity/argument_generators/column_family_insert'
 require 'cassanity/argument_generators/column_family_prepare_insert'
 require 'cassanity/argument_generators/column_family_update'
@@ -51,7 +50,7 @@ module Cassanity
         column_family_truncate: ArgumentGenerators::ColumnFamilyTruncate.new,
         column_family_select: ArgumentGenerators::ColumnFamilySelect.new,
         column_family_select_async: ArgumentGenerators::ColumnFamilySelect.new,
-        column_family_prepare_select: ArgumentGenerators::ColumnFamilySelect.new,
+        column_family_prepare_select: ArgumentGenerators::ColumnFamilySelect.new(where_clause: ArgumentGenerators::PreparedWhereClause.new),
         column_family_insert: ArgumentGenerators::ColumnFamilyInsert.new,
         column_family_insert_async: ArgumentGenerators::ColumnFamilyInsert.new,
         column_family_prepare_insert: ArgumentGenerators::ColumnFamilyPrepareInsert.new,

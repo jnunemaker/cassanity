@@ -1,4 +1,5 @@
 require 'cassanity/argument_generators/where_clause'
+require 'cassanity/argument_generators/prepared_where_clause'
 
 module Cassanity
   module ArgumentGenerators

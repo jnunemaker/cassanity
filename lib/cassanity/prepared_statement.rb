@@ -33,7 +33,15 @@ module Cassanity
     private
 
     def args_from(variables)
-      fields.map { |field| variables.fetch field }
+      fields.map do |field|
+        value = variables.fetch field
+        case value
+        when Range
+          [value.begin, value.end]
+        else
+          value
+        end
+      end.flatten
     end
 
     def fields
@@ -44,7 +52,7 @@ module Cassanity
       # TODO: This instance variable get is VERY risky.
       # Change this into named attributes ASAP. In order to do this we need to
       # prepare the statement using named attributes rather than positional.
-      @prepared_statement.instance_variable_get(:@params_metadata).collect { |param| param[2].to_sym }
+      @prepared_statement.instance_variable_get(:@params_metadata).collect { |param| param[2].to_sym }.uniq
     end
   end
 end
