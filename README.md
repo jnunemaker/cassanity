@@ -98,6 +98,7 @@ You can also do a lot more. Here are a few more [examples](https://github.com/jn
 * [Instrumentation](https://github.com/jnunemaker/cassanity/tree/master/doc/Instrumentation.md)
 * [Migrations](https://github.com/jnunemaker/cassanity/tree/master/doc/Migrations.md)
 * [Prepared Statements](https://github.com/jnunemaker/cassanity/tree/master/doc/Prepared_Statements.md)
+* [Asynchronous Queries](https://github.com/jnunemaker/cassanity/tree/master/doc/Async_Queries.md)
 
 ## Compatibility
 
