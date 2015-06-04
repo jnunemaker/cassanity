@@ -375,7 +375,9 @@ describe Cassanity::ColumnFamily do
     describe 'preparing select' do
       it 'successfully prepares the statement' do
         subject.prepare_select({
-          fields: [:id]
+          where: {
+            id: Cassanity::SingleFieldPlaceholder.new
+          }
         }).should be_a Cassanity::PreparedStatement
       end
 
