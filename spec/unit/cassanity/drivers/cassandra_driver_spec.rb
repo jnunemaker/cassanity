@@ -41,10 +41,16 @@ describe Cassanity::Drivers::CassandraDriver do
     end
 
     describe '#execute' do
-
       it 'forwards the message to the underlying driver' do
         session.should_receive(:execute).with 'query'
         driver.execute 'query'
+      end
+    end
+
+    describe '#execute_async' do
+      it 'forwards the message to the underlying driver' do
+        session.should_receive(:execute_async).with 'query'
+        driver.execute_async 'query'
       end
     end
 

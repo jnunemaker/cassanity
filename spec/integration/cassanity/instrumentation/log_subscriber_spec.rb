@@ -6,9 +6,7 @@ require 'cassanity/instrumentation/log_subscriber'
 
 describe Cassanity::Instrumentation::LogSubscriber do
   let(:client) {
-    Cassanity::Client.new(CassanityHost, CassanityPort, {
-      instrumenter: ActiveSupport::Notifications,
-    })
+    Cassanity::ClientPool.get_client instrumenter: ActiveSupport::Notifications
   }
 
   let(:keyspace) { client[:cassanity_test] }

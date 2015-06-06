@@ -7,9 +7,7 @@ describe Cassanity::Instrumentation::StatsdSubscriber do
   let(:socket) { FakeUDPSocket.new }
 
   let(:client) {
-    Cassanity::Client.new(CassanityHost, CassanityPort, {
-      instrumenter: ActiveSupport::Notifications,
-    })
+    Cassanity::ClientPool.get_client instrumenter: ActiveSupport::Notifications
   }
 
   let(:keyspace) { client[:cassanity_test] }

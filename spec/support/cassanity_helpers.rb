@@ -39,4 +39,8 @@ module CassanityHelpers
   def cassandra_error(err)
     Cassandra::Errors::ClientError.new(err)
   end
+
+  def column_family_count(driver, column_family)
+    driver.execute("SELECT COUNT(*) FROM #{column_family}").rows.to_a[0]['count']
+  end
 end

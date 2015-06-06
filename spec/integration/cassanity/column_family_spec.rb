@@ -6,7 +6,7 @@ describe Cassanity::ColumnFamily do
   let(:column_family_name)          { :apps }
   let(:counters_column_family_name) { :counters }
 
-  let(:client) { Cassanity::Client.new(CassanityHost, CassanityPort) }
+  let(:client) { Cassanity::ClientPool.get_client }
   let(:driver) { client.driver }
 
   let(:keyspace) { client[keyspace_name] }
@@ -165,6 +165,41 @@ describe Cassanity::ColumnFamily do
     ])
   end
 
+  it "can select data asynchronously" do
+    driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('1', 'github')")
+    driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('2', 'gist')")
+    future = subject.select_async({
+      select: :name,
+      where: {
+        id: '2',
+      },
+    })
+    future.wait.should eq([
+      {'name' => 'gist'}
+    ])
+  end
+
+  it "can run several selects asynchronously" do
+    driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('1', 'github')")
+    driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('2', 'gist')")
+    futures = (0..5).map do |i|
+      subject.select_async({
+        select: :name,
+        where: {
+          id: i.to_s,
+        },
+      })
+    end
+    expect(Cassanity::Future.wait_all(futures)).to eq [
+      [],
+      [{'name' => 'github'}],
+      [{'name' => 'gist'}],
+      [],
+      [],
+      []
+    ]
+  end
+
   context "selecting a range of data" do
     let(:name) { 'rollups_minute' }
 
@@ -210,19 +245,38 @@ describe Cassanity::ColumnFamily do
     end
   end
 
-  it "can insert data" do
-    subject.insert({
-      data: {
+  describe 'data insert' do
+    let(:attributes) {
+      {
         id: '1',
-        name: 'GitHub',
-      },
-    })
+        name: 'GitHub'
+      }
+    }
 
-    result = driver.execute("SELECT * FROM #{column_family_name}")
-    result.to_a.length.should eq(1)
-    row = result.first
-    row['id'].should eq('1')
-    row['name'].should eq('GitHub')
+    it "can insert synchronously data" do
+      subject.insert data: attributes
+
+      result = driver.execute("SELECT * FROM #{column_family_name}")
+      result.to_a.length.should eq(1)
+      row = result.first
+      row['id'].should eq('1')
+      row['name'].should eq('GitHub')
+    end
+
+    it "can asynchronously insert data" do
+      driver.should_receive(:execute_async).once.and_call_original
+
+      expect do
+        future = subject.insert_async data: attributes
+        future.wait
+      end.to change { column_family_count driver, column_family_name }.from(0).to 1
+
+      result = driver.execute("SELECT * FROM #{column_family_name}")
+      result.to_a.length.should eq(1)
+      row = result.first
+      row['id'].should eq('1')
+      row['name'].should eq('GitHub')
+    end
   end
 
   it "can update data" do
@@ -318,6 +372,106 @@ describe Cassanity::ColumnFamily do
   end
 
   describe 'prepared statements' do
+    describe 'preparing select' do
+      it 'successfully prepares the statement' do
+        subject.prepare_select({
+          where: {
+            id: Cassanity::SingleFieldPlaceholder.new
+          }
+        }).should be_a Cassanity::PreparedStatement
+      end
+
+      it 'successfully uses prepared statements' do
+        driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('1', 'github')")
+        driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('2', 'gist')")
+
+        stmt = subject.prepare_select({
+          select: :name,
+          where: {
+            id: Cassanity::SingleFieldPlaceholder.new
+          }
+        })
+
+        expect(stmt.execute id: '2').to eq [{'name' => 'gist'}]
+      end
+
+      it 'works with arrays' do
+        10.times do |i|
+          driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('#{i}', 'name#{i}')")
+        end
+
+        stmt = subject.prepare_select({
+          select: :name,
+          where: {
+            id: Cassanity::ArrayPlaceholder.new(3)
+          }
+        })
+
+        expect(stmt.execute id: %w(2 5 8)).to eq [{'name' => 'name2'}, {'name' => 'name5'}, {'name' => 'name8'}]
+      end
+
+      describe 'nummeric based clauses' do
+        let(:events_cf_name) { 'events' }
+        let(:start_time) { Time.now.round }
+        let(:column_family) { keyspace.column_family events_cf_name }
+
+        before do
+          driver_create_column_family(driver, events_cf_name, "app_id text, event text, time timestamp, PRIMARY KEY(app_id, time)")
+
+          10.times do |i|
+            driver.execute("INSERT INTO #{events_cf_name} (app_id, event, time) VALUES ('1', 'event#{i}', '#{(start_time + i).to_s}')")
+          end
+        end
+
+        describe 'ranges' do
+          it 'works with ranges' do
+            stmt = column_family.prepare_select({
+              select: :event,
+              where: {
+                app_id: Cassanity::SingleFieldPlaceholder.new,
+                time: Cassanity::RangePlaceholder.new
+              }
+            })
+
+            expect(stmt.execute app_id: '1', time: (start_time..(start_time+2))).to eq [{'event' => 'event0'}, {'event' => 'event1'}]
+          end
+
+          it 'allows edges inclusion/exclusion configuration'
+        end
+
+        it 'works with non equals operators' do
+          stmt = column_family.prepare_select({
+            select: :event,
+            where: {
+              app_id: Cassanity::SingleFieldPlaceholder.new,
+              time: Cassanity::SingleFieldPlaceholder.new('>')
+            }
+          })
+
+          expect(stmt.execute app_id: '1', time: start_time+7).to eq [{'event' => 'event8'}, {'event' => 'event9'}]
+        end
+      end
+
+      it 'successfully uses prepared statements asynchronously if required' do
+        driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('1', 'github')")
+        driver.execute("INSERT INTO #{column_family_name} (id, name) VALUES ('2', 'gist')")
+
+        stmt = subject.prepare_select({
+          select: :name,
+          where: {
+            id: Cassanity::SingleFieldPlaceholder.new
+          }
+        })
+
+        futures = [1, 2].map do |i|
+          stmt.execute_async id: i.to_s
+        end
+
+        expect(Cassanity::Future.wait_all(futures).flatten).to eq [{'name' => 'github'}, {'name' => 'gist'}]
+      end
+    end
+
+
     describe 'preparing insert' do
       it 'successfully prepares the statement' do
         subject.prepare_insert({
@@ -340,6 +494,20 @@ describe Cassanity::ColumnFamily do
           stmt.execute id: '1', name: 'GitHub'
           stmt.execute id: '2', name: 'GitHub'
           stmt.execute id: '3', name: 'GitHub'
+        }.to change { driver.execute("SELECT * FROM #{column_family_name}").to_a.length }.from(0).to 3
+      end
+
+      it 'successfully uses prepared statements asynchronously if required' do
+        stmt = subject.prepare_insert({
+          fields: [:id, :name]
+        })
+
+        expect {
+          futures = (1..3).map do |i|
+            stmt.execute_async id: i.to_s, name: 'GitHub'
+          end
+
+          Cassanity::Future.wait_all futures
         }.to change { driver.execute("SELECT * FROM #{column_family_name}").to_a.length }.from(0).to 3
       end
     end

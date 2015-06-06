@@ -57,6 +57,21 @@ describe Cassanity::ArgumentGenerators::WithClause do
       end
     end
 
+    context "with clustering order option" do
+      it "returns array of arguments including clustering order" do
+        subject.call({
+            with: {
+              clustering_order: {
+                field: :field1,
+                order: :asc
+              }
+            }
+          }).should eq([
+            " WITH CLUSTERING ORDER BY (field1 ASC)",
+          ])
+      end
+    end
+
     context "when using :with option that has sub options" do
       it "returns array of arguments" do
         subject.call({
