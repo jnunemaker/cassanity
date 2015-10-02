@@ -5,6 +5,7 @@ shared_context "rake" do
   let(:task_name) { self.class.top_level_description }
   let(:task_path) { "#{task_name.split(":").first}" }
   subject         { rake[task_name] }
+  let(:main)      { TOPLEVEL_BINDING.eval('self') }
 
   let(:all_tasks_path) { Pathname.new File.expand_path('../../../lib/tasks', __FILE__) }
 
