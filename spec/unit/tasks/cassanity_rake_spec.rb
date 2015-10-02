@@ -95,3 +95,23 @@ describe 'cassanity:create' do
     subject.invoke
   end
 end
+
+describe 'cassanity:drop' do
+  include_context 'rake'
+  include_context 'migrations'
+
+  let(:keyspace) { main.send :get_keyspace }
+
+  it 'drops if exists' do
+    keyspace.create unless keyspace.exists?
+    expect {
+      subject.invoke
+    }.to change(keyspace, :exists?).from(true).to false
+  end
+
+  it "doesn't drop if already doesn't exist" do
+    keyspace.drop if keyspace.exists?
+    expect(keyspace).not_to receive :drop
+    subject.invoke
+  end
+end
