@@ -1,15 +1,14 @@
 namespace :cassanity do
 
   def display_migrations(migrations)
-    max_size = (migrations.map(&:name).map(&:size).max || 0) + 1
+    left_padding = (migrations.map(&:name).map(&:size).max || 0) + 1
     migrations.each do |migration|
-      display_migration migration, size: max_size
+      display_migration migration, left_padding
     end
   end
 
-  def display_migration(migration, options = {})
-    size = options[:size] || migration.name.size
-    puts "- #{migration.name.ljust(size)} #{migration.version}"
+  def display_migration(migration, left_padding)
+    puts "- #{migration.name.ljust(left_padding)} #{migration.version}"
   end
 
   def build_migrator
