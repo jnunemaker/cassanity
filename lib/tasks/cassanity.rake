@@ -1,7 +1,7 @@
 namespace :cassanity do
 
   def display_migrations(migrations)
-    max_size = migrations.map(&:name).map(&:size).max + 1
+    max_size = (migrations.map(&:name).map(&:size).max || 0) + 1
     migrations.each do |migration|
       display_migration migration, size: max_size
     end
@@ -12,24 +12,20 @@ namespace :cassanity do
     puts "- #{migration.name.ljust(size)} #{migration.version}"
   end
 
-  def migrator
-    @migrator ||= begin
-      require 'cassanity/migrator'
+  def build_migrator
+    require 'cassanity/migrator'
 
-      Cassanity::Migrator.new(keyspace, Cassanity::Config.instance.migrations_path)
-    end
+    Cassanity::Migrator.new(get_keyspace, Cassanity::Config.instance.migrations_path)
   end
 
-  def keyspace
-    @keyspace ||= begin
-
-      config = Cassanity::Config.instance
-      Cassanity::Client.new(config.hosts, config.port)[config.keyspace.to_sym]
-    end
+  def get_keyspace
+    config = Cassanity::Config.instance
+    Cassanity::Client.new(config.hosts, config.port)[config.keyspace.to_sym]
   end
 
   desc "Run any pending migrations."
   task :migrate do
+    migrator = build_migrator
     if ENV["VERSION"]
       version = ENV["VERSION"].to_i
       direction = ENV.fetch('DIRECTION', :up).to_sym
@@ -41,29 +37,32 @@ namespace :cassanity do
 
   desc "List pending migrations."
   task :pending do
+    migrator = build_migrator
     pending = migrator.pending_migrations
-
     display_migrations pending
   end
 
   desc "List all migrations."
   task :migrations do
+    migrator = build_migrator
     display_migrations migrator.migrations
   end
 
   desc "Create the keyspace"
   task :create do
-    unless keyspace.exists?
-      puts "Creating keyspace #{keyspace.name}"
-      keyspace.create
+    ks = get_keyspace
+    unless ks.exists?
+      puts "Creating keyspace #{ks.name}"
+      ks.create
     end
   end
 
   desc "Drop the keyspace"
   task :drop do
-    if keyspace.exists?
-      puts "Dropping keyspace #{keyspace.name}"
-      keyspace.drop
+    ks = get_keyspace
+    if ks.exists?
+      puts "Dropping keyspace #{ks.name}"
+      ks.drop
     end
   end
 end
