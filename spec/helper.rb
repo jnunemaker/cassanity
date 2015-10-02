@@ -30,3 +30,4 @@ end
 
 CassanityHost = Array(ENV.fetch('CASSANITY_HOST', '127.0.0.1'))
 CassanityPort = ENV.fetch('CASSANITY_PORT', '9042').to_i
+ENV['CASSANITY_ENV'] = 'test'
