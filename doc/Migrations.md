@@ -118,4 +118,10 @@ migrator.migrate_to(1, :up)
 
 ## Rake Tasks
 
-What is that? You want some rake tasks to handle migrating? [Here is a gist for that](https://gist.github.com/jnunemaker/5086063). I will try to keep it up to date and I am definitely open to any solutions that would make integrating all of this with your app easier.
+Cassanity defines several useful Rake tasks to manage your migrations. They are:
+
+* `cassanity:migrate`: The most important one. Runs all pending migrations.
+* `cassanity:pending`: Outputs all pending migrations.
+* `cassanity:migrations`: Outputs all migrations.
+* `cassanity:create`: Creates your keyspace (defined in your config/cassanity.erb.yml) if not exists.
+* `cassanity:drop`: Drops your keyspace.
