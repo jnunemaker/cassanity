@@ -7,6 +7,10 @@ describe Cassanity::Config do
     stub_const 'Cassanity::Config::CONFIG_FILE', 'spec/support/cassanity.erb.yml'
   end
 
+  after do
+    ENV['CASSANITY_ENV'] = 'test'
+  end
+
   let(:config) { Class.new(Cassanity::Config).instance }
 
   it 'successfully reads hosts config' do
@@ -31,7 +35,7 @@ describe Cassanity::Config do
   end
 
   it 'successfully reads migrations path' do
-    config.migrations_path.should eq 'lib/db/migrations'
+    config.migrations_path.should eq 'spec/migrations'
   end
 
 end
