@@ -10,6 +10,7 @@ development:
 test:
   <<: *default
   :keyspace: cassanity_test
+  :migrations_path: 'spec/migrations'
 
 production:
   <<: *default

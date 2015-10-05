@@ -1,33 +1,46 @@
 require 'helper'
 require 'cassanity/migrator'
+require 'cassanity/migration'
 
 describe 'cassanity:migrate' do
   include_context 'rake'
   include_context 'migrations'
 
+  let(:migrator) { CassanityRakeHelper.migrator }
+  let(:keyspace) { CassanityRakeHelper.keyspace }
+
+  before do
+    keyspace.drop if keyspace.exists?
+    keyspace.create
+  end
+
   it 'migrates' do
-    expect(migrator).to receive :migrate
-    subject.invoke
+    expect do
+      subject.invoke
+    end.to change { migrator.pending_migrations.count }.from(2).to 0
   end
 
   context 'specifying target version' do
 
-    let(:target_version) { 139 }
-
     before do
       ENV.delete 'DIRECTION'
-      ENV['VERSION'] = target_version.to_s
+      ENV.delete 'VERSION'
     end
 
     it 'migrates up to a specific version' do
-      expect(migrator).to receive(:migrate_to).with target_version, :up
-      subject.invoke
+      ENV['VERSION'] = '1'
+      expect do
+        subject.invoke
+      end.to change { migrator.pending_migrations.map(&:version) }.from([1, 2]).to [2]
     end
 
     it 'migrates down to a specific version' do
+      migrator.migrate
+      ENV['VERSION'] = '1'
       ENV['DIRECTION'] = 'down'
-      expect(migrator).to receive(:migrate_to).with target_version, :down
-      subject.invoke
+      expect do
+        subject.invoke
+      end.to change { migrator.pending_migrations.map(&:version) }.from([]).to [2]
     end
   end
 end
@@ -36,20 +49,25 @@ describe 'cassanity:pending' do
   include_context 'rake'
   include_context 'migrations'
 
+  let(:migrator) { CassanityRakeHelper.migrator }
+  let(:keyspace) { CassanityRakeHelper.keyspace }
+
+  before do
+    keyspace.drop if keyspace.exists?
+    keyspace.create
+  end
+
   it 'lists pending migrations' do
-    migration_name = 'Migration1'
-    migration = double Cassanity::MigrationProxy, name: migration_name
-    migration_name2 = 'Migration_2'
-    migration2 = double Cassanity::MigrationProxy, name: migration_name2
-    allow(migrator).to receive(:pending_migrations).and_return [migration, migration2]
-    expect(main).to receive(:display_migration).with(migration, migration_name2.size + 1)
-    expect(main).to receive(:display_migration).with(migration2, migration_name2.size + 1)
+    expect(migrator.migrations.count).to eq 2
+    migrator.migrations.each do |m|
+      expect(CassanityRakeHelper).to receive(:display_migration).with(m, 9)
+    end
     subject.invoke
   end
 
   it 'lists nothing if no pending migrations' do
-    allow(migrator).to receive(:pending_migrations).and_return []
-    expect(main).not_to receive :display_migration
+    migrator.migrate
+    expect(CassanityRakeHelper).not_to receive :display_migration
     subject.invoke
   end
 end
@@ -58,20 +76,25 @@ describe 'cassanity:migrations' do
   include_context 'rake'
   include_context 'migrations'
 
+  let(:migrator) { CassanityRakeHelper.migrator }
+  let(:keyspace) { CassanityRakeHelper.keyspace }
+
+  before do
+    keyspace.drop if keyspace.exists?
+    keyspace.create
+  end
+
   it 'lists all migrations' do
-    migration_name = 'Migration1'
-    migration = double Cassanity::MigrationProxy, name: migration_name
-    migration_name2 = 'Migration_2'
-    migration2 = double Cassanity::MigrationProxy, name: migration_name2
-    allow(migrator).to receive(:migrations).and_return [migration, migration2]
-    expect(main).to receive(:display_migration).with(migration, migration_name2.size + 1)
-    expect(main).to receive(:display_migration).with(migration2, migration_name2.size + 1)
+    expect(migrator.migrations.count).to eq 2
+    migrator.migrations.each do |m|
+      expect(CassanityRakeHelper).to receive(:display_migration).with(m, 9)
+    end
     subject.invoke
   end
 
-  it 'lists nothing if no pending migrations' do
+  it 'lists nothing if no migrations' do
     allow(migrator).to receive(:migrations).and_return []
-    expect(main).not_to receive :display_migration
+    expect(CassanityRakeHelper).not_to receive :display_migration
     subject.invoke
   end
 end
@@ -80,7 +103,7 @@ describe 'cassanity:create' do
   include_context 'rake'
   include_context 'migrations'
 
-  let(:keyspace) { main.send :get_keyspace }
+  let(:keyspace) { CassanityRakeHelper.keyspace }
 
   it 'creates if not exists' do
     keyspace.drop if keyspace.exists?
@@ -100,7 +123,7 @@ describe 'cassanity:drop' do
   include_context 'rake'
   include_context 'migrations'
 
-  let(:keyspace) { main.send :get_keyspace }
+  let(:keyspace) { CassanityRakeHelper.keyspace }
 
   it 'drops if exists' do
     keyspace.create unless keyspace.exists?
