@@ -15,7 +15,7 @@ module Cassanity
     end
 
     def environment
-      ENV['CASSANITY_ENV'] || 'development'
+      ENV['CASSANITY_ENV'] || ENV['RAILS_ENV'] || ENV['RACK_ENV'] || 'development'
     end
 
     def hosts
