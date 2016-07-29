@@ -12,7 +12,7 @@ module Cassanity
 
     attr_reader :comparator
 
-    def initialize(exclusive: true)
+    def initialize(exclusive = true)
       @comparator = exclusive ? '<' : '<='
     end
   end
