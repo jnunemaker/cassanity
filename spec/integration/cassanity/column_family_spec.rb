@@ -441,7 +441,7 @@ describe Cassanity::ColumnFamily do
               select: :event,
               where: {
                 app_id: Cassanity::SingleFieldPlaceholder.new,
-                time: Cassanity::RangePlaceholder.new(exclusive: false)
+                time: Cassanity::RangePlaceholder.new(false)
               }
             })
 
