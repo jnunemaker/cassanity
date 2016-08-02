@@ -8,7 +8,14 @@ require 'cassanity/range'
 
 module Cassanity
 
-  class RangePlaceholder ; end
+  class RangePlaceholder
+
+    attr_reader :comparator
+
+    def initialize(exclusive = true)
+      @comparator = exclusive ? '<' : '<='
+    end
+  end
 
   class SingleFieldPlaceholder
 
@@ -46,7 +53,7 @@ module Cassanity
             wheres << "#{key} IN (#{binds})"
           when RangePlaceholder
             wheres << "#{key} >= ?"
-            wheres << "#{key} < ?"
+            wheres << "#{key} #{value.comparator} ?"
           when SingleFieldPlaceholder
             wheres << "\"#{key}\" #{value.symbol} ?"
           end

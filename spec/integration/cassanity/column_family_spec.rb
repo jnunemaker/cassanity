@@ -424,7 +424,7 @@ describe Cassanity::ColumnFamily do
         end
 
         describe 'ranges' do
-          it 'works with ranges' do
+          it 'works with (and defaults to) exclusive ranges' do
             stmt = column_family.prepare_select({
               select: :event,
               where: {
@@ -436,7 +436,19 @@ describe Cassanity::ColumnFamily do
             expect(stmt.execute app_id: '1', time: (start_time..(start_time+2))).to eq [{'event' => 'event0'}, {'event' => 'event1'}]
           end
 
-          it 'allows edges inclusion/exclusion configuration'
+          it 'works with inclusive ranges' do
+            stmt = column_family.prepare_select({
+              select: :event,
+              where: {
+                app_id: Cassanity::SingleFieldPlaceholder.new,
+                time: Cassanity::RangePlaceholder.new(false)
+              }
+            })
+
+            expect(stmt.execute app_id: '1', time: (start_time..(start_time+2))).to eq [
+              {'event' => 'event0'}, {'event' => 'event1'}, {'event' => 'event2'}
+            ]
+          end
         end
 
         it 'works with non equals operators' do
