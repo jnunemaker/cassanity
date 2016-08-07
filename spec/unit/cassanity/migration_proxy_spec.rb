@@ -40,6 +40,11 @@ describe Cassanity::MigrationProxy do
       described_class.new('/some/path/1_foo.rb').eql?(other).should be_true
     end
 
+    it "returns true for same version value" do
+      other = described_class.new('/some/path/1_foo.rb')
+      described_class.new('/some/path/001_foo.rb').eql?(other).should be_true
+    end
+
     it "returns false for different path" do
       other = described_class.new('/some/path/1_foo.rb')
       described_class.new('/some/path/2_foo.rb').eql?(other).should be_false
@@ -52,10 +57,12 @@ describe Cassanity::MigrationProxy do
   end
 
   describe "#hash" do
-    it "delegates to path" do
-      path = '/some/path/1_foo.rb'
+    it "hashes the version and name concatenated" do
+      version = 1
+      name = 'foo'
+      path = "/some/path/00#{version}_#{name}.rb"
       instance = described_class.new(path)
-      instance.hash.should eq(path.hash)
+      instance.hash.should eq("#{version}_#{name}".hash)
     end
   end
 
@@ -75,6 +82,12 @@ describe Cassanity::MigrationProxy do
     it "returns 1 when version is greater than other" do
       older = described_class.new(Pathname('/some/path/1_a.rb'))
       newer = described_class.new(Pathname('/some/path/2_a.rb'))
+      (newer <=> older).should be(1)
+    end
+
+    it "works successfully with alphanummerical ordering" do
+      older = described_class.new(Pathname('/some/path/1_a.rb'))
+      newer = described_class.new(Pathname('/some/path/10_a.rb'))
       (newer <=> older).should be(1)
     end
   end
