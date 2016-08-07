@@ -50,7 +50,7 @@ module Cassanity
 
     def migration_class
       @migration_class ||= begin
-        require path
+        require File.expand_path(path)
         # TODO: handle constant not found
         Kernel.const_get(constant)
       end

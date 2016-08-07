@@ -1,0 +1,17 @@
+default: &default
+  :hosts: [127.0.0.1]
+  :port: <%= ENV['CASSANDRA_PORT'] || 9042 %>
+  :migrations_path: 'lib/db/migrations'
+
+development:
+  <<: *default
+  :keyspace: cassanity_dev
+
+test:
+  <<: *default
+  :keyspace: cassanity_test
+  :migrations_path: 'spec/migrations'
+
+production:
+  <<: *default
+  :keyspace: cassanity
