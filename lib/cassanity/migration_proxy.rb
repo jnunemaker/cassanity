@@ -23,7 +23,7 @@ module Cassanity
       raise ArgumentError, "name cannot be nil" if name.nil?
 
       @path = Pathname(path)
-      @version = version.to_i
+      @version = version
       @name = name
     end
 
